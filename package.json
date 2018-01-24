@@ -5,7 +5,7 @@
   "main": "bin/index.js",
   "scripts": {
     "dev": "better-npm-run dev",
-    "test": "NODE_PATH=./src mocha --require babel-core/register --reporter spec src/*/test.js"
+    "test": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/*/test.js"
   },
   "betterScripts": {
     "dev": {
@@ -29,6 +29,7 @@
   "license": "ISC",
   "private": true,
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
     "base-x": "^3.0.4",
     "bip39": "^2.5.0",

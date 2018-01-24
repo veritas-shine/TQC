@@ -16,4 +16,5 @@ try {
   console.error(err);
 }
 
+require("babel-polyfill");
 require('babel-register')(config);
