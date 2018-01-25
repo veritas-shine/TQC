@@ -56,3 +56,20 @@ wallet // 模块名
 ├── model.js // 数据对象封装
 └── test.js  // 单元测试
 ```
+
+导出路由的写法：
+以HTTP的小写method开始, 空格后写路由路径，支持的method为：`get`, `post`, `put`, `delete`举例如下：
+```js
+'post /wallet/create'
+```
+完整的例子：
+```js
+{
+  'post /wallet/create': (req, res, next) => {
+    res.send(200)
+  },
+  'get /wallet/detail': (req, res) => {
+    res.send('detail')
+  }
+}
+```

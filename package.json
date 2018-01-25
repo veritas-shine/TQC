@@ -5,7 +5,8 @@
   "main": "bin/index.js",
   "scripts": {
     "dev": "better-npm-run dev",
-    "test": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/*/test.js"
+    "test": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/*/test.js",
+    "test-lib": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/*/*.js"
   },
   "betterScripts": {
     "dev": {
@@ -33,12 +34,14 @@
     "babel-register": "^6.26.0",
     "base-x": "^3.0.4",
     "bip39": "^2.5.0",
+    "bn.js": "^4.11.8",
     "crypto-js": "^3.1.9-1",
     "express": "^4.16.2",
     "express-winston": "^2.4.0",
     "grpcc": "^1.1.1",
     "leveldown": "^2.1.1",
     "levelup": "^2.0.1",
+    "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
     "ntru": "^3.1.3",
     "pqp": "^0.0.7",
