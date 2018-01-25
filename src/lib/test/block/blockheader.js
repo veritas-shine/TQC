@@ -21,7 +21,7 @@ describe('BlockHeader', function() {
   var prevblockidbuf = new Buffer(data.prevblockidhex, 'hex');
   var merklerootbuf = new Buffer(data.merkleroothex, 'hex');
   var time = data.time;
-  var bits = data.bits;
+  var bits = data.qbits;
   var nonce = data.nonce;
   var bh = new BlockHeader({
     version: version,
@@ -59,7 +59,7 @@ describe('BlockHeader', function() {
       should.exist(bh.prevHash);
       should.exist(bh.merkleRoot);
       should.exist(bh.time);
-      should.exist(bh.bits);
+      should.exist(bh.qbits);
       should.exist(bh.nonce);
     });
 
@@ -104,7 +104,7 @@ describe('BlockHeader', function() {
       should.exist(bh.prevHash);
       should.exist(bh.merkleRoot);
       should.exist(bh.time);
-      should.exist(bh.bits);
+      should.exist(bh.qbits);
       should.exist(bh.nonce);
     });
 
@@ -118,7 +118,7 @@ describe('BlockHeader', function() {
       should.exist(json.prevHash);
       should.exist(json.merkleRoot);
       should.exist(json.time);
-      should.exist(json.bits);
+      should.exist(json.qbits);
       should.exist(json.nonce);
     });
 
@@ -142,7 +142,7 @@ describe('BlockHeader', function() {
       should.exist(json.prevHash);
       should.exist(json.merkleRoot);
       should.exist(json.time);
-      should.exist(json.bits);
+      should.exist(json.qbits);
       should.exist(json.nonce);
     });
 
@@ -209,13 +209,13 @@ describe('BlockHeader', function() {
     it('should instantiate from a raw block binary', function() {
       var x = BlockHeader.fromRawBlock(dataRawBlockBinary);
       x.version.should.equal(2);
-      new BN(x.bits).toString('hex').should.equal('1c3fffc0');
+      new BN(x.qbits).toString('hex').should.equal('1c3fffc0');
     });
 
     it('should instantiate from raw block buffer', function() {
       var x = BlockHeader.fromRawBlock(dataRawBlockBuffer);
       x.version.should.equal(2);
-      new BN(x.bits).toString('hex').should.equal('1c3fffc0');
+      new BN(x.qbits).toString('hex').should.equal('1c3fffc0');
     });
 
   });
@@ -261,7 +261,7 @@ describe('BlockHeader', function() {
   describe('#getDifficulty', function() {
     it('should get the correct difficulty for block 86756', function() {
       var x = BlockHeader.fromRawBlock(dataRawBlockBuffer);
-      x.bits.should.equal(0x1c3fffc0);
+      x.qbits.should.equal(0x1c3fffc0);
       x.getDifficulty().should.equal(4);
     });
 
