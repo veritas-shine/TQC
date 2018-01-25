@@ -1,13 +1,10 @@
-'use strict';
-
-var _ = require('lodash');
-var $ = require('./util/preconditions');
-var errors = require('./errors');
-var Base58Check = require('./encoding/base58check');
-var Networks = require('./networks');
-var Hash = require('./crypto/hash');
-var JSUtil = require('./util/js');
-var PublicKey = require('./publickey');
+import _ from 'lodash'
+import $ from './util/preconditions'
+import Base58Check from './encoding/base58check'
+import Networks from './networks'
+import Hash from './crypto/hash'
+import JSUtil from './util/js'
+import PublicKey from './publickey'
 
 /**
  * Instantiate an address from an address String or Buffer, a public key or script hash Buffer,
@@ -43,112 +40,109 @@ var PublicKey = require('./publickey');
  * @returns {Address} A new valid and frozen instance of an Address
  * @constructor
  */
-function Address(data, network, type) {
-  /* jshint maxcomplexity: 12 */
-  /* jshint maxstatements: 20 */
+export default class Address {
 
-  if (!(this instanceof Address)) {
-    return new Address(data, network, type);
+  constructor(data, network, type) {
+
+    if (_.isArray(data) && _.isNumber(network)) {
+      return Address.createMultisig(data, network, type);
+    }
+
+    if (data instanceof Address) {
+      // Immutable instance
+      return data;
+    }
+
+    $.checkArgument(data, 'First argument is required, please include address data.', 'guide/address.html');
+
+    if (network && !Networks.get(network)) {
+      throw new TypeError('Second argument must be "livenet" or "testnet".');
+    }
+
+    if (type && (type !== Address.PayToPublicKeyHash && type !== Address.PayToScriptHash)) {
+      throw new TypeError('Third argument must be "pubkeyhash" or "scripthash".');
+    }
+
+    var info = this._classifyArguments(data, network, type);
+
+    // set defaults if not set
+    info.network = info.network || Networks.get(network) || Networks.defaultNetwork;
+    info.type = info.type || type || Address.PayToPublicKeyHash;
+
+    JSUtil.defineImmutable(this, {
+      hashBuffer: info.hashBuffer,
+      network: info.network,
+      type: info.type
+    });
   }
 
-  if (_.isArray(data) && _.isNumber(network)) {
-    return Address.createMultisig(data, network, type);
-  }
 
-  if (data instanceof Address) {
-    // Immutable instance
-    return data;
-  }
-
-  $.checkArgument(data, 'First argument is required, please include address data.', 'guide/address.html');
-
-  if (network && !Networks.get(network)) {
-    throw new TypeError('Second argument must be "livenet" or "testnet".');
-  }
-
-  if (type && (type !== Address.PayToPublicKeyHash && type !== Address.PayToScriptHash)) {
-    throw new TypeError('Third argument must be "pubkeyhash" or "scripthash".');
-  }
-
-  var info = this._classifyArguments(data, network, type);
-
-  // set defaults if not set
-  info.network = info.network || Networks.get(network) || Networks.defaultNetwork;
-  info.type = info.type || type || Address.PayToPublicKeyHash;
-
-  JSUtil.defineImmutable(this, {
-    hashBuffer: info.hashBuffer,
-    network: info.network,
-    type: info.type
-  });
-
-  return this;
-}
-
-/**
- * Internal function used to split different kinds of arguments of the constructor
- * @param {*} data - The encoded data in various formats
- * @param {Network|String|number=} network - The network: 'livenet' or 'testnet'
- * @param {string=} type - The type of address: 'script' or 'pubkey'
- * @returns {Object} An "info" object with "type", "network", and "hashBuffer"
- */
-Address.prototype._classifyArguments = function(data, network, type) {
-  /* jshint maxcomplexity: 10 */
-  // transform and validate input data
-  if ((data instanceof Buffer || data instanceof Uint8Array) && data.length === 20) {
-    return Address._transformHash(data);
-  } else if ((data instanceof Buffer || data instanceof Uint8Array) && data.length === 21) {
-    return Address._transformBuffer(data, network, type);
-  } else if (data instanceof PublicKey) {
-    return Address._transformPublicKey(data);
-  } else if (typeof(data) === 'string') {
-    return Address._transformString(data, network, type);
-  } else if (_.isObject(data)) {
-    return Address._transformObject(data);
-  } else {
-    throw new TypeError('First argument is an unrecognized data format.');
-  }
-};
-
-/** @static */
-Address.PayToPublicKeyHash = 'pubkeyhash';
-/** @static */
-Address.PayToScriptHash = 'scripthash';
-
-/**
- * @param {Buffer} hash - An instance of a hash Buffer
- * @returns {Object} An object with keys: hashBuffer
- * @private
- */
-Address._transformHash = function(hash) {
-  var info = {};
-  if (!(hash instanceof Buffer) && !(hash instanceof Uint8Array)) {
-    throw new TypeError('Address supplied is not a buffer.');
-  }
-  if (hash.length !== 20) {
-    throw new TypeError('Address hashbuffers must be exactly 20 bytes.');
-  }
-  info.hashBuffer = hash;
-  return info;
-};
-
-/**
- * Deserializes an address serialized through `Address#toObject()`
- * @param {Object} data
- * @param {string} data.hash - the hash that this address encodes
- * @param {string} data.type - either 'pubkeyhash' or 'scripthash'
- * @param {Network=} data.network - the name of the network associated
- * @return {Address}
- */
-Address._transformObject = function(data) {
-  $.checkArgument(data.hash || data.hashBuffer, 'Must provide a `hash` or `hashBuffer` property');
-  $.checkArgument(data.type, 'Must provide a `type` property');
-  return {
-    hashBuffer: data.hash ? new Buffer(data.hash, 'hex') : data.hashBuffer,
-    network: Networks.get(data.network) || Networks.defaultNetwork,
-    type: data.type
+  /**
+   * Internal function used to split different kinds of arguments of the constructor
+   * @param {*} data - The encoded data in various formats
+   * @param {Network|String|number=} network - The network: 'livenet' or 'testnet'
+   * @param {string=} type - The type of address: 'script' or 'pubkey'
+   * @returns {Object} An "info" object with "type", "network", and "hashBuffer"
+   */
+  _classifyArguments(data, network, type) {
+    /* jshint maxcomplexity: 10 */
+    // transform and validate input data
+    if ((data instanceof Buffer || data instanceof Uint8Array) && data.length === 20) {
+      return Address._transformHash(data);
+    } else if ((data instanceof Buffer || data instanceof Uint8Array) && data.length === 21) {
+      return Address._transformBuffer(data, network, type);
+    } else if (data instanceof PublicKey) {
+      return Address._transformPublicKey(data);
+    } else if (typeof(data) === 'string') {
+      return Address._transformString(data, network, type);
+    } else if (_.isObject(data)) {
+      return Address._transformObject(data);
+    } else {
+      throw new TypeError('First argument is an unrecognized data format.');
+    }
   };
-};
+
+  /** @static */
+  static PayToPublicKeyHash = 'pubkeyhash';
+  /** @static */
+  static PayToScriptHash = 'scripthash';
+
+
+  /**
+   * @param {Buffer} hash - An instance of a hash Buffer
+   * @returns {Object} An object with keys: hashBuffer
+   * @private
+   */
+  static _transformHash(hash) {
+    var info = {};
+    if (!(hash instanceof Buffer) && !(hash instanceof Uint8Array)) {
+      throw new TypeError('Address supplied is not a buffer.');
+    }
+    if (hash.length !== 20) {
+      throw new TypeError('Address hashbuffers must be exactly 20 bytes.');
+    }
+    info.hashBuffer = hash;
+    return info;
+  }
+
+  /**
+   * Deserializes an address serialized through `Address#toObject()`
+   * @param {Object} data
+   * @param {string} data.hash - the hash that this address encodes
+   * @param {string} data.type - either 'pubkeyhash' or 'scripthash'
+   * @param {Network=} data.network - the name of the network associated
+   * @return {Address}
+   */
+  static _transformObject(data) {
+    $.checkArgument(data.hash || data.hashBuffer, 'Must provide a `hash` or `hashBuffer` property');
+    $.checkArgument(data.type, 'Must provide a `type` property');
+    return {
+      hashBuffer: data.hash ? new Buffer(data.hash, 'hex') : data.hashBuffer,
+      network: Networks.get(data.network) || Networks.defaultNetwork,
+      type: data.type
+    };
+  };
+}
 
 /**
  * Internal function to discover the network and type based on the first data byte
@@ -456,5 +450,3 @@ Address.prototype.toString = function() {
 Address.prototype.inspect = function() {
   return '<Address: ' + this.toString() + ', type: ' + this.type + ', network: ' + this.network + '>';
 };
-
-module.exports = Address;

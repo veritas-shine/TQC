@@ -1,10 +1,9 @@
-'use strict';
-var _ = require('lodash');
+import _ from 'lodash'
+import BufferUtil from './util/buffer'
+import JSUtil from './util/js'
 
-var BufferUtil = require('./util/buffer');
-var JSUtil = require('./util/js');
-var networks = [];
-var networkMaps = {};
+const networks = []
+const networkMaps = {}
 
 /**
  * A network is merely a map containing values that correspond to version
@@ -12,11 +11,11 @@ var networkMaps = {};
  * (a.k.a. "mainnet") and "testnet".
  * @constructor
  */
-function Network() {}
-
-Network.prototype.toString = function toString() {
-  return this.name;
-};
+export default class Network {
+  toString() {
+    return this.name;
+  }
+}
 
 /**
  * @function
