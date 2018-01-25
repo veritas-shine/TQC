@@ -1,7 +1,7 @@
 import assert from 'assert'
 import CryptoJS from 'crypto-js'
 import {wordArrayToBuffer} from './polyfill'
-import base58 from './base58'
+import base58 from './encoding/base58'
 
 describe('lib test', function () {
   it('should encode base58', function () {
