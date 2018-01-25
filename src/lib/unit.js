@@ -24,10 +24,10 @@ const UNITS = {
  *
  * @example
  * ```javascript
- * var sats = Unit.fromBTC(1.3).toSatoshis();
+ * var sats = Unit.fromBTC(1.3).toGlv();
  * var mili = Unit.fromBits(1.3).to(Unit.mBTC);
- * var bits = Unit.fromFiat(1.3, 350).bits;
- * var btc = new Unit(1.3, Unit.bits).PQC;
+ * var bits = Unit.fromFiat(1.3, 350).qbits;
+ * var btc = new Unit(1.3, Unit.qbits).PQC;
  * ```
  *
  * @param {Number} amount - The amount to be represented
@@ -91,6 +91,9 @@ export default class Unit {
     return new Unit(amount, Unit.mPQC);
   }
 
+  static fromMillis(amount) {
+    return this.fromMilis(amount)
+  }
 
   /**
    * Returns a Unit instance created from an amount in bits
@@ -99,7 +102,7 @@ export default class Unit {
    * @returns {Unit} A Unit instance
    */
   static fromMicros(amount) {
-    return new Unit(amount, Unit.bits);
+    return new Unit(amount, Unit.qbits);
   }
 
   static fromBits(amount) {
@@ -181,7 +184,7 @@ export default class Unit {
    *
    * @returns {Number} The value converted to bits
    */
-  toMicros() { return this.to(Unit.bits) }
+  toMicros() { return this.to(Unit.qbits) }
   toBits() { return this.toMicros() }
   /**
    * Returns the value represented in glv

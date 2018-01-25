@@ -23,7 +23,7 @@ export default class BlockHeader {
     this.merkleRoot = info.merkleRoot;
     this.time = info.time;
     this.timestamp = info.time;
-    this.bits = info.bits;
+    this.qbits = info.qbits;
     this.nonce = info.nonce;
   }
   static create(arg) {
@@ -76,7 +76,7 @@ export default class BlockHeader {
       merkleRoot: merkleRoot,
       time: data.time,
       timestamp: data.time,
-      bits: data.bits,
+      bits: data.qbits,
       nonce: data.nonce
     })
     return info;
@@ -123,7 +123,7 @@ export default class BlockHeader {
     info.prevHash = br.read(32);
     info.merkleRoot = br.read(32);
     info.time = br.readUInt32LE();
-    info.bits = br.readUInt32LE();
+    info.qbits = br.readUInt32LE();
     info.nonce = br.readUInt32LE();
     return new BlockHeader(info)
   };
@@ -139,7 +139,7 @@ export default class BlockHeader {
       prevHash: BufferUtil.reverse(this.prevHash).toString('hex'),
       merkleRoot: BufferUtil.reverse(this.merkleRoot).toString('hex'),
       time: this.time,
-      bits: this.bits,
+      bits: this.qbits,
       nonce: this.nonce
     };
   };
@@ -170,7 +170,7 @@ export default class BlockHeader {
     bw.write(this.prevHash);
     bw.write(this.merkleRoot);
     bw.writeUInt32LE(this.time);
-    bw.writeUInt32LE(this.bits);
+    bw.writeUInt32LE(this.qbits);
     bw.writeUInt32LE(this.nonce);
     return bw;
   };
@@ -181,7 +181,7 @@ export default class BlockHeader {
    * @returns {BN} An instance of BN with the decoded difficulty bits
    */
   getTargetDifficulty(bits) {
-    bits = bits || this.bits;
+    bits = bits || this.qbits;
 
     var target = new BN(bits & 0xffffff);
     var mov = 8 * ((bits >>> 24) - 3);

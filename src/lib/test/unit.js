@@ -22,20 +22,20 @@ describe('Unit', function() {
 
   it('no "new" is required for creating an instance', function() {
     expect(function() {
-      return Unit(1.2, 'PQC');
+      return new Unit(1.2, 'PQC');
     }).to.not.throw();
 
     expect(function() {
-      return Unit(1.2, 350);
+      return new Unit(1.2, 350);
     }).to.not.throw();
   });
 
-  it('has property accesors "PQC", "mPQC", "uPQC", "bits", and "glv"', function() {
+  it('has property accesors "PQC", "mPQC", "uPQC", "qbits", and "glv"', function() {
     var unit = new Unit(1.2, 'PQC');
     unit.PQC.should.equal(1.2);
     unit.mPQC.should.equal(1200);
     unit.uPQC.should.equal(1200000);
-    unit.bits.should.equal(1200000);
+    unit.qbits.should.equal(1200000);
     unit.glv.should.equal(120000000);
   });
 
@@ -52,10 +52,7 @@ describe('Unit', function() {
     unit.mPQC.should.equal(1.00001);
 
     unit = Unit.fromBits('100');
-    unit.bits.should.equal(100);
-
-    unit = Unit.fromSatoshis('8999');
-    unit.glv.should.equal(8999);
+    unit.qbits.should.equal(100);
 
     unit = Unit.fromFiat('43', 350);
     unit.PQC.should.equal(0.12285714);
@@ -71,9 +68,9 @@ describe('Unit', function() {
     unit.mPQC.should.equal(1.00001);
 
     unit = Unit.fromBits(100);
-    unit.bits.should.equal(100);
+    unit.qbits.should.equal(100);
 
-    unit = Unit.fromSatoshis(8999);
+    unit = Unit.fromGlv(8999);
     unit.glv.should.equal(8999);
 
     unit = Unit.fromFiat(43, 350);
@@ -86,12 +83,12 @@ describe('Unit', function() {
 
     unit = Unit.fromPQC(1.3);
     unit.mPQC.should.equal(1300);
-    unit.bits.should.equal(1300000);
+    unit.qbits.should.equal(1300000);
     unit.glv.should.equal(130000000);
 
     unit = Unit.fromMilis(1.3);
     unit.PQC.should.equal(0.0013);
-    unit.bits.should.equal(1300);
+    unit.qbits.should.equal(1300);
     unit.glv.should.equal(130000);
 
     unit = Unit.fromBits(1.3);
@@ -99,16 +96,16 @@ describe('Unit', function() {
     unit.mPQC.should.equal(0.0013);
     unit.glv.should.equal(130);
 
-    unit = Unit.fromSatoshis(3);
+    unit = Unit.fromGlv(3);
     unit.PQC.should.equal(0.00000003);
     unit.mPQC.should.equal(0.00003);
-    unit.bits.should.equal(0.03);
+    unit.qbits.should.equal(0.03);
   });
 
   it('takes into account floating point problems', function() {
     var unit = Unit.fromPQC(0.00000003);
     unit.mPQC.should.equal(0.00003);
-    unit.bits.should.equal(0.03);
+    unit.qbits.should.equal(0.03);
     unit.glv.should.equal(3);
   });
 
@@ -119,8 +116,8 @@ describe('Unit', function() {
     should.exist(Unit.mPQC);
     Unit.mPQC.should.equal('mPQC');
 
-    should.exist(Unit.bits);
-    Unit.bits.should.equal('bits');
+    should.exist(Unit.qbits);
+    Unit.qbits.should.equal('qbits');
 
     should.exist(Unit.glv);
     Unit.glv.should.equal('glv');
@@ -130,7 +127,7 @@ describe('Unit', function() {
     var unit = new Unit(1.3, 'PQC');
     unit.to(Unit.PQC).should.equal(unit.PQC);
     unit.to(Unit.mPQC).should.equal(unit.mPQC);
-    unit.to(Unit.bits).should.equal(unit.bits);
+    unit.to(Unit.qbits).should.equal(unit.qbits);
     unit.to(Unit.glv).should.equal(unit.glv);
   });
 
@@ -139,8 +136,8 @@ describe('Unit', function() {
     unit.toPQC().should.equal(unit.PQC);
     unit.toMilis().should.equal(unit.mPQC);
     unit.toMillis().should.equal(unit.mPQC);
-    unit.toBits().should.equal(unit.bits);
-    unit.toSatoshis().should.equal(unit.glv);
+    unit.toBits().should.equal(unit.qbits);
+    unit.toGlv().should.equal(unit.glv);
   });
 
   it('can convert to fiat', function() {
