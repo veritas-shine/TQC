@@ -68,7 +68,7 @@ Transaction.DUST_AMOUNT = 546;
 // Margin of error to allow fees in the vecinity of the expected value but doesn't allow a big difference
 Transaction.FEE_SECURITY_MARGIN = 15;
 
-// max amount of satoshis in circulation
+// max amount of glv in circulation
 Transaction.MAX_MONEY = 21000000 * 1e8;
 
 // nlocktime limit to be considered block height rather than a timestamp
@@ -77,7 +77,7 @@ Transaction.NLOCKTIME_BLOCKHEIGHT_LIMIT = 5e8;
 // Max value for an unsigned 32 bit value
 Transaction.NLOCKTIME_MAX_VALUE = 4294967295;
 
-// Value used for fee estimation (satoshis per kilobyte)
+// Value used for fee estimation (glv per kilobyte)
 Transaction.FEE_PER_KB = 10000;
 
 // Safe upper bound for change address script size in bytes
@@ -254,7 +254,7 @@ Transaction.prototype._hasDustOutputs = function(opts) {
   var index, output;
   for (index in this.outputs) {
     output = this.outputs[index];
-    if (output.satoshis < Transaction.DUST_AMOUNT && !output.script.isDataOut()) {
+    if (output.glv < Transaction.DUST_AMOUNT && !output.script.isDataOut()) {
       return new errors.Transaction.DustOutputs();
     }
   }
@@ -489,7 +489,7 @@ Transaction.prototype._newTransaction = function() {
  * @property {string} prevTxId
  * @property {number} outputIndex
  * @property {(Buffer|string|Script)} script
- * @property {number} satoshis
+ * @property {number} glv
  */
 
 /**
@@ -505,7 +505,7 @@ Transaction.prototype._newTransaction = function() {
  *  txId: 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
  *  outputIndex: 0,
  *  script: Script.empty(),
- *  satoshis: 1020000
+ *  glv: 1020000
  * }
  * ```
  * Where `address` can be either a string or a bitcore Address object. The
@@ -522,10 +522,10 @@ Transaction.prototype._newTransaction = function() {
  * transaction.from({'txid': '0000...', vout: 0, amount: 0.1, scriptPubKey: 'OP_DUP ...'});
  *
  * // From a pay to public key hash output
- * transaction.from({'txId': '0000...', outputIndex: 0, satoshis: 1000, script: 'OP_DUP ...'});
+ * transaction.from({'txId': '0000...', outputIndex: 0, glv: 1000, script: 'OP_DUP ...'});
  *
  * // From a multisig P2SH output
- * transaction.from({'txId': '0000...', inputIndex: 0, satoshis: 1000, script: '... OP_HASH'},
+ * transaction.from({'txId': '0000...', inputIndex: 0, glv: 1000, script: '... OP_HASH'},
  *                  ['03000...', '02000...'], 2);
  * ```
  *
@@ -569,7 +569,7 @@ Transaction.prototype._fromNonP2SH = function(utxo) {
   this.addInput(new clazz({
     output: new Output({
       script: utxo.script,
-      satoshis: utxo.satoshis
+      glv: utxo.glv
     }),
     prevTxId: utxo.txId,
     outputIndex: utxo.outputIndex,
@@ -592,7 +592,7 @@ Transaction.prototype._fromMultisigUtxo = function(utxo, pubkeys, threshold) {
   this.addInput(new clazz({
     output: new Output({
       script: utxo.script,
-      satoshis: utxo.satoshis
+      glv: utxo.glv
     }),
     prevTxId: utxo.txId,
     outputIndex: utxo.outputIndex,
@@ -603,24 +603,24 @@ Transaction.prototype._fromMultisigUtxo = function(utxo, pubkeys, threshold) {
 /**
  * Add an input to this transaction. The input must be an instance of the `Input` class.
  * It should have information about the Output that it's spending, but if it's not already
- * set, two additional parameters, `outputScript` and `satoshis` can be provided.
+ * set, two additional parameters, `outputScript` and `glv` can be provided.
  *
  * @param {Input} input
  * @param {String|Script} outputScript
- * @param {number} satoshis
+ * @param {number} glv
  * @return Transaction this, for chaining
  */
-Transaction.prototype.addInput = function(input, outputScript, satoshis) {
+Transaction.prototype.addInput = function(input, outputScript, glv) {
   $.checkArgumentType(input, Input, 'input');
-  if (!input.output && (_.isUndefined(outputScript) || _.isUndefined(satoshis))) {
-    throw new errors.Transaction.NeedMoreInfo('Need information about the UTXO script and satoshis');
+  if (!input.output && (_.isUndefined(outputScript) || _.isUndefined(glv))) {
+    throw new errors.Transaction.NeedMoreInfo('Need information about the UTXO script and glv');
   }
-  if (!input.output && outputScript && !_.isUndefined(satoshis)) {
+  if (!input.output && outputScript && !_.isUndefined(glv)) {
     outputScript = outputScript instanceof Script ? outputScript : new Script(outputScript);
-    $.checkArgumentType(satoshis, 'number', 'satoshis');
+    $.checkArgumentType(glv, 'number', 'glv');
     input.output = new Output({
       script: outputScript,
-      satoshis: satoshis
+      glv: glv
     });
   }
   return this.uncheckedAddInput(input);
@@ -657,7 +657,7 @@ Transaction.prototype.hasAllUtxoInfo = function() {
  * for inputs (in further versions, SIGHASH_SINGLE or SIGHASH_NONE signatures will not
  * be reset).
  *
- * @param {number} amount satoshis to be sent
+ * @param {number} amount glv to be sent
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.fee = function(amount) {
@@ -672,7 +672,7 @@ Transaction.prototype.fee = function(amount) {
  * for inputs (in further versions, SIGHASH_SINGLE or SIGHASH_NONE signatures will not
  * be reset).
  *
- * @param {number} amount satoshis per KB to be sent
+ * @param {number} amount glv per KB to be sent
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.feePerKb = function(amount) {
@@ -714,7 +714,7 @@ Transaction.prototype.getChangeOutput = function() {
 /**
  * @typedef {Object} Transaction~toObject
  * @property {(string|Address)} address
- * @property {number} satoshis
+ * @property {number} glv
  */
 
 /**
@@ -724,14 +724,14 @@ Transaction.prototype.getChangeOutput = function() {
  * SIGHASH_SINGLE or SIGHASH_NONE signatures will not be reset).
  *
  * @param {(string|Address|Array.<Transaction~toObject>)} address
- * @param {number} amount in satoshis
+ * @param {number} amount in glv
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.to = function(address, amount) {
   if (_.isArray(address)) {
     var self = this;
     _.each(address, function(to) {
-      self.to(to.address, to.satoshis);
+      self.to(to.address, to.glv);
     });
     return this;
   }
@@ -742,7 +742,7 @@ Transaction.prototype.to = function(address, amount) {
   );
   this.addOutput(new Output({
     script: Script(new Address(address)),
-    satoshis: amount
+    glv: amount
   }));
   return this;
 };
@@ -760,7 +760,7 @@ Transaction.prototype.to = function(address, amount) {
 Transaction.prototype.addData = function(value) {
   this.addOutput(new Output({
     script: Script.buildDataOut(value),
-    satoshis: 0
+    glv: 0
   }));
   return this;
 };
@@ -802,7 +802,7 @@ Transaction.prototype._addOutput = function(output) {
 
 
 /**
- * Calculates or gets the total output amount in satoshis
+ * Calculates or gets the total output amount in glv
  *
  * @return {Number} the transaction total output amount
  */
@@ -811,7 +811,7 @@ Transaction.prototype._getOutputAmount = function() {
     var self = this;
     this._outputAmount = 0;
     _.each(this.outputs, function(output) {
-      self._outputAmount += output.satoshis;
+      self._outputAmount += output.glv;
     });
   }
   return this._outputAmount;
@@ -819,7 +819,7 @@ Transaction.prototype._getOutputAmount = function() {
 
 
 /**
- * Calculates or gets the total input amount in satoshis
+ * Calculates or gets the total input amount in glv
  *
  * @return {Number} the transaction total input amount
  */
@@ -831,7 +831,7 @@ Transaction.prototype._getInputAmount = function() {
       if (_.isUndefined(input.output)) {
         throw new errors.Transaction.Input.MissingPreviousOutput();
       }
-      self._inputAmount += input.output.satoshis;
+      self._inputAmount += input.output.glv;
     });
   }
   return this._inputAmount;
@@ -852,7 +852,7 @@ Transaction.prototype._updateChangeOutput = function() {
     this._changeIndex = this.outputs.length;
     this._addOutput(new Output({
       script: this._changeScript,
-      satoshis: changeAmount
+      glv: changeAmount
     }));
   } else {
     this._changeIndex = undefined;
@@ -874,7 +874,7 @@ Transaction.prototype._updateChangeOutput = function() {
  * If there's no fee set and no change address,
  * estimate the fee based on size.
  *
- * @return {Number} fee of this transaction in satoshis
+ * @return {Number} fee of this transaction in glv
  */
 Transaction.prototype.getFee = function() {
   if (this.isCoinbase()) {
@@ -957,7 +957,7 @@ Transaction.prototype.sort = function() {
   this.sortOutputs(function(outputs) {
     var copy = Array.prototype.concat.apply([], outputs);
     copy.sort(function(first, second) {
-      return first.satoshis - second.satoshis
+      return first.glv - second.glv
         || compare(first.script.toBuffer(), second.script.toBuffer());
     });
     return copy;
@@ -1146,7 +1146,7 @@ Transaction.prototype.verify = function() {
     var txout = this.outputs[i];
 
     if (txout.invalidSatoshis()) {
-      return 'transaction txout ' + i + ' satoshis is invalid';
+      return 'transaction txout ' + i + ' glv is invalid';
     }
     if (txout._satoshisBN.gt(new BN(Transaction.MAX_MONEY, 10))) {
       return 'transaction txout ' + i + ' greater than MAX_MONEY';

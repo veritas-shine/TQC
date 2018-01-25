@@ -101,8 +101,6 @@ Address.prototype._classifyArguments = function(data, network, type) {
     return Address._transformBuffer(data, network, type);
   } else if (data instanceof PublicKey) {
     return Address._transformPublicKey(data);
-  } else if (data instanceof Script) {
-    return Address._transformScript(data, network);
   } else if (typeof(data) === 'string') {
     return Address._transformString(data, network, type);
   } else if (_.isObject(data)) {
@@ -230,22 +228,6 @@ Address._transformPublicKey = function(pubkey) {
 };
 
 /**
- * Internal function to transform a {@link Script} into a `info` object.
- *
- * @param {Script} script - An instance of Script
- * @returns {Object} An object with keys: hashBuffer, type
- * @private
- */
-Address._transformScript = function(script, network) {
-  $.checkArgument(script instanceof Script, 'script must be a Script instance');
-  var info = script.getAddressInfo(network);
-  if (!info) {
-    throw new errors.Script.CantDeriveAddress(script);
-  }
-  return info;
-};
-
-/**
  * Creates a P2SH address from a set of public keys and a threshold.
  *
  * The addresses will be sorted lexicographically, as that is the trend in bitcoin.
@@ -334,24 +316,6 @@ Address.payingTo = function(script, network) {
   $.checkArgument(script instanceof Script, 'script must be instance of Script');
 
   return Address.fromScriptHash(Hash.sha256ripemd160(script.toBuffer()), network);
-};
-
-/**
- * Extract address from a Script. The script must be of one
- * of the following types: p2pkh input, p2pkh output, p2sh input
- * or p2sh output.
- * This will analyze the script and extract address information from it.
- * If you want to transform any script to a p2sh Address paying
- * to that script's hash instead, use {{Address#payingTo}}
- *
- * @param {Script} script - An instance of Script
- * @param {String|Network} network - either a Network instance, 'livenet', or 'testnet'
- * @returns {Address} A new valid and frozen instance of an Address
- */
-Address.fromScript = function(script, network) {
-  $.checkArgument(script instanceof Script, 'script must be a Script instance');
-  var info = Address._transformScript(script, network);
-  return new Address(info.hashBuffer, network, info.type);
 };
 
 /**
@@ -494,5 +458,3 @@ Address.prototype.inspect = function() {
 };
 
 module.exports = Address;
-
-var Script = require('./script');

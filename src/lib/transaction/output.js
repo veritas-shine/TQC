@@ -17,7 +17,7 @@ function Output(args) {
     return new Output(args);
   }
   if (_.isObject(args)) {
-    this.satoshis = args.satoshis;
+    this.glv = args.glv;
     if (bufferUtil.isBuffer(args.script)) {
       this._scriptBuffer = args.script;
     } else {
@@ -48,7 +48,7 @@ Object.defineProperty(Output.prototype, 'script', {
   }
 });
 
-Object.defineProperty(Output.prototype, 'satoshis', {
+Object.defineProperty(Output.prototype, 'glv', {
   configurable: false,
   enumerable: true,
   get: function() {
@@ -64,24 +64,24 @@ Object.defineProperty(Output.prototype, 'satoshis', {
     } else {
       $.checkArgument(
         JSUtil.isNaturalNumber(num),
-        'Output satoshis is not a natural number'
+        'Output glv is not a natural number'
       );
       this._satoshisBN = BN.fromNumber(num);
       this._satoshis = num;
     }
     $.checkState(
       JSUtil.isNaturalNumber(this._satoshis),
-      'Output satoshis is not a natural number'
+      'Output glv is not a natural number'
     );
   }
 });
 
 Output.prototype.invalidSatoshis = function() {
   if (this._satoshis > MAX_SAFE_INTEGER) {
-    return 'transaction txout satoshis greater than max safe integer';
+    return 'transaction txout glv greater than max safe integer';
   }
   if (this._satoshis !== this._satoshisBN.toNumber()) {
-    return 'transaction txout satoshis has corrupted value';
+    return 'transaction txout glv has corrupted value';
   }
   if (this._satoshis < 0) {
     return 'transaction txout negative';
@@ -91,7 +91,7 @@ Output.prototype.invalidSatoshis = function() {
 
 Output.prototype.toObject = Output.prototype.toJSON = function toObject() {
   var obj = {
-    satoshis: this.satoshis
+    glv: this.glv
   };
   obj.script = this._scriptBuffer.toString('hex');
   return obj;
@@ -139,12 +139,12 @@ Output.prototype.inspect = function() {
   } else {
     scriptStr = this._scriptBuffer.toString('hex');
   }
-  return '<Output (' + this.satoshis + ' sats) ' + scriptStr + '>';
+  return '<Output (' + this.glv + ' sats) ' + scriptStr + '>';
 };
 
 Output.fromBufferReader = function(br) {
   var obj = {};
-  obj.satoshis = br.readUInt64LEBN();
+  obj.glv = br.readUInt64LEBN();
   var size = br.readVarintNum();
   if (size !== 0) {
     obj.script = br.read(size);

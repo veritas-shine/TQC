@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "better-npm-run dev",
     "test": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/*/test.js",
-    "test-lib": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/*/*.js"
+    "test-lib": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/unit.js"
   },
   "betterScripts": {
     "dev": {
@@ -53,6 +53,7 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-0": "^6.24.1",
     "better-npm-run": "^0.1.0",
+    "chai": "^4.1.2",
     "eslint": "^4.16.0",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "^2.8.0",

@@ -15,7 +15,7 @@ var Unit = require('./unit');
  *
  * All standard parameters can be found as members of the class, the address
  * is represented using an {Address} instance and the amount is represented in
- * satoshis. Any other non-standard parameters can be found under the extra member.
+ * glv. Any other non-standard parameters can be found under the extra member.
  *
  * @example
  * ```javascript
@@ -157,11 +157,11 @@ URI.prototype._fromObject = function(obj) {
 };
 
 /**
- * Internal function to transform a BTC string amount into satoshis
+ * Internal function to transform a PQC string amount into glv
  *
- * @param {string} amount - Amount BTC string
+ * @param {string} amount - Amount PQC string
  * @throws {TypeError} Invalid amount
- * @returns {Object} Amount represented in satoshis
+ * @returns {Object} Amount represented in glv
  */
 URI.prototype._parseAmount = function(amount) {
   amount = Number(amount);
@@ -191,7 +191,7 @@ URI.prototype.toObject = URI.prototype.toJSON = function toObject() {
 URI.prototype.toString = function() {
   var query = {};
   if (this.amount) {
-    query.amount = Unit.fromSatoshis(this.amount).toBTC();
+    query.amount = Unit.fromSatoshis(this.amount).toPQC();
   }
   if (this.message) {
     query.message = this.message;
