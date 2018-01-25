@@ -2,10 +2,11 @@ import assert from 'assert'
 import ntru from 'ntru'
 import Wallet from './model'
 import config from '../config'
+import Storage from 'storage'
 
 describe('wallet test', function () {
-  const filePath = './wallet.pqc'
-  const wallet = new Wallet(filePath)
+  let files = Storage.getWalletFiles()
+  const wallet = new Wallet(files[0])
   const {length, suffix, prefix} = config.address
 
   it('should generate wallet', function (done) {
@@ -14,12 +15,13 @@ describe('wallet test', function () {
   })
 
   it('should save wallet to file', function (done) {
-    wallet.saveToFile(filePath)
+    wallet.saveToFile(wallet.address)
     done()
   })
 
   it('should load ', function (done) {
-    let oldWallet = new Wallet(filePath)
+    files = Storage.getWalletFiles()
+    let oldWallet = new Wallet(files[0])
     assert.equal(oldWallet.address, wallet.address)
     done()
   })

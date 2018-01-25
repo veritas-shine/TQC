@@ -4,6 +4,7 @@ import Base58 from 'lib/base58'
 import config from '../config'
 import PQP from 'pqp'
 import { wordArrayToBuffer } from 'lib/polyfill'
+import Storage from 'storage'
 
 const {Keygen, IO} = PQP
 
@@ -49,7 +50,7 @@ export default class Wallet {
     }
   }
 
-  saveToFile(filePath) {
+  saveToFile(filename) {
     const io = new IO()
     const privateKeyString = io.get_der_priv_key(this.privateKey)
     const address = this.address
@@ -59,7 +60,7 @@ export default class Wallet {
       publicKey: publicKeyString,
       privateKey: privateKeyString
     }
-    if (fs.writeFileSync(filePath, JSON.stringify(data))) {
+    if (Storage.createWalletFile(filename, JSON.stringify(data))) {
       console.log('save wallet ok!')
     }
   }

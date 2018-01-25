@@ -1,3 +1,4 @@
+import Wallet from './model'
 
 export default {
   'post /wallet/create': (req, res, next) => {
