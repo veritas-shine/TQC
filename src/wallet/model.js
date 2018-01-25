@@ -1,6 +1,6 @@
 import fs from 'fs'
 import 'lib/polyfill'
-import Base58 from 'lib/base58'
+import Base58 from 'lib/encoding/base58'
 import config from '../config'
 import PQP from 'pqp'
 import { wordArrayToBuffer } from 'lib/polyfill'

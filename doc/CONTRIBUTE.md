@@ -25,7 +25,6 @@
 │   │   └── test.js
 │   ├── index.js
 │   ├── lib       // 工具库
-│   │   ├── base58.js
 │   │   ├── polyfill.js
 │   │   └── test.js
 │   ├── mine     // 挖矿

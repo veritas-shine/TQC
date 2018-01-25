@@ -1,7 +1,9 @@
 'use strict';
 
+const BASE58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+const bs58 = require('base-x')(BASE58)
+
 var _ = require('lodash');
-var bs58 = require('bs58');
 var buffer = require('buffer');
 
 var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'.split('');
@@ -26,7 +28,7 @@ Base58.validCharacters = function validCharacters(chars) {
   if (buffer.Buffer.isBuffer(chars)) {
     chars = chars.toString();
   }
-  return _.all(_.map(chars, function(char) { return _.contains(ALPHABET, char); }));
+  return _.every(_.map(chars, function(char) { return _.includes(ALPHABET, char); }));
 };
 
 Base58.prototype.set = function(obj) {
