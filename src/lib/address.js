@@ -416,7 +416,7 @@ export default class Address {
   /**
    * @returns {Object} A plain object with the address information
    */
-  toObject() {
+  toObject = () => {
     return {
       hash: this.hashBuffer.toString('hex'),
       type: this.type,

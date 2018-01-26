@@ -1,16 +1,12 @@
 'use strict';
 
 /* jshint maxstatements: 30 */
-
-var chai = require('chai');
+import Address from '../address';
+import PublicKey from'../publickey';
+import Networks from '../networks';
+import chai from'chai';
 var should = chai.should();
 var expect = chai.expect;
-
-var bitcore = require('.');
-var PublicKey = bitcore.PublicKey;
-var Address = bitcore.Address;
-var Script = bitcore.Script;
-var Networks = bitcore.Networks;
 
 var validbase58 = require('./data/bitcoind/base58_keys_valid.json');
 var invalidbase58 = require('./data/bitcoind/base58_keys_invalid.json');
