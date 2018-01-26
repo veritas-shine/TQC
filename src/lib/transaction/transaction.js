@@ -541,7 +541,7 @@ Transaction.prototype.from = function(utxo, pubkeys, threshold) {
     });
     return this;
   }
-  var exists = _.any(this.inputs, function(input) {
+  var exists = _.some(this.inputs, function(input) {
     // TODO: Maybe prevTxId should be a string? Or defined as read only property?
     return input.prevTxId.toString('hex') === utxo.txId && input.outputIndex === utxo.outputIndex;
   });

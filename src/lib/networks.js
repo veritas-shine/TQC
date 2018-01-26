@@ -37,7 +37,7 @@ function get(arg, keys) {
       return networks[index][key] === arg;
     };
     for (var index in networks) {
-      if (_.any(keys, containsArg)) {
+      if (_.some(keys, containsArg)) {
         return networks[index];
       }
     }
@@ -173,10 +173,7 @@ var TESTNET = {
   PORT: 18333,
   NETWORK_MAGIC: BufferUtil.integerAsBuffer(0x0b110907),
   DNS_SEEDS: [
-    'testnet-seed.bitcoin.petertodd.org',
-    'testnet-seed.bluematt.me',
-    'testnet-seed.alexykot.me',
-    'testnet-seed.bitcoin.schildbach.de'
+    '192.168.0.1'
   ]
 };
 

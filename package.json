@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "better-npm-run dev",
     "test": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/*/test.js",
-    "test-lib": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/opcode.js"
+    "test-lib": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/networks.js"
   },
   "betterScripts": {
     "dev": {
