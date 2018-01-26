@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "better-npm-run dev",
     "test": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/*/test.js",
-    "test-lib": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/util/*.js"
+    "test-lib": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/networks.js"
   },
   "betterScripts": {
     "dev": {
@@ -43,8 +43,9 @@
     "levelup": "^2.0.1",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
-    "ntru": "^3.1.3",
+    "ntru": "git+ssh://git@github.com:veritas-shine/ntru.js.git",
     "pqp": "^0.0.7",
+    "tweetnacl": "^1.0.0",
     "winston": "^2.4.0"
   },
   "devDependencies": {

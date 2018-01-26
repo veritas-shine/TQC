@@ -162,7 +162,6 @@ export default class Address {
       version.network = scripthashNetwork;
       version.type = Address.PayToScriptHash;
     }
-
     return version;
   };
 
