@@ -1,11 +1,12 @@
 'use strict';
 
-var Address = require('../address');
+import Address from '../address';
+import PublicKey from '../publickey';
 var BufferReader = require('../encoding/bufferreader');
 var BufferWriter = require('../encoding/bufferwriter');
 var Hash = require('../crypto/hash');
 var Opcode = require('../opcode');
-var PublicKey = require('../publickey');
+
 var Signature = require('../crypto/signature');
 var Networks = require('../networks');
 var $ = require('../util/preconditions');

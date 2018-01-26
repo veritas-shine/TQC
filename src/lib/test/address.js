@@ -4,6 +4,8 @@
 import Address from '../address';
 import PublicKey from'../publickey';
 import Networks from '../networks';
+import Script from '../script/script'
+import errors from '../errors'
 import chai from'chai';
 var should = chai.should();
 var expect = chai.expect;
@@ -255,7 +257,7 @@ describe('Address', function() {
     it('should error because of unrecognized data format', function() {
       (function() {
         return new Address(new Error());
-      }).should.throw(bitcore.errors.InvalidArgument);
+      }).should.throw(errors.InvalidArgument);
     });
 
     it('should error because of incorrect format for pubkey hash', function() {
@@ -408,7 +410,6 @@ describe('Address', function() {
         Address(script, Networks.livenet).toString().should.equal(address);
       });
     });
-
     it('should derive from this known address string livenet', function() {
       var address = new Address(str);
       var buffer = address.toBuffer();
@@ -437,7 +438,6 @@ describe('Address', function() {
     });
 
   });
-
   describe('#toBuffer', function() {
 
     it('3c3fa3d4adcaf8f52d5b1843975e122548269937 corresponds to hash 16VZnHwRhwrExfeHFHGjwrgEMq8VcYPs9r', function() {
@@ -458,7 +458,7 @@ describe('Address', function() {
     it('will fail with invalid state', function() {
       expect(function() {
         return Address.fromObject('¹');
-      }).to.throw(bitcore.errors.InvalidState);
+      }).to.throw(errors.InvalidState);
     });
   });
 

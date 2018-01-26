@@ -2,7 +2,8 @@ import _ from 'lodash'
 import BN from './crypto/bn'
 import JSUtil from './util/js'
 import $ from './util/preconditions'
-
+import Point from './crypto/point';
+import Network from './networks';
 /**
  * Instantiate a PublicKey from a {@link PrivateKey}, `string`, or `Buffer`.
  *
@@ -30,7 +31,6 @@ import $ from './util/preconditions'
  */
 export default class PublicKey {
   constructor(data, extra) {
-
     $.checkArgument(data, 'First argument is required, please include public key data.');
 
     if (data instanceof PublicKey) {
@@ -164,6 +164,22 @@ export default class PublicKey {
     return info;
   };
 
+
+  /**
+   * Internal function to transform X into a public key point
+   *
+   * @param {Boolean} odd - If the point is above or below the x axis
+   * @param {Point} x - The x point
+   * @returns {Object} An object with keys: point and compressed
+   * @private
+   */
+  static _transformX (odd, x) {
+    $.checkArgument(typeof odd === 'boolean', 'Must specify whether y is odd or not (true or false)');
+    var info = {};
+    info.point = Point.fromX(odd, x);
+    return info;
+  };
+
   /**
    * Instantiate a PublicKey from a PrivateKey
    *
@@ -248,7 +264,7 @@ export default class PublicKey {
     };
   };
 
-  toJSON = toObject
+  toJSON = this.toObject
   /**
    * Will output the PublicKey to a DER Buffer
    *
@@ -280,7 +296,7 @@ export default class PublicKey {
     }
   };
 
-  toDER = toBuffer
+  toDER = this.toBuffer
   /**
    * Will return a sha256 + ripemd160 hash of the serialized public key
    * @see https://github.com/bitcoin/bitcoin/blob/master/src/pubkey.h#L141

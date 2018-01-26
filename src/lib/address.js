@@ -5,6 +5,7 @@ import Networks from './networks'
 import Hash from './crypto/hash'
 import JSUtil from './util/js'
 import PublicKey from './publickey'
+import Script from './script/script'
 
 /**
  * Instantiate an address from an address String or Buffer, a public key or script hash Buffer,
@@ -162,6 +163,7 @@ export default class Address {
       version.network = scripthashNetwork;
       version.type = Address.PayToScriptHash;
     }
+
     return version;
   };
 
@@ -214,6 +216,21 @@ export default class Address {
     }
     info.hashBuffer = Hash.sha256ripemd160(pubkey.toBuffer());
     info.type = Address.PayToPublicKeyHash;
+    return info;
+  };
+  /**
+   * Internal function to transform a {@link Script} into a `info` object.
+   *
+   * @param {Script} script - An instance of Script
+   * @returns {Object} An object with keys: hashBuffer, type
+   * @private
+   */
+  static _transformScript (script, network) {
+    $.checkArgument(script instanceof Script, 'script must be a Script instance');
+    var info = script.getAddressInfo(network);
+    if (!info) {
+      throw new errors.Script.CantDeriveAddress(script);
+    }
     return info;
   };
 
@@ -306,6 +323,24 @@ export default class Address {
     $.checkArgument(script instanceof Script, 'script must be instance of Script');
 
     return Address.fromScriptHash(Hash.sha256ripemd160(script.toBuffer()), network);
+  };
+
+  /**
+   * Extract address from a Script. The script must be of one
+   * of the following types: p2pkh input, p2pkh output, p2sh input
+   * or p2sh output.
+   * This will analyze the script and extract address information from it.
+   * If you want to transform any script to a p2sh Address paying
+   * to that script's hash instead, use {{Address#payingTo}}
+   *
+   * @param {Script} script - An instance of Script
+   * @param {String|Network} network - either a Network instance, 'livenet', or 'testnet'
+   * @returns {Address} A new valid and frozen instance of an Address
+   */
+  static fromScript (script, network) {
+    $.checkArgument(script instanceof Script, 'script must be a Script instance');
+    var info = Address._transformScript(script, network);
+    return new Address(info.hashBuffer, network, info.type);
   };
   /**
    * Instantiate an address from a buffer of the address
