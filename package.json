@@ -43,8 +43,9 @@
     "levelup": "^2.0.1",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
-    "ntru": "^3.1.3",
+    "ntru": "git+ssh://git@github.com:veritas-shine/ntru.js.git",
     "pqp": "^0.0.7",
+    "tweetnacl": "^1.0.0",
     "winston": "^2.4.0"
   },
   "devDependencies": {

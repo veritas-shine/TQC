@@ -142,67 +142,69 @@ export default class Address {
       type: data.type
     };
   };
+
+
+  /**
+   * Internal function to discover the network and type based on the first data byte
+   *
+   * @param {Buffer} buffer - An instance of a hex encoded address Buffer
+   * @returns {Object} An object with keys: network and type
+   * @private
+   */
+  static _classifyFromVersion(buffer) {
+    var version = {};
+
+    var pubkeyhashNetwork = Networks.get(buffer[0], 'pubkeyhash');
+    var scripthashNetwork = Networks.get(buffer[0], 'scripthash');
+
+    if (pubkeyhashNetwork) {
+      version.network = pubkeyhashNetwork;
+      version.type = Address.PayToPublicKeyHash;
+    } else if (scripthashNetwork) {
+      version.network = scripthashNetwork;
+      version.type = Address.PayToScriptHash;
+    }
+
+    return version;
+  };
+
+  /**
+   * Internal function to transform a bitcoin address buffer
+   *
+   * @param {Buffer} buffer - An instance of a hex encoded address Buffer
+   * @param {string=} network - The network: 'livenet' or 'testnet'
+   * @param {string=} type - The type: 'pubkeyhash' or 'scripthash'
+   * @returns {Object} An object with keys: hashBuffer, network and type
+   * @private
+   */
+  static _transformBuffer(buffer, network, type) {
+    /* jshint maxcomplexity: 9 */
+    var info = {};
+    if (!(buffer instanceof Buffer) && !(buffer instanceof Uint8Array)) {
+      throw new TypeError('Address supplied is not a buffer.');
+    }
+    if (buffer.length !== 1 + 20) {
+      throw new TypeError('Address buffers must be exactly 21 bytes.');
+    }
+
+    network = Networks.get(network);
+    var bufferVersion = Address._classifyFromVersion(buffer);
+
+    if (!bufferVersion.network || (network && network !== bufferVersion.network)) {
+      throw new TypeError('Address has mismatched network type.');
+    }
+
+    if (!bufferVersion.type || (type && type !== bufferVersion.type)) {
+      throw new TypeError('Address has mismatched type.');
+    }
+
+    info.hashBuffer = buffer.slice(1);
+    info.network = bufferVersion.network;
+    info.type = bufferVersion.type;
+    return info;
+  };
 }
 
-/**
- * Internal function to discover the network and type based on the first data byte
- *
- * @param {Buffer} buffer - An instance of a hex encoded address Buffer
- * @returns {Object} An object with keys: network and type
- * @private
- */
-Address._classifyFromVersion = function(buffer) {
-  var version = {};
-
-  var pubkeyhashNetwork = Networks.get(buffer[0], 'pubkeyhash');
-  var scripthashNetwork = Networks.get(buffer[0], 'scripthash');
-
-  if (pubkeyhashNetwork) {
-    version.network = pubkeyhashNetwork;
-    version.type = Address.PayToPublicKeyHash;
-  } else if (scripthashNetwork) {
-    version.network = scripthashNetwork;
-    version.type = Address.PayToScriptHash;
-  }
-
-  return version;
-};
-
-/**
- * Internal function to transform a bitcoin address buffer
- *
- * @param {Buffer} buffer - An instance of a hex encoded address Buffer
- * @param {string=} network - The network: 'livenet' or 'testnet'
- * @param {string=} type - The type: 'pubkeyhash' or 'scripthash'
- * @returns {Object} An object with keys: hashBuffer, network and type
- * @private
- */
-Address._transformBuffer = function(buffer, network, type) {
-  /* jshint maxcomplexity: 9 */
-  var info = {};
-  if (!(buffer instanceof Buffer) && !(buffer instanceof Uint8Array)) {
-    throw new TypeError('Address supplied is not a buffer.');
-  }
-  if (buffer.length !== 1 + 20) {
-    throw new TypeError('Address buffers must be exactly 21 bytes.');
-  }
-
-  network = Networks.get(network);
-  var bufferVersion = Address._classifyFromVersion(buffer);
-
-  if (!bufferVersion.network || (network && network !== bufferVersion.network)) {
-    throw new TypeError('Address has mismatched network type.');
-  }
-
-  if (!bufferVersion.type || (type && type !== bufferVersion.type)) {
-    throw new TypeError('Address has mismatched type.');
-  }
-
-  info.hashBuffer = buffer.slice(1);
-  info.network = bufferVersion.network;
-  info.type = bufferVersion.type;
-  return info;
-};
 
 /**
  * Internal function to transform a {@link PublicKey}
