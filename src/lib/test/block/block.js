@@ -15,7 +15,7 @@ var dataRawBlockBuffer = fs.readFileSync('test/data/blk86756-testnet.dat');
 var dataRawBlockBinary = fs.readFileSync('test/data/blk86756-testnet.dat', 'binary');
 var dataJson = fs.readFileSync('test/data/blk86756-testnet.json').toString();
 var data = require('../data/blk86756-testnet');
-var dataBlocks = require('../data/bitcoind/blocks');
+var dataBlocks = require('../data/pqcoind/blocks');
 
 describe('Block', function() {
 

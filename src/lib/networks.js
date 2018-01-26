@@ -7,7 +7,7 @@ const networkMaps = {}
 
 /**
  * A network is merely a map containing values that correspond to version
- * numbers for each bitcoin network. Currently only supporting "livenet"
+ * numbers for each pqcoin network. Currently only supporting "livenet"
  * (a.k.a. "mainnet") and "testnet".
  * @constructor
  */
@@ -136,10 +136,10 @@ addNetwork({
   networkMagic: 0xf9beb4d9,
   port: 8333,
   dnsSeeds: [
-    'seed.bitcoin.sipa.be',
+    'seed.pqcoin.sipa.be',
     'dnsseed.bluematt.me',
-    'dnsseed.bitcoin.dashjr.org',
-    'seed.bitcoinstats.com',
+    'dnsseed.pqcoin.dashjr.org',
+    'seed.pqcoinstats.com',
     'seed.bitnodes.io',
     'bitseed.xf2.org'
   ]

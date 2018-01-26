@@ -192,7 +192,7 @@ export default class BlockHeader {
   };
 
   /**
-   * @link https://en.bitcoin.it/wiki/Difficulty
+   * @link https://en.pqcoin.it/wiki/Difficulty
    * @return {Number}
    */
   getDifficulty() {
