@@ -168,7 +168,7 @@ export default class Address {
   };
 
   /**
-   * Internal function to transform a bitcoin address buffer
+   * Internal function to transform a pqcoin address buffer
    *
    * @param {Buffer} buffer - An instance of a hex encoded address Buffer
    * @param {string=} network - The network: 'livenet' or 'testnet'
@@ -202,6 +202,7 @@ export default class Address {
     info.type = bufferVersion.type;
     return info;
   };
+
   /**
    * Internal function to transform a {@link PublicKey}
    *
@@ -250,6 +251,7 @@ export default class Address {
     network = network || publicKeys[0].network || Networks.defaultNetwork;
     return Address.payingTo(Script.buildMultisigOut(publicKeys, threshold), network);
   };
+
 
 
   /**
@@ -321,9 +323,9 @@ export default class Address {
   static payingTo (script, network) {
     $.checkArgument(script, 'script is required');
     $.checkArgument(script instanceof Script, 'script must be instance of Script');
-
     return Address.fromScriptHash(Hash.sha256ripemd160(script.toBuffer()), network);
   };
+
 
   /**
    * Extract address from a Script. The script must be of one
@@ -460,6 +462,7 @@ export default class Address {
 
   toJSON = this.toObject
 
+
   /**
    * Will return a the string representation of the address
    *
@@ -477,3 +480,4 @@ export default class Address {
     return '<Address: ' + this.toString() + ', type: ' + this.type + ', network: ' + this.network + '>';
   };
 }
+

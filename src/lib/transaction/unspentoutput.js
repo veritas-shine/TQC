@@ -20,7 +20,7 @@ var Unit = require('../unit');
  * @param {number=} data.outputIndex alias for `vout`
  * @param {string|Script} data.scriptPubKey the script that must be resolved to release the funds
  * @param {string|Script=} data.script alias for `scriptPubKey`
- * @param {number} data.amount amount of bitcoins associated
+ * @param {number} data.amount amount of pqcoins associated
  * @param {number=} data.glv alias for `amount`, but expressed in glv (1 PQC = 1e8 glv)
  * @param {string|Address=} data.address the associated address to the script, if provided
  */

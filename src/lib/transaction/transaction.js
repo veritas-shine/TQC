@@ -130,7 +130,7 @@ Transaction.prototype._getHash = function() {
 };
 
 /**
- * Retrieve a hexa string that can be used with bitcoind's CLI interface
+ * Retrieve a hexa string that can be used with pqcoind's CLI interface
  * (decoderawtransaction, sendrawtransaction)
  *
  * @param {Object|boolean=} unsafe if true, skip all tests. if it's an object,
@@ -140,7 +140,7 @@ Transaction.prototype._getHash = function() {
  * * `disableLargeFees`: disable checking for fees that are too large
  * * `disableIsFullySigned`: disable checking if all inputs are fully signed
  * * `disableDustOutputs`: disable checking if there are no outputs that are dust amounts
- * * `disableMoreOutputThanInput`: disable checking if the transaction spends more bitcoins than the sum of the input amounts
+ * * `disableMoreOutputThanInput`: disable checking if the transaction spends more pqcoins than the sum of the input amounts
  * @return {string}
  */
 Transaction.prototype.serialize = function(unsafe) {
@@ -156,7 +156,7 @@ Transaction.prototype.uncheckedSerialize = Transaction.prototype.toString = func
 };
 
 /**
- * Retrieve a hexa string that can be used with bitcoind's CLI interface
+ * Retrieve a hexa string that can be used with pqcoind's CLI interface
  * (decoderawtransaction, sendrawtransaction)
  *
  * @param {Object} opts allows to skip certain tests. {@see Transaction#serialize}
@@ -496,7 +496,7 @@ Transaction.prototype._newTransaction = function() {
  * Add an input to this transaction. This is a high level interface
  * to add an input, for more control, use @{link Transaction#addInput}.
  *
- * Can receive, as output information, the output of bitcoind's `listunspent` command,
+ * Can receive, as output information, the output of pqcoind's `listunspent` command,
  * and a slightly fancier format recognized by pqccore:
  *
  * ```
@@ -518,7 +518,7 @@ Transaction.prototype._newTransaction = function() {
  * ```javascript
  * var transaction = new Transaction();
  *
- * // From a pay to public key hash output from bitcoind's listunspent
+ * // From a pay to public key hash output from pqcoind's listunspent
  * transaction.from({'txid': '0000...', vout: 0, amount: 0.1, scriptPubKey: 'OP_DUP ...'});
  *
  * // From a pay to public key hash output
@@ -942,7 +942,7 @@ Transaction.prototype.removeOutput = function(index) {
 /**
  * Sort a transaction's inputs and outputs according to BIP69
  *
- * @see {https://github.com/bitcoin/bips/blob/master/bip-0069.mediawiki}
+ * @see {https://github.com/pqcoin/bips/blob/master/bip-0069.mediawiki}
  * @return {Transaction} this
  */
 Transaction.prototype.sort = function() {
@@ -1128,7 +1128,7 @@ Transaction.prototype.verifySignature = function(sig, pubkey, nin, subscript) {
 /**
  * Check that a transaction passes basic sanity tests. If not, return a string
  * describing the error. This function contains the same logic as
- * CheckTransaction in bitcoin core.
+ * CheckTransaction in pqcoin core.
  */
 Transaction.prototype.verify = function() {
   // Basic checks that don't depend on any context
@@ -1191,7 +1191,7 @@ Transaction.prototype.verify = function() {
 };
 
 /**
- * Analogous to bitcoind's IsCoinBase function in transaction.h
+ * Analogous to pqcoind's IsCoinBase function in transaction.h
  */
 Transaction.prototype.isCoinbase = function() {
   return (this.inputs.length === 1 && this.inputs[0].isNull());

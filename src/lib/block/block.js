@@ -144,7 +144,7 @@ export default class Block {
   /**
    * Will build a merkle tree of all the transactions, ultimately arriving at
    * a single point, the merkle root.
-   * @link https://en.bitcoin.it/wiki/Protocol_specification#Merkle_Trees
+   * @link https://en.pqcoin.it/wiki/Protocol_specification#Merkle_Trees
    * @returns {Array} - An array with each level of the tree after the other.
    */
   getMerkleTree() {

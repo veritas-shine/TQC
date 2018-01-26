@@ -299,7 +299,7 @@ export default class PublicKey {
   toDER = this.toBuffer
   /**
    * Will return a sha256 + ripemd160 hash of the serialized public key
-   * @see https://github.com/bitcoin/bitcoin/blob/master/src/pubkey.h#L141
+   * @see https://github.com/pqcoin/pqcoin/blob/master/src/pubkey.h#L141
    * @returns {Buffer}
    */
   _getID() {

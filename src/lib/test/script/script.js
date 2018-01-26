@@ -408,7 +408,7 @@ describe('Script', function() {
       Script('OP_0').isPushOnly().should.equal(true);
       Script('OP_0 OP_RETURN').isPushOnly().should.equal(false);
       Script('OP_PUSHDATA1 5 0x1010101010').isPushOnly().should.equal(true);
-      // like bitcoind, we regard OP_RESERVED as being "push only"
+      // like pqcoind, we regard OP_RESERVED as being "push only"
       Script('OP_RESERVED').isPushOnly().should.equal(true);
     });
   });
@@ -929,7 +929,7 @@ describe('Script', function() {
   });
 
   describe('#getSignatureOperationsCount', function() {
-    // comes from bitcoind src/test/sigopcount_tests
+    // comes from pqcoind src/test/sigopcount_tests
     // only test calls to function with boolean param, not signature ref param
     var pubKeyHexes = [
       '022df8750480ad5b26950b25c7ba79d3e37d75f640f8e5d9bcd5b150a0f85014da',

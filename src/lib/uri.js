@@ -1,16 +1,13 @@
-'use strict';
-
-var _ = require('lodash');
-var URL = require('url');
-
-var Address = require('./address');
-var Unit = require('./unit');
+import _ from 'lodash'
+import URL from 'url'
+import Address from './address'
+import Unit from './unit'
 
 /**
  * pqccore URI
  *
- * Instantiate an URI from a bitcoin URI String or an Object. An URI instance
- * can be created with a bitcoin uri string or an object. All instances of
+ * Instantiate an URI from a pqcoin URI String or an Object. An URI instance
+ * can be created with a pqcoin uri string or an object. All instances of
  * URI are valid, the static method isValid allows checking before instantiation.
  *
  * All standard parameters can be found as members of the class, the address
@@ -20,13 +17,13 @@ var Unit = require('./unit');
  * @example
  * ```javascript
  *
- * var uri = new URI('bitcoin:12A1MyfXbW6RhdRAZEqofac5jCQQjwEPBu?amount=1.2');
+ * var uri = new URI('pqcoin:12A1MyfXbW6RhdRAZEqofac5jCQQjwEPBu?amount=1.2');
  * console.log(uri.address, uri.amount);
  * ```
  *
- * @param {string|Object} data - A bitcoin URI string or an Object
+ * @param {string|Object} data - A pqcoin URI string or an Object
  * @param {Array.<string>=} knownParams - Required non-standard params
- * @throws {TypeError} Invalid bitcoin address
+ * @throws {TypeError} Invalid pqcoin address
  * @throws {TypeError} Invalid amount
  * @throws {Error} Unknown required argument
  * @returns {URI} A new valid and frozen instance of URI
@@ -78,16 +75,16 @@ URI.fromObject = function fromObject(json) {
 };
 
 /**
- * Check if an bitcoin URI string is valid
+ * Check if an pqcoin URI string is valid
  *
  * @example
  * ```javascript
  *
- * var valid = URI.isValid('bitcoin:12A1MyfXbW6RhdRAZEqofac5jCQQjwEPBu');
+ * var valid = URI.isValid('pqcoin:12A1MyfXbW6RhdRAZEqofac5jCQQjwEPBu');
  * // true
  * ```
  *
- * @param {string|Object} data - A bitcoin URI string or an Object
+ * @param {string|Object} data - A pqcoin URI string or an Object
  * @param {Array.<string>=} knownParams - Required non-standard params
  * @returns {boolean} Result of uri validation
  */
@@ -101,17 +98,17 @@ URI.isValid = function(arg, knownParams) {
 };
 
 /**
- * Convert a bitcoin URI string into a simple object.
+ * Convert a pqcoin URI string into a simple object.
  *
- * @param {string} uri - A bitcoin URI string
- * @throws {TypeError} Invalid bitcoin URI
+ * @param {string} uri - A pqcoin URI string
+ * @throws {TypeError} Invalid pqcoin URI
  * @returns {Object} An object with the parsed params
  */
 URI.parse = function(uri) {
   var info = URL.parse(uri, true);
 
-  if (info.protocol !== 'bitcoin:') {
-    throw new TypeError('Invalid bitcoin URI');
+  if (info.protocol !== 'pqcoin:') {
+    throw new TypeError('Invalid pqcoin URI');
   }
 
   // workaround to host insensitiveness
@@ -127,7 +124,7 @@ URI.Members = ['address', 'amount', 'message', 'label', 'r'];
  * Internal function to load the URI instance with an object.
  *
  * @param {Object} obj - Object with the information
- * @throws {TypeError} Invalid bitcoin address
+ * @throws {TypeError} Invalid pqcoin address
  * @throws {TypeError} Invalid amount
  * @throws {Error} Unknown required argument
  */
@@ -135,7 +132,7 @@ URI.prototype._fromObject = function(obj) {
   /* jshint maxcomplexity: 10 */
 
   if (!Address.isValid(obj.address)) {
-    throw new TypeError('Invalid bitcoin address');
+    throw new TypeError('Invalid pqcoin address');
   }
 
   this.address = new Address(obj.address);
@@ -168,7 +165,7 @@ URI.prototype._parseAmount = function(amount) {
   if (isNaN(amount)) {
     throw new TypeError('Invalid amount');
   }
-  return Unit.fromBTC(amount).toGlv();
+  return Unit.fromPQC(amount).toGlv();
 };
 
 URI.prototype.toObject = URI.prototype.toJSON = function toObject() {
@@ -186,7 +183,7 @@ URI.prototype.toObject = URI.prototype.toJSON = function toObject() {
 /**
  * Will return a the string representation of the URI
  *
- * @returns {string} Bitcoin URI string
+ * @returns {string} pqcoin URI string
  */
 URI.prototype.toString = function() {
   var query = {};
@@ -205,7 +202,7 @@ URI.prototype.toString = function() {
   _.extend(query, this.extras);
 
   return URL.format({
-    protocol: 'bitcoin:',
+    protocol: 'pqcoin:',
     host: this.address,
     query: query
   });
@@ -214,7 +211,7 @@ URI.prototype.toString = function() {
 /**
  * Will return a string formatted for the console
  *
- * @returns {string} Bitcoin URI
+ * @returns {string} pqcoin URI
  */
 URI.prototype.inspect = function() {
   return '<URI: ' + this.toString() + '>';

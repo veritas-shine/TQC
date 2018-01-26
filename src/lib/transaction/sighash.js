@@ -61,7 +61,7 @@ var sighash = function sighash(transaction, sighashType, inputNumber, subscript)
 
   } else if ((sighashType & 31) === Signature.SIGHASH_SINGLE) {
     // The SIGHASH_SINGLE bug.
-    // https://bitcointalk.org/index.php?topic=260595.0
+    // https://pqcointalk.org/index.php?topic=260595.0
     if (inputNumber >= txcopy.outputs.length) {
       return new Buffer(SIGHASH_SINGLE_BUG, 'hex');
     }
