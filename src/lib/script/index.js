@@ -1,3 +1,7 @@
 
-export script from './script'
-export Interpreter from './interpreter'
+import script from './script'
+import Interpreter from './interpreter'
+
+export default {
+  Interpreter
+}

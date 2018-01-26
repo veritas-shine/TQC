@@ -1,4 +1,11 @@
-export BN from './bn'
-export Hash from './hash'
-export Random from './random'
-export Signature from './signature'
+import BN from './bn'
+import Hash from './hash'
+import Random from './random'
+import Signature from './signature'
+
+export default {
+  BN,
+  Hash,
+  Random,
+  Signature
+}

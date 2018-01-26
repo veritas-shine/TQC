@@ -2,6 +2,7 @@
 
 var should = require('chai').should();
 var pqccore = require('../..');
+
 var Interpreter = pqccore.Script.Interpreter;
 var Transaction = pqccore.Transaction;
 var PrivateKey = pqccore.PrivateKey;
