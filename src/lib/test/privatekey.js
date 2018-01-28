@@ -5,7 +5,6 @@ var should = chai.should();
 var expect = chai.expect;
 
 var pqccore = require('..');
-console.log(pqccore);
 var BN = pqccore.crypto.BN;
 var PrivateKey = pqccore.PrivateKey;
 var Networks = pqccore.Networks;

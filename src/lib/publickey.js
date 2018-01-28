@@ -1,7 +1,13 @@
 import _ from 'lodash'
-import BN from './crypto/bn'
+import {toBitArray} from 'lib/polyfill'
 import JSUtil from './util/js'
 import $ from './util/preconditions'
+import ntru from 'ntrujs'
+import asn1 from 'asn1.js'
+
+const ASN1PublicKey = asn1.define('ASN1PublicKey', function() {
+  this.seq().obj(this.key('G').bitstr())
+});
 
 /**
  * Instantiate a PublicKey from a {@link PrivateKey}, `string`, or `Buffer`.
@@ -110,11 +116,14 @@ export default class PublicKey {
    */
   static _transformPrivateKey(privkey) {
     $.checkArgument(PublicKey._isPrivateKey(privkey), 'Must be an instance of PrivateKey');
-    var info = {};
-    info.point = Point.getG().mul(privkey.bn);
-    info.compressed = privkey.compressed;
-    info.network = privkey.network;
-    return info;
+
+    const seed = privkey.bn
+    const keypair = ntru.createKey(seed)
+    const publicKey = keypair.public
+    publicKey.compressed = privkey.compressed
+    publicKey.network = privkey.network
+
+    return publicKey
   };
 
   /**
@@ -126,43 +135,13 @@ export default class PublicKey {
    * @private
    */
   static _transformDER(buf, strict) {
-    /* jshint maxstatements: 30 */
-    /* jshint maxcomplexity: 12 */
     $.checkArgument(PublicKey._isBuffer(buf), 'Must be a hex buffer of DER encoded public key');
-    var info = {};
 
-    strict = _.isUndefined(strict) ? true : strict;
-
-    var x;
-    var y;
-    var xbuf;
-    var ybuf;
-
-    if (buf[0] === 0x04 || (!strict && (buf[0] === 0x06 || buf[0] === 0x07))) {
-      xbuf = buf.slice(1, 33);
-      ybuf = buf.slice(33, 65);
-      if (xbuf.length !== 32 || ybuf.length !== 32 || buf.length !== 65) {
-        throw new TypeError('Length of x and y must be 32 bytes');
-      }
-      x = new BN(xbuf);
-      y = new BN(ybuf);
-      info.point = new Point(x, y);
-      info.compressed = false;
-    } else if (buf[0] === 0x03) {
-      xbuf = buf.slice(1);
-      x = new BN(xbuf);
-      info = PublicKey._transformX(true, x);
-      info.compressed = true;
-    } else if (buf[0] === 0x02) {
-      xbuf = buf.slice(1);
-      x = new BN(xbuf);
-      info = PublicKey._transformX(false, x);
-      info.compressed = true;
-    } else {
-      throw new TypeError('Invalid DER format public key');
-    }
-    return info;
-  };
+    const der = ASN1PublicKey.decode(buf, 'der')
+    const pub_key = new PublicKey()
+    pub_key.G = toBitArray(der['G'])
+    return pub_key
+  }
 
   /**
    * Instantiate a PublicKey from a PrivateKey
@@ -248,7 +227,7 @@ export default class PublicKey {
     };
   };
 
-  toJSON = toObject
+  toJSON = this.toObject
   /**
    * Will output the PublicKey to a DER Buffer
    *
@@ -280,7 +259,7 @@ export default class PublicKey {
     }
   };
 
-  toDER = toBuffer
+  toDER = this.toBuffer
   /**
    * Will return a sha256 + ripemd160 hash of the serialized public key
    * @see https://github.com/pqcoin/pqcoin/blob/master/src/pubkey.h#L141
