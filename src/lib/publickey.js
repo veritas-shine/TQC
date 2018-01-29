@@ -1,14 +1,15 @@
 'use strict';
+import JSUtil from './util/js'
+import Hash from './crypto/hash'
 
-var BN = require('./crypto/bn');
-var Hash = require('./crypto/hash');
-var JSUtil = require('./util/js');
-var Network = require('./networks');
-var _ = require('lodash');
-var $ = require('./util/preconditions');
+import Network from './networks'
+import _ from 'lodash'
+import $ from './util/preconditions'
+import Address from './address'
 import ntru from 'ntrujs'
 import asn1 from 'asn1.js'
 import {toBitArray} from 'lib/polyfill'
+import PrivateKey from './privatekey'
 
 const ASN1PublicKey = asn1.define('ASN1PublicKey', function() {
   this.seq().obj(this.key('G').bitstr())
@@ -101,7 +102,6 @@ PublicKey.prototype._classifyArgs = function(data, extra) {
  * @private
  */
 PublicKey._isPrivateKey = function(param) {
-  var PrivateKey = require('./privatekey');
   return param instanceof PrivateKey;
 };
 
@@ -165,10 +165,7 @@ PublicKey._transformDER = function(buf, strict) {
 PublicKey.fromPrivateKey = function(privkey) {
   $.checkArgument(PublicKey._isPrivateKey(privkey), 'Must be an instance of PrivateKey');
   var info = PublicKey._transformPrivateKey(privkey);
-  return new PublicKey(info.buffer, {
-    compressed: info.compressed,
-    network: info.network
-  });
+  return new PublicKey(info);
 };
 
 /**
@@ -262,7 +259,6 @@ PublicKey.prototype._getID = function _getID() {
  * @returns {Address} An address generated from the public key
  */
 PublicKey.prototype.toAddress = function(network) {
-  var Address = require('./address');
   return Address.fromPublicKey(this, network || this.network);
 };
 
@@ -286,4 +282,4 @@ PublicKey.prototype.inspect = function() {
 };
 
 
-module.exports = PublicKey;
+export default PublicKey;

@@ -409,4 +409,4 @@ PrivateKey.prototype.inspect = function() {
   return '<PrivateKey: ' + this.toString() + ', network: ' + this.network + uncompressed + '>';
 };
 
-module.exports = PrivateKey
+export default PrivateKey
