@@ -10,6 +10,7 @@ import ntru from 'ntrujs'
 import asn1 from 'asn1.js'
 import {toBitArray} from 'lib/polyfill'
 import PrivateKey from './privatekey'
+import BitArray from 'node-bitarray'
 
 const ASN1PublicKey = asn1.define('ASN1PublicKey', function() {
   this.seq().obj(this.key('G').bitstr())
@@ -149,11 +150,12 @@ PublicKey._transformDER = function(buf, strict) {
   /* jshint maxstatements: 30 */
   /* jshint maxcomplexity: 12 */
   $.checkArgument(PublicKey._isBuffer(buf), 'Must be a hex buffer of DER encoded public key');
-
   const der = ASN1PublicKey.decode(buf, 'der')
+  const data = der['G'].data
+
   // TODO
   return {
-    buffer: toBitArray(der['G'])
+    buffer: data
   };
 };
 
@@ -240,11 +242,21 @@ PublicKey.prototype.toObject = PublicKey.prototype.toJSON = function toObject() 
  *
  * @returns {Buffer} A DER hex encoded buffer
  */
-PublicKey.prototype.toBuffer = PublicKey.prototype.toDER = function() {
+PublicKey.prototype.toBuffer = function() {
   return this.buffer
 };
 
-/**
+PublicKey.prototype.toDER = function () {
+  let buffer = this.buffer
+  return ASN1PublicKey.encode({
+    G: {
+      data: buffer,
+      unused: 0
+    }
+  }, 'der')
+}
+
+    /**
  * Will return a sha256 + ripemd160 hash of the serialized public key
  * @see https://github.com/bitcoin/bitcoin/blob/master/src/pubkey.h#L141
  * @returns {Buffer}
