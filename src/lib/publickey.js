@@ -10,7 +10,6 @@ import ntru from 'ntrujs'
 import asn1 from 'asn1.js'
 import {toBitArray} from 'lib/polyfill'
 import PrivateKey from './privatekey'
-import BitArray from 'node-bitarray'
 
 const ASN1PublicKey = asn1.define('ASN1PublicKey', function() {
   this.seq().obj(this.key('G').bitstr())
@@ -195,9 +194,7 @@ PublicKey.fromDER = PublicKey.fromBuffer = function(buf, strict) {
 PublicKey.fromString = function(str, encoding) {
   var buf = new Buffer(str, encoding || 'hex');
   var info = PublicKey._transformDER(buf);
-  return new PublicKey(info.buffer, {
-    compressed: info.compressed
-  });
+  return new PublicKey(info);
 };
 
 /**
