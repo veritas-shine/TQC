@@ -7,6 +7,12 @@ var Network = require('./networks');
 var _ = require('lodash');
 var $ = require('./util/preconditions');
 import ntru from 'ntrujs'
+import asn1 from 'asn1.js'
+import {toBitArray} from 'lib/polyfill'
+
+const ASN1PublicKey = asn1.define('ASN1PublicKey', function() {
+  this.seq().obj(this.key('G').bitstr())
+});
 
 /**
  * Instantiate a PublicKey from a {@link PrivateKey}, `string`, or `Buffer`.
@@ -143,8 +149,11 @@ PublicKey._transformDER = function(buf, strict) {
   /* jshint maxcomplexity: 12 */
   $.checkArgument(PublicKey._isBuffer(buf), 'Must be a hex buffer of DER encoded public key');
 
+  const der = ASN1PublicKey.decode(buf, 'der')
   // TODO
-  return info;
+  return {
+    buffer: toBitArray(der['G'])
+  };
 };
 
 /**
