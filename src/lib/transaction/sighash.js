@@ -1,17 +1,16 @@
-'use strict';
 
 var buffer = require('buffer');
 
-var Signature = require('../crypto/signature');
-var Script = require('../script');
-var Output = require('./output');
-var BufferReader = require('../encoding/bufferreader');
-var BufferWriter = require('../encoding/bufferwriter');
-var BN = require('../crypto/bn');
-var Hash = require('../crypto/hash');
-var ECDSA = require('../crypto/ecdsa');
-var $ = require('../util/preconditions');
-var _ = require('lodash');
+import Signature from '../crypto/signature'
+import Script from '../script'
+import Output from './output'
+import BufferReader from '../encoding/bufferreader'
+import BufferWriter from '../encoding/bufferwriter'
+import BN from '../crypto/bn'
+import Hash from '../crypto/hash'
+import $ from '../util/preconditions'
+import _ from 'lodash'
+import NTRUMLS from 'ntrumls'
 
 var SIGHASH_SINGLE_BUG = '0000000000000000000000000000000000000000000000000000000000000001';
 var BITS_64_ON = 'ffffffffffffffff';
@@ -26,7 +25,7 @@ var BITS_64_ON = 'ffffffffffffffff';
  * @param {number} inputNumber the input index for the signature
  * @param {Script} subscript the script that will be signed
  */
-var sighash = function sighash(transaction, sighashType, inputNumber, subscript) {
+function sighash(transaction, sighashType, inputNumber, subscript) {
   var Transaction = require('./transaction');
   var Input = require('./input');
 
@@ -102,7 +101,7 @@ var sighash = function sighash(transaction, sighashType, inputNumber, subscript)
  */
 function sign(transaction, privateKey, sighashType, inputIndex, subscript) {
   var hashbuf = sighash(transaction, sighashType, inputIndex, subscript);
-  var sig = ECDSA.sign(hashbuf, privateKey, 'little').set({
+  var sig = NTRUMLS.sign(hashbuf, privateKey).set({
     nhashtype: sighashType
   });
   return sig;
@@ -123,7 +122,7 @@ function verify(transaction, signature, publicKey, inputIndex, subscript) {
   $.checkArgument(!_.isUndefined(transaction));
   $.checkArgument(!_.isUndefined(signature) && !_.isUndefined(signature.nhashtype));
   var hashbuf = sighash(transaction, signature.nhashtype, inputIndex, subscript);
-  return ECDSA.verify(hashbuf, signature, publicKey, 'little');
+  return NTRUMLS.verify(signature, hashbuf, publicKey);
 }
 
 /**

@@ -75,7 +75,7 @@ describe('URI', function() {
   });
 
   describe('instantiation from pqcoin uri', function() {
-    /* jshint maxstatements: 25 */
+    /* jshint maxstatements: 25 */0
     var uri;
 
     it('parses address', function() {

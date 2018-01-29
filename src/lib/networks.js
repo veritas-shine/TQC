@@ -41,7 +41,7 @@ function get(arg, keys) {
         return networks[index];
       }
     }
-    throw new Error('Unknown network')
+    // throw new Error('Unknown network')
     return undefined;
   }
   return networkMaps[arg];

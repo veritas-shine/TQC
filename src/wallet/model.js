@@ -1,15 +1,12 @@
 import fs from 'fs'
-import 'lib/polyfill'
 import Base58 from 'lib/encoding/base58'
 import config from '../config'
-import PQP from 'pqp'
-import { wordArrayToBuffer } from 'lib/polyfill'
+import NTRU from 'ntrujs'
 import Storage from 'storage'
-
-const {Keygen, IO} = PQP
+import { packBuffer, wordArrayToBuffer } from '../lib/polyfill'
 
 function generateAddressByPublicKey(publicKey) {
-  const hash = publicKey.G.pack()
+  const hash = packBuffer(publicKey)
   const {length, prefix, suffix} = config.address
   const b58 = Base58.encode(wordArrayToBuffer(hash)).slice(0, length)
   return `${prefix}${b58}${suffix}`
@@ -42,11 +39,10 @@ export default class Wallet {
       this.publicKey = publicKey
     } else {
       // generate keypair && address
-      const gen = new Keygen()
-      const [privateKey, publicKey] = gen.generate()
-      this.address = generateAddressByPublicKey(publicKey)
-      this.privateKey = privateKey
-      this.publicKey = publicKey
+      const keypair = NTRU.createKey()
+      this.address = generateAddressByPublicKey(keypair.public)
+      this.privateKey = keypair.private
+      this.publicKey = keypair.public
     }
   }
 

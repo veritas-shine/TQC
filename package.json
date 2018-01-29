@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "better-npm-run dev",
     "test": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/*/test.js",
-    "test-lib": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/address.js"
+    "test-lib": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/privatekey.js"
   },
   "betterScripts": {
     "dev": {
@@ -30,6 +30,7 @@
   "license": "ISC",
   "private": true,
   "dependencies": {
+    "asn1.js": "^5.0.0",
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
     "base-x": "^3.0.4",
@@ -44,8 +45,13 @@
     "levelup": "^2.0.1",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
+
     "ntru": "https://github.com/veritas-shine/ntru.js/tarball/master",
     "pqp": "^0.0.7",
+
+    "node-bitarray": "^0.1.0",
+    "ntrujs": "^1.0.8",
+    "ntrumls": "^0.0.1",
     "tweetnacl": "^1.0.0",
     "winston": "^2.4.0"
   },
