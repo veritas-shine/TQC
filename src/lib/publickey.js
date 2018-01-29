@@ -78,7 +78,8 @@ PublicKey.prototype._classifyArgs = function(data, extra) {
 
   // detect type of data
   if (data.buffer) {
-    ;
+    info.buffer = data.buffer
+    info.network = data.network
   } else if (typeof(data) === 'string') {
     info = PublicKey._transformDER(new Buffer(data, 'hex'));
   } else if (PublicKey._isBuffer(data)) {
