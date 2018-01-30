@@ -90,7 +90,7 @@ export default class Address {
     // transform and validate input data
     if ((data instanceof Buffer || data instanceof Uint8Array) && data.length === 20) {
       return Address._transformHash(data);
-    } else if ((data instanceof Buffer || data instanceof Uint8Array) && data.length === 21) {
+    } else if ((data instanceof Buffer || data instanceof Uint8Array)) {
       return Address._transformBuffer(data, network, type);
     } else if (data instanceof PublicKey) {
       return Address._transformPublicKey(data);
@@ -182,9 +182,10 @@ export default class Address {
     if (!(buffer instanceof Buffer) && !(buffer instanceof Uint8Array)) {
       throw new TypeError('Address supplied is not a buffer.');
     }
-    if (buffer.length !== 1 + 20) {
-      throw new TypeError('Address buffers must be exactly 21 bytes.');
-    }
+    // TODO
+    // if (buffer.length !== 1 + 20) {
+    //   throw new TypeError('Address buffers must be exactly 21 bytes.');
+    // }
 
     network = Networks.get(network);
     var bufferVersion = Address._classifyFromVersion(buffer);
