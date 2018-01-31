@@ -222,7 +222,8 @@ export default class Address {
    */
   static _transformScript (script, network) {
     $.checkArgument(script instanceof Script, 'script must be a Script instance');
-    var info = script.getAddressInfo(network);
+    var info = script.getAddressInfo(network)
+    console.log(226, info)
     if (!info) {
       throw new errors.Script.CantDeriveAddress(script);
     }
