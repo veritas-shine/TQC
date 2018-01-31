@@ -128,13 +128,15 @@ PublicKey._transformPrivateKey = function(privkey) {
   $.checkArgument(PublicKey._isPrivateKey(privkey), 'Must be an instance of PrivateKey');
 
   const seed = privkey.bn
+  console.log(131, new Buffer(seed))
   const pair = ntru.createKey(seed)
   const publicKey = pair.public
-  var info = {};
+
+  const info = {}
   info.buffer = publicKey
   info.compressed = privkey.compressed
   info.network = privkey.network
-  return info;
+  return info
 }
 
 /**

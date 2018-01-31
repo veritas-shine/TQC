@@ -1,5 +1,5 @@
 import assert from 'assert'
-import ntru from 'ntru'
+import ntru from 'ntrujs'
 import Wallet from './model'
 import config from '../config'
 import Storage from 'storage'

@@ -129,7 +129,7 @@ function removeNetwork(network) {
 addNetwork({
   name: 'livenet',
   alias: 'mainnet',
-  pubkeyhash: 0x0f, // 'G'
+  pubkeyhash: 0x26, // 'G'
   privatekey: 0x90, // '2S'
   scripthash: 0x32, // 's'
   xpubkey: 0x0488b21e,

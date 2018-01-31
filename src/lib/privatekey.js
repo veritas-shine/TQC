@@ -129,7 +129,8 @@ export default class PrivateKey {
    * @private
    */
   static _getRandomBuffer() {
-    return nacl.randomBytes(64)
+    const buf = nacl.randomBytes(64)
+    return buf
   }
 
   /**
@@ -323,8 +324,7 @@ export default class PrivateKey {
    * @returns {Address} An address generated from the private key
    */
   toAddress(network) {
-    var pubkey = this.toPublicKey()
-    return Address.fromPublicKey(pubkey, network || this.network)
+    return this.toPublicKey().toAddress()
   }
 
   /**

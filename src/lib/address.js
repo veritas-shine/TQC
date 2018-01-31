@@ -148,7 +148,6 @@ export default class Address {
 
     var pubkeyhashNetwork = Networks.get(buffer[0], 'pubkeyhash');
     var scripthashNetwork = Networks.get(buffer[0], 'scripthash');
-
     if (pubkeyhashNetwork) {
       version.network = pubkeyhashNetwork;
       version.type = Address.PayToPublicKeyHash;
@@ -270,10 +269,10 @@ export default class Address {
    * @param {String|Network} network - either a Network instance, 'livenet', or 'testnet'
    * @returns {Address} A new valid and frozen instance of an Address
    */
-  static fromPublicKey (data, network) {
-    var info = Address._transformPublicKey(data);
-    network = network || Networks.defaultNetwork;
-    return new Address(info.hashBuffer, network, info.type);
+  static fromPublicKey (pubkey, network) {
+    var info = Address._transformPublicKey(pubkey);
+    network = network || Networks.defaultNetwork
+    return new Address(pubkey, network, info.type);
   };
 
   /**
