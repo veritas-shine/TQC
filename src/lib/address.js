@@ -86,11 +86,7 @@ export default class Address {
    * @returns {Object} An "info" object with "type", "network", and "hashBuffer"
    */
   _classifyArguments(data, network, type) {
-    /* jshint maxcomplexity: 10 */
-    // transform and validate input data
-    if ((data instanceof Buffer || data instanceof Uint8Array) && data.length === 20) {
-      return Address._transformHash(data);
-    } else if ((data instanceof Buffer || data instanceof Uint8Array)) {
+    if ((data instanceof Buffer || data instanceof Uint8Array)) {
       return Address._transformBuffer(data, network, type);
     } else if (data instanceof PublicKey) {
       return Address._transformPublicKey(data);
@@ -118,9 +114,6 @@ export default class Address {
     var info = {};
     if (!(hash instanceof Buffer) && !(hash instanceof Uint8Array)) {
       throw new TypeError('Address supplied is not a buffer.');
-    }
-    if (hash.length !== 20) {
-      throw new TypeError('Address hashbuffers must be exactly 20 bytes.');
     }
     info.hashBuffer = hash;
     return info;
@@ -182,10 +175,6 @@ export default class Address {
     if (!(buffer instanceof Buffer) && !(buffer instanceof Uint8Array)) {
       throw new TypeError('Address supplied is not a buffer.');
     }
-    // TODO
-    // if (buffer.length !== 1 + 20) {
-    //   throw new TypeError('Address buffers must be exactly 21 bytes.');
-    // }
 
     network = Networks.get(network);
     var bufferVersion = Address._classifyFromVersion(buffer);

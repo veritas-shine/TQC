@@ -129,21 +129,14 @@ function removeNetwork(network) {
 addNetwork({
   name: 'livenet',
   alias: 'mainnet',
-  pubkeyhash: 0x00,
-  privatekey: 0x80,
-  scripthash: 0x05,
+  pubkeyhash: 0x0f, // 'G'
+  privatekey: 0x90, // '2S'
+  scripthash: 0x32, // 's'
   xpubkey: 0x0488b21e,
   xprivkey: 0x0488ade4,
   networkMagic: 0xf9beb4d9,
   port: 8333,
-  dnsSeeds: [
-    'seed.pqcoin.sipa.be',
-    'dnsseed.bluematt.me',
-    'dnsseed.pqcoin.dashjr.org',
-    'seed.pqcoinstats.com',
-    'seed.bitnodes.io',
-    'bitseed.xf2.org'
-  ]
+  dnsSeeds: []
 });
 
 /**
@@ -155,9 +148,9 @@ var livenet = get('livenet');
 addNetwork({
   name: 'testnet',
   alias: 'regtest',
-  pubkeyhash: 0x6f,
-  privatekey: 0xef,
-  scripthash: 0xc4,
+  pubkeyhash: 0x27, // 'g'
+  privatekey: 0xca, // '4V'
+  scripthash: 0x19, // 'S'
   xpubkey: 0x043587cf,
   xprivkey: 0x04358394
 });

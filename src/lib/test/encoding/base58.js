@@ -13,6 +13,11 @@ describe('Base58', function() {
     should.exist(b58);
   });
 
+  it('should decode', function () {
+    const buffer = new Buffer([0xc4])
+    console.log(Base58.decode('g'), Base58.encode(buffer))
+  });
+
   it('validates characters with no false negatives', function() {
     Base58.validCharacters(
       '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
