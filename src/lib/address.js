@@ -285,7 +285,11 @@ export default class Address {
    * @returns {Address} A new valid and frozen instance of an Address
    */
   static fromPublicKeyHash (hash, network) {
-    var info = Address._transformHash(hash);
+    if (!(hash instanceof Buffer) && !(hash instanceof Uint8Array)) {
+      throw new TypeError('Address supplied is not a buffer.');
+    }
+    const hashBuffer = Hash.sha256ripemd160(hash)
+    var info = Address._transformHash(hashBuffer)
     return new Address(info.hashBuffer, network, Address.PayToPublicKeyHash);
   };
 
@@ -417,7 +421,7 @@ export default class Address {
    * Returns true if an address is of pay to public key hash type
    * @return boolean
    */
-  isPayToPublicKeyHash = () => {
+  isPayToPublicKeyHash() {
     return this.type === Address.PayToPublicKeyHash;
   }
 
@@ -425,7 +429,7 @@ export default class Address {
    * Returns true if an address is of pay to script hash type
    * @return boolean
    */
-  isPayToScriptHash = () => {
+  isPayToScriptHash() {
     return this.type === Address.PayToScriptHash;
   };
   /**
@@ -433,7 +437,7 @@ export default class Address {
    *
    * @returns {Buffer} Bitcoin address buffer
    */
-  toBuffer = () => {
+  toBuffer() {
     var version = new Buffer([this.network[this.type]]);
     var buf = Buffer.concat([version, this.hashBuffer]);
     return buf;
@@ -442,7 +446,7 @@ export default class Address {
   /**
    * @returns {Object} A plain object with the address information
    */
-  toObject = () => {
+  toObject() {
     return {
       hash: this.hashBuffer.toString('hex'),
       type: this.type,
@@ -458,7 +462,7 @@ export default class Address {
    *
    * @returns {string} Bitcoin address
    */
-  toString = () => {
+  toString() {
     return Base58Check.encode(this.toBuffer());
   };
   /**
@@ -466,7 +470,7 @@ export default class Address {
    *
    * @returns {string} Bitcoin address
    */
-  inspect = () =>  {
+  inspect() {
     return '<Address: ' + this.toString() + ', type: ' + this.type + ', network: ' + this.network + '>';
   };
 }
