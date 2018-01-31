@@ -90,6 +90,9 @@ export default class Address {
       return Address._transformHash(data);
     } else if ((data instanceof Buffer || data instanceof Uint8Array) && data.length === 21) {
       return Address._transformBuffer(data, network, type);
+    } else if (data instanceof Buffer || data instanceof Uint8Array) {
+      const hashBuffer = Hash.sha256ripemd160(data)
+      return Address._transformHash(hashBuffer)
     } else if (data instanceof PublicKey) {
       return Address._transformPublicKey(data);
     } else if (typeof(data) === 'string') {
