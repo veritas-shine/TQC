@@ -128,7 +128,6 @@ PublicKey._transformPrivateKey = function(privkey) {
   $.checkArgument(PublicKey._isPrivateKey(privkey), 'Must be an instance of PrivateKey');
 
   const seed = privkey.bn
-  console.log(131, new Buffer(seed))
   const pair = ntru.createKey(seed)
   const publicKey = pair.public
 
@@ -292,6 +291,5 @@ PublicKey.prototype.inspect = function() {
   return '<PublicKey: ' + this.toString() +
     (this.compressed ? '' : ', uncompressed') + '>';
 };
-
 
 export default PublicKey;

@@ -95,7 +95,7 @@ export default class PrivateKey {
   _classifyArguments(data, network) {
     /* jshint maxcomplexity: 10 */
     var info = {
-      compressed: true,
+      compressed: false,
       network: network ? Networks.get(network) : Networks.defaultNetwork
     }
 
@@ -211,6 +211,8 @@ export default class PrivateKey {
     $.checkArgument(_.isString(str), 'First argument is expected to be a string.')
     return new PrivateKey(str)
   }
+
+  static fromWIF = PrivateKey.fromString
 
   /**
    * Instantiate a PrivateKey from a plain JavaScript object
