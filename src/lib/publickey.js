@@ -241,7 +241,7 @@ PublicKey.prototype.toObject = PublicKey.prototype.toJSON = function toObject() 
  * @returns {Buffer} A DER hex encoded buffer
  */
 PublicKey.prototype.toBuffer = function() {
-  return this.buffer
+  return this.toDER()
 };
 
 PublicKey.prototype.toDER = function () {
