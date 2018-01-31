@@ -1,23 +1,17 @@
-'use strict';
-
-/* jshint maxstatements: 30 */
-import Address from '../address';
-import PublicKey from'../publickey';
-import Networks from '../networks';
+import Address from '../address'
+import PublicKey from'../publickey'
+import Networks from '../networks'
 import Script from '../script/script'
 import errors from '../errors'
-import chai from'chai';
-var should = chai.should();
-var expect = chai.expect;
-
-var validbase58 = require('./data/pqcoind/base58_keys_valid.json');
-var invalidbase58 = require('./data/pqcoind/base58_keys_invalid.json');
+import chai from'chai'
+const should = chai.should()
+const expect = chai.expect
 
 describe('Address', function() {
 
-  var pubkeyhash = new Buffer('30820408038204040080c00060081402f2ba4d72562ccd18c83799f09485d850d6742a2f0bcfe77e562cda9e9477c6692da963c814bbc14545edc3009f36db2f6bb669b1e8f5830b6a7865cb443fb88e02e57ac382e5c24147ccea49848966310655cda7632abb32638d27a5015a4a3a819fec8a5dff37d309a8228ee65a84c44e3012f0ff8c27454b601755096959d50f39c77de705e8ec075813343f55d43caeca7e3689a6a7fbe45558a1beb409dd033bdc7a1790cc0c11e4cddc0d3c410c5c328650cf6895390791240468fcfa91dbcf9dafdcf7b3d1e49bb5f4e36f9e5b81ca170c49185199bad117fb2dc341850f428faf172235e5869af8bc14ffee25920fa8bb030d316dcee0a60c6f1c37eac461d49277dfbf308fff74ead58b35df663ba18ede62e976ae81caeff83f29c5dbebe1dc5fa2f5f51b00260abd35964803e1ea4fffe299675c2f9ad1defc53c7171b97ec516084c92e44f72c4a4d820fb530be9e462e8af54efa99e46cc7c52a8c67bab064feca7c5d65d414859ce352ce463ce6932673ef92dec665a6f17cd43f1e27f63f8782a3058198d68c61153eb5936f0c89f2539aaa31f8fbffa45b25f65a6533c275010f5e4aef4dccc8aafc5f93682d9aab808419669d3914d35e493baa1b578884c375d0edbc8d697f434b83c8448d9bd750c8b7b903d8ea3b707d3f3cfd93085179bcb1b07ebaa0df0764d24dad80f9ece7bc42c0520c4f331f9531469088e542cbf8b44a668f15434ee7bec2f426fd2eac2e919f05b566e5047dbeb9d47c7f15d058e33b6441a4fcb64e7b7ce30a0aa1aae42218da7af12c19f45f55f392e4147b797e05dd7a08457d90a1285e6220fe6d93a4f42755ac1b45f32d9e6da12ae80b9dc0f9af7ec349ec28b513138fa75b7c4e74acda76f777e61a2ff66060ac64f86cbab7a98fd3ebddc558b8597493f5f1f4835f89b7b03ea087c56756928b7d373ad7d60ce4dfbaf0ebc0f38c61c76dc44f6927a77f7fe666f4979b311d52464a80853b687c1d702d12f3739ebbcbd4a0297396ea487bd6cf05786a2be4d9823ffce9963c8f4562a75b230da006fa22bbcb3214b378128706f76075d3e2abe44eb589709a3b594191df4a8bb954b55de0cfe90a91e7de80033782f11e17c6b11f64308cdfa2f543d360636e026d3a1d5f0754b3a199d9a81fb179230388b14d309028d5c08c2553289dad33ae7e7b25e6b01c6f6d70810830dc48717284735b57559958ee4de25bf8770c50c7eacac0d79562bb7dedd6fa4231a0dd3197aa8255e4d4321a8c04c1d940ea6c907e52489f23a2daef57454ac5be97315633b016d51ef84ad9648c2b451edbd691ccfd032c92b6dc5f77d67a27073e00eb720da072c896f784bd703b71195e2ce8e7121f40434555fa39d1f0beb8439499d120883127f508255927c9a50751f3011d693a34ceb0a67106', 'hex');
+  var pubkeyhash = new Buffer('3082040803820404000103000610cb6b8aff60be6b06e796b74c99fee72676ab60268d6cc5214e2275edfb4b1a388d18c5d2a60fe9ddd39b271b27c273e6a05cc6471fa10721f2d6ece5a53d5a7890a309c02766cb72d74c93a2979f1ba60eb427a8bd3e1a934d3b0c096c660165f1d3c87807f40248a4201430f13f58ccb21a600a643669d5f8bd5b6c330877d6221cd9e5cb161f325d63a5e30f0102a7dfd3842c9736481ceab8a58f5c3a53b26b3b4d362d1f7b3b71211602d0ba85e220415db2126beda29f30f1e04eb3d6f7d9828c2367b8fd0db0ee2ac934f91433112114b7c099343d6618eee9fc394c4da7aba9a7d24aaedb112af6c0af0be2943dec95e1260a0e1f604fc0dec0420cbb714faaffded994972e4905e2d7f5466b29647ba4aee75eb658b24e8a53831655ea219e1ba7db943e6782f3e9e1e1c393be6d9af5aac585ac48e317554beba55766f21ef22a657682f2eeef8288ef62095ca733548ea1fc6e77f1b5b06a4d49026b66be4db3bf47725262d61e0656fcb9b2e24f2a9174840a82201638f2c070212e5e2b7edaae175e1cd40e4638552ffd1ff3c92939dcc4288552616ca38e117a517f3a6ea0666a25be8293b69e956e6281aa69d4e49fcd3a9d1c27741599a422a4fe9a76ebc01dd36debf166500efb41be3cca17577fb2f025146f36b915edb5a8d457400fbcea424f3ceecf295dbc5c0e32ec4d0d04045a936f3943c2af425ec4dc6e93a80e44e2f03ef4ca0c50453bf8fa0bcc1532e00d07f1cb6a90d1c3a116e311b9a1b10d00f9a1ea489ff8ba7cb8806a28b4e5e8c12bbcf2c76503fb5c9eba6bef8b135dc3f008f20233fe14ef6e2d97908235e4dd089ca3cf4855d8e4cefa9ba7146a5a370cb4c984cfc83f33dbace2b8f8593d7b2d7f55dbfc430d77fa361a99ec26571e4deab6b2227042e6870cd9bc115dc3e205dbeac580b3cd0fb1abf1d8e3492d142b754cab6eac4d741401a8be8791dc086eb719394db6125ec83613e2e04ec281be43c9918d8712173dd78501948a1747d63bf014715ca7ad8118be6f6e3724c47edf2abb168fe8134b05552c41103969c1aeb1a89b7595de38b0de63df13c053e6b83b75e45220a2b5762766b5e3940591dbd21a25bb110ad2796856c960baeef54486afb311a846708fbd57c063a81648a0e72e46e991976ad844ff3a60b09d67f6a7fde2d44f688fdf6e6ef431dad086930c57ebdfbaf065c8705d924ef66352e96f4a5e55e878cbfd2de86c12eda5ea768af72b4f3bfa3cb2caec1fb8a6530646ed8a2e4ce0120c50b00ce4dd7b672ebf5ea4cf9b3c5bd387dd03042e71e5740c48cca995a026ef9517a5178030364f3e9f5a8dcd379e4cbbd2b3277bc2d785576ee36f02535d6d7710d8ff33facd3a18809fd50131292a601bdd1f52a7cb0bccd928a3895b429436bca286f4f31429756d24af48', 'hex');
   var buf = Buffer.concat([new Buffer([0]), pubkeyhash]);
-  var str = '16VZnHwRhwrExfeHFHGjwrgEMq8VcYPs9r';
+  var str = 'Gb76WZGzhoKQRu1pzM1HQrwGdxwpnfeY68';
 
   it('can\'t build without data', function() {
     (function() {
@@ -39,28 +33,28 @@ describe('Address', function() {
 
   // livenet valid
   var PKHLivenet = [
-    '15vkcKf7gB23wLAnZLmbVuMiiVDc1Nm4a2',
-    '1A6ut1tWnUq1SEQLMr4ttDh24wcbJ5o9TT',
-    '1BpbpfLdY7oBS9gK7aDXgvMgr1DPvNhEB2',
-    '1Jz2yCRd5ST1p2gUqFB5wsSQfdm3jaFfg7',
-    '    1Jz2yCRd5ST1p2gUqFB5wsSQfdm3jaFfg7   \t\n'
+    'GdypLqQuf57ntjyeqzpuBgiD5CN8oix4zC',
+    'GPgYeos6wX3mEUEUt1gY214yYcj4f4ksrV',
+    'GQXk4yFH6Ai9r4tmDkki45kVee42gp649i',
+    'GW6G88uB1BPGbeaW1KeBhBT86M9Akachfw',
+    '    GW6G88uB1BPGbeaW1KeBhBT86M9Akachfw   \t\n'
   ];
 
   // livenet p2sh
   var P2SHLivenet = [
-    '342ftSRCvFHfCeFFBuz4xwbeqnDw6BGUey',
-    '33vt8ViH5jsr115AGkW6cEmEz9MpvJSwDk',
-    '37Sp6Rv3y4kVd1nQ1JV5pfqXccHNyZm1x3',
-    '3QjYXhTkvuj8qPaXHTTWb5wjXhdsLAAWVy',
-    '\t \n3QjYXhTkvuj8qPaXHTTWb5wjXhdsLAAWVy \r'
+    'GdypLqQuf57ntjyeqzpuBgiD5CN8oix4zC',
+    'GPgYeos6wX3mEUEUt1gY214yYcj4f4ksrV',
+    'GQXk4yFH6Ai9r4tmDkki45kVee42gp649i',
+    'GW6G88uB1BPGbeaW1KeBhBT86M9Akachfw',
+    '\t \nGW6G88uB1BPGbeaW1KeBhBT86M9Akachfw \r'
   ];
 
   // testnet p2sh
   var P2SHTestnet = [
-    '2N7FuwuUuoTBrDFdrAZ9KxBmtqMLxce9i1C',
-    '2NEWDzHWwY5ZZp8CQWbB7ouNMLqCia6YRda',
-    '2MxgPqX1iThW3oZVk9KoFcE5M4JpiETssVN',
-    '2NB72XtkjpnATMggui83aEtPawyyKvnbX2o'
+    'LMedLCb4ogwHjENTdXv3Z66iXyBUNXdAJ9',
+    'LezoWDMEc46Hfowcs4LWzHkxpitMZSKLjY',
+    'LY87oF7mxcGf1YWC71gMAkWeHNS3Lkkpfw',
+    'LPHJVZARa3U3uNxv6A6cebUmHKS9QSMMHJ'
   ];
 
   //livenet bad checksums
@@ -81,10 +75,10 @@ describe('Address', function() {
 
   //testnet valid
   var PKHTestnet = [
-    'n28S35tqEMbt6vNad7A5K3mZ7vdn8dZ86X',
-    'n45x3R2w2jaSC62BMa9MeJCd3TXxgvDEmm',
-    'mursDVxqNQmmwWHACpM9VHwVVSfTddGsEM',
-    'mtX8nPZZdJ8d3QNLRJ1oJTiEi26Sj6LQXS'
+    'Lfci7ooSc31oNijNG9zDeHBBHJddxrPEKX',
+    'LSqMfCvCHqDFWKp3xnKduMRYjw2Tqdn3JK',
+    'LSyQbWDAiWAX8N75zTDHjXsXgVMa44q7q4',
+    'LXchYoUj65tkdR66isEcc8KxiFHkKhJFSz'
   ];
 
   describe('validation', function() {
@@ -95,7 +89,7 @@ describe('Address', function() {
     });
 
     it('isValid returns true on a valid address', function() {
-      var valid = Address.isValid('37BahqRsFrAd3qLiNNwLNV3AWMRD7itxTo', 'livenet');
+      var valid = Address.isValid('GdypLqQuf57ntjyeqzpuBgiD5CN8oix4zC', 'livenet');
       valid.should.equal(true);
     });
 
@@ -185,10 +179,10 @@ describe('Address', function() {
     });
 
     it('addresses with whitespace are validated correctly', function() {
-      var ws = '  \r \t    \n 1A6ut1tWnUq1SEQLMr4ttDh24wcbJ5o9TT \t \n            \r';
+      var ws = '  \r \t    \n GdypLqQuf57ntjyeqzpuBgiD5CN8oix4zC \t \n            \r';
       var error = Address.getValidationError(ws);
       should.not.exist(error);
-      Address.fromString(ws).toString().should.equal('1A6ut1tWnUq1SEQLMr4ttDh24wcbJ5o9TT');
+      Address.fromString(ws).toString().should.equal('GdypLqQuf57ntjyeqzpuBgiD5CN8oix4zC');
     });
   });
 
@@ -251,12 +245,6 @@ describe('Address', function() {
       }).should.throw('Address supplied is not a buffer.');
     });
 
-    it('should error because of incorrect length buffer for transform buffer', function() {
-      (function() {
-        return Address._transformBuffer(new Buffer(20));
-      }).should.throw('Address buffers must be exactly 21 bytes.');
-    });
-
     it('should error because of incorrect type for pubkey transform', function() {
       (function() {
         return Address._transformPublicKey(new Buffer(20));
@@ -309,7 +297,7 @@ describe('Address', function() {
     it('should make this address from a compressed pubkey', function() {
       var pubkey = new PublicKey('30820408038204040080c00060081402f2ba4d72562ccd18c83799f09485d850d6742a2f0bcfe77e562cda9e9477c6692da963c814bbc14545edc3009f36db2f6bb669b1e8f5830b6a7865cb443fb88e02e57ac382e5c24147ccea49848966310655cda7632abb32638d27a5015a4a3a819fec8a5dff37d309a8228ee65a84c44e3012f0ff8c27454b601755096959d50f39c77de705e8ec075813343f55d43caeca7e3689a6a7fbe45558a1beb409dd033bdc7a1790cc0c11e4cddc0d3c410c5c328650cf6895390791240468fcfa91dbcf9dafdcf7b3d1e49bb5f4e36f9e5b81ca170c49185199bad117fb2dc341850f428faf172235e5869af8bc14ffee25920fa8bb030d316dcee0a60c6f1c37eac461d49277dfbf308fff74ead58b35df663ba18ede62e976ae81caeff83f29c5dbebe1dc5fa2f5f51b00260abd35964803e1ea4fffe299675c2f9ad1defc53c7171b97ec516084c92e44f72c4a4d820fb530be9e462e8af54efa99e46cc7c52a8c67bab064feca7c5d65d414859ce352ce463ce6932673ef92dec665a6f17cd43f1e27f63f8782a3058198d68c61153eb5936f0c89f2539aaa31f8fbffa45b25f65a6533c275010f5e4aef4dccc8aafc5f93682d9aab808419669d3914d35e493baa1b578884c375d0edbc8d697f434b83c8448d9bd750c8b7b903d8ea3b707d3f3cfd93085179bcb1b07ebaa0df0764d24dad80f9ece7bc42c0520c4f331f9531469088e542cbf8b44a668f15434ee7bec2f426fd2eac2e919f05b566e5047dbeb9d47c7f15d058e33b6441a4fcb64e7b7ce30a0aa1aae42218da7af12c19f45f55f392e4147b797e05dd7a08457d90a1285e6220fe6d93a4f42755ac1b45f32d9e6da12ae80b9dc0f9af7ec349ec28b513138fa75b7c4e74acda76f777e61a2ff66060ac64f86cbab7a98fd3ebddc558b8597493f5f1f4835f89b7b03ea087c56756928b7d373ad7d60ce4dfbaf0ebc0f38c61c76dc44f6927a77f7fe666f4979b311d52464a80853b687c1d702d12f3739ebbcbd4a0297396ea487bd6cf05786a2be4d9823ffce9963c8f4562a75b230da006fa22bbcb3214b378128706f76075d3e2abe44eb589709a3b594191df4a8bb954b55de0cfe90a91e7de80033782f11e17c6b11f64308cdfa2f543d360636e026d3a1d5f0754b3a199d9a81fb179230388b14d309028d5c08c2553289dad33ae7e7b25e6b01c6f6d70810830dc48717284735b57559958ee4de25bf8770c50c7eacac0d79562bb7dedd6fa4231a0dd3197aa8255e4d4321a8c04c1d940ea6c907e52489f23a2daef57454ac5be97315633b016d51ef84ad9648c2b451edbd691ccfd032c92b6dc5f77d67a27073e00eb720da072c896f784bd703b71195e2ce8e7121f40434555fa39d1f0beb8439499d120883127f508255927c9a50751f3011d693a34ceb0a67106');
       var address = Address.fromPublicKey(pubkey, 'livenet');
-      address.toString().should.equal('19UnQ4gWDpYNyJJ8xk8zFwDT3bawAM7W2K');
+      address.toString().should.equal('GSKhpC1TCg9g3mbRtgo6ghZLxmNn575AR1');
     });
 
     it('should use the default network for pubkey', function() {
@@ -321,9 +309,9 @@ describe('Address', function() {
     it('should make this address from an uncompressed pubkey', function() {
       var pubkey = new PublicKey('30820408038204040080c00060081402f2ba4d72562ccd18c83799f09485d850d6742a2f0bcfe77e562cda9e9477c6692da963c814bbc14545edc3009f36db2f6bb669b1e8f5830b6a7865cb443fb88e02e57ac382e5c24147ccea49848966310655cda7632abb32638d27a5015a4a3a819fec8a5dff37d309a8228ee65a84c44e3012f0ff8c27454b601755096959d50f39c77de705e8ec075813343f55d43caeca7e3689a6a7fbe45558a1beb409dd033bdc7a1790cc0c11e4cddc0d3c410c5c328650cf6895390791240468fcfa91dbcf9dafdcf7b3d1e49bb5f4e36f9e5b81ca170c49185199bad117fb2dc341850f428faf172235e5869af8bc14ffee25920fa8bb030d316dcee0a60c6f1c37eac461d49277dfbf308fff74ead58b35df663ba18ede62e976ae81caeff83f29c5dbebe1dc5fa2f5f51b00260abd35964803e1ea4fffe299675c2f9ad1defc53c7171b97ec516084c92e44f72c4a4d820fb530be9e462e8af54efa99e46cc7c52a8c67bab064feca7c5d65d414859ce352ce463ce6932673ef92dec665a6f17cd43f1e27f63f8782a3058198d68c61153eb5936f0c89f2539aaa31f8fbffa45b25f65a6533c275010f5e4aef4dccc8aafc5f93682d9aab808419669d3914d35e493baa1b578884c375d0edbc8d697f434b83c8448d9bd750c8b7b903d8ea3b707d3f3cfd93085179bcb1b07ebaa0df0764d24dad80f9ece7bc42c0520c4f331f9531469088e542cbf8b44a668f15434ee7bec2f426fd2eac2e919f05b566e5047dbeb9d47c7f15d058e33b6441a4fcb64e7b7ce30a0aa1aae42218da7af12c19f45f55f392e4147b797e05dd7a08457d90a1285e6220fe6d93a4f42755ac1b45f32d9e6da12ae80b9dc0f9af7ec349ec28b513138fa75b7c4e74acda76f777e61a2ff66060ac64f86cbab7a98fd3ebddc558b8597493f5f1f4835f89b7b03ea087c56756928b7d373ad7d60ce4dfbaf0ebc0f38c61c76dc44f6927a77f7fe666f4979b311d52464a80853b687c1d702d12f3739ebbcbd4a0297396ea487bd6cf05786a2be4d9823ffce9963c8f4562a75b230da006fa22bbcb3214b378128706f76075d3e2abe44eb589709a3b594191df4a8bb954b55de0cfe90a91e7de80033782f11e17c6b11f64308cdfa2f543d360636e026d3a1d5f0754b3a199d9a81fb179230388b14d309028d5c08c2553289dad33ae7e7b25e6b01c6f6d70810830dc48717284735b57559958ee4de25bf8770c50c7eacac0d79562bb7dedd6fa4231a0dd3197aa8255e4d4321a8c04c1d940ea6c907e52489f23a2daef57454ac5be97315633b016d51ef84ad9648c2b451edbd691ccfd032c92b6dc5f77d67a27073e00eb720da072c896f784bd703b71195e2ce8e7121f40434555fa39d1f0beb8439499d120883127f508255927c9a50751f3011d693a34ceb0a67106');
       var a = Address.fromPublicKey(pubkey, 'livenet');
-      a.toString().should.equal('19UnQ4gWDpYNyJJ8xk8zFwDT3bawAM7W2K');
+      a.toString().should.equal('GSKhpC1TCg9g3mbRtgo6ghZLxmNn575AR1');
       var b = new Address(pubkey, 'livenet', 'pubkeyhash');
-      b.toString().should.equal('19UnQ4gWDpYNyJJ8xk8zFwDT3bawAM7W2K');
+      b.toString().should.equal('GSKhpC1TCg9g3mbRtgo6ghZLxmNn575AR1');
     });
 
     it('should classify from a custom network', function() {
@@ -372,7 +360,7 @@ describe('Address', function() {
       });
 
       it('returns the same address if the script is a pay to public key hash out', function() {
-        var address = '19UnQ4gWDpYNyJJ8xk8zFwDT3bawAM7W2K';
+        var address = 'GSKhpC1TCg9g3mbRtgo6ghZLxmNn575AR1';
         var script = Script.buildPublicKeyHashOut(new Address(address));
         Address(script, Networks.livenet).toString().should.equal(address);
       });
@@ -412,7 +400,7 @@ describe('Address', function() {
   });
   describe('#toBuffer', function() {
 
-    it('3c3fa3d4adcaf8f52d5b1843975e122548269937 corresponds to hash 16VZnHwRhwrExfeHFHGjwrgEMq8VcYPs9r', function() {
+    it('3c3fa3d4adcaf8f52d5b1843975e122548269937 corresponds to hash Gb76WZGzhoKQRu1pzM1HQrwGdxwpnfeY68', function() {
       var address = new Address(str);
       address.toBuffer().slice(1).toString('hex').should.equal(pubkeyhash.toString('hex'));
     });
@@ -461,7 +449,7 @@ describe('Address', function() {
   describe('#inspect', function() {
     it('should output formatted output correctly', function() {
       var address = new Address(str);
-      var output = '<Address: 16VZnHwRhwrExfeHFHGjwrgEMq8VcYPs9r, type: pubkeyhash, network: livenet>';
+      var output = '<Address: Gb76WZGzhoKQRu1pzM1HQrwGdxwpnfeY68, type: pubkeyhash, network: livenet>';
       address.inspect().should.equal(output);
     });
   });

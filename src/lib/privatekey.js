@@ -326,7 +326,7 @@ export default class PrivateKey {
    * @returns {Address} An address generated from the private key
    */
   toAddress(network) {
-    return this.toPublicKey().toAddress()
+    return this.toPublicKey().toAddress(network)
   }
 
   /**

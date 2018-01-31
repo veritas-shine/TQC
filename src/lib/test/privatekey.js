@@ -57,9 +57,11 @@ describe('PrivateKey', function() {
   })
 
   it('should generate address from a private key', function () {
-    const privatekey = PrivateKey.fromRandom()
-    const address = privatekey.toAddress()
-    console.log(address)
+    for (let i = 0; i < 4; ++i) {
+      const privatekey = PrivateKey.fromRandom()
+      const address = privatekey.toAddress(Networks.get('testnet'))
+      console.log(address, privatekey.toPublicKey())
+    }
   })
 
   it('should convert to JSON Object', function () {

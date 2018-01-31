@@ -86,7 +86,9 @@ export default class Address {
    * @returns {Object} An "info" object with "type", "network", and "hashBuffer"
    */
   _classifyArguments(data, network, type) {
-    if ((data instanceof Buffer || data instanceof Uint8Array)) {
+    if ((data instanceof Buffer || data instanceof Uint8Array) && data.length === 20) {
+      return Address._transformHash(data);
+    } else if ((data instanceof Buffer || data instanceof Uint8Array) && data.length === 21) {
       return Address._transformBuffer(data, network, type);
     } else if (data instanceof PublicKey) {
       return Address._transformPublicKey(data);
@@ -148,6 +150,7 @@ export default class Address {
 
     var pubkeyhashNetwork = Networks.get(buffer[0], 'pubkeyhash');
     var scripthashNetwork = Networks.get(buffer[0], 'scripthash');
+
     if (pubkeyhashNetwork) {
       version.network = pubkeyhashNetwork;
       version.type = Address.PayToPublicKeyHash;
@@ -155,7 +158,6 @@ export default class Address {
       version.network = scripthashNetwork;
       version.type = Address.PayToScriptHash;
     }
-
     return version;
   };
 
@@ -257,7 +259,7 @@ export default class Address {
       throw new TypeError('data parameter supplied is not a string.');
     }
     data = data.trim();
-    var addressBuffer = Base58Check.decode(data);
+    var addressBuffer = Base58Check.decode(data)
     var info = Address._transformBuffer(addressBuffer, network, type);
     return info;
   };
@@ -389,7 +391,6 @@ export default class Address {
   static getValidationError (data, network, type) {
     var error;
     try {
-      /* jshint nonew: false */
       new Address(data, network, type);
     } catch (e) {
       error = e;
