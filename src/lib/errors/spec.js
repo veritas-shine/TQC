@@ -45,6 +45,19 @@ module.exports = [{
     'message': 'Invalid exchange rate: {0}'
   }]
 }, {
+  name: 'Script',
+  message: 'Internal Error on Script {0}',
+  errors: [{
+    name: 'UnrecognizedAddress',
+    message: 'Expected argument {0} to be an address'
+  }, {
+    name: 'CantDeriveAddress',
+    message: 'Can\'t derive address associated with script {0}, needs to be p2pkh in, p2pkh out, p2sh in, or p2sh out.'
+  }, {
+    name: 'InvalidBuffer',
+    message: 'Invalid script buffer: can\'t parse valid script from given buffer {0}'
+  }]
+}, {
   name: 'Transaction',
   message: 'Internal Error on Transaction {0}',
   errors: [{

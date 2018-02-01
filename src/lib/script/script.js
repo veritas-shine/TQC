@@ -353,9 +353,9 @@ Script.prototype.isPublicKeyOut = function() {
     var isVersion = false;
     if ((version === 0x04 ||
          version === 0x06 ||
-         version === 0x07) && pubkeyBuf.length === 65) {
+         version === 0x07) ) {
       isVersion = true;
-    } else if ((version === 0x03 || version === 0x02) && pubkeyBuf.length === 33) {
+    } else if ((version === 0x03 || version === 0x02)) {
       isVersion = true;
     }
     if (isVersion) {
@@ -906,7 +906,7 @@ Script.prototype.toScriptHashOut = function() {
  * @return {Script} an output script built from the address
  */
 Script.fromAddress = function(address) {
-  address = Address(address);
+  address = new Address(address);
   if (address.isPayToScriptHash()) {
     return Script.buildScriptHashOut(address);
   } else if (address.isPayToPublicKeyHash()) {
