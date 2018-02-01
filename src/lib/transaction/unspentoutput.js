@@ -1,12 +1,11 @@
 'use strict';
 
 var _ = require('lodash');
-var $ = require('../util/preconditions');
+import $ from '../util/preconditions'
 var JSUtil = require('../util/js');
-
-var Script = require('../script');
-var Address = require('../address');
-var Unit = require('../unit');
+import Script from '../script/script'
+import Address from '../address'
+import Unit from '../unit'
 
 /**
  * Represents an unspent output information: its script, associated amount and address,

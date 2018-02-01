@@ -22,8 +22,8 @@ var PublicKeyInput = Input.PublicKey;
 var MultiSigScriptHashInput = Input.MultiSigScriptHash;
 var MultiSigInput = Input.MultiSig;
 var Output = require('./output');
-var Script = require('../script');
-var PrivateKey = require('../privatekey');
+import Script from '../script/script'
+import PrivateKey from '../privatekey'
 var BN = require('../crypto/bn');
 
 /**

@@ -1,12 +1,11 @@
 'use strict';
-
-var _ = require('lodash');
-var $ = require('../util/preconditions');
+import _ from 'lodash'
+import $ from '../util/preconditions'
 var inherits = require('inherits');
 var BufferUtil = require('../util/buffer');
 var JSUtil = require('../util/js');
 
-var PublicKey = require('../publickey');
+import PublicKey from '../publickey'
 var errors = require('../errors');
 var Signature = require('../crypto/signature');
 

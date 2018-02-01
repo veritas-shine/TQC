@@ -7,7 +7,7 @@ var should = chai.should();
 var pqccore = require('../../');
 var Script = pqccore.Script;
 var Transaction = pqccore.Transaction;
-var sighash = Transaction.sighash;
+var sighash = Transaction.Sighash
 
 var vectors_sighash = require('../data/sighash.json');
 

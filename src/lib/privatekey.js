@@ -260,6 +260,15 @@ export default class PrivateKey {
    * @returns {string} A WIF representation of the private key
    */
   toWIF() {
+    return Base58Check.encode(this.toBuffer())
+  }
+
+  /**
+   * Will return the private key as a buffer
+   *
+   * @returns {Buffer} A buffer of the private key
+   */
+  toBuffer() {
     let network = this.network
     let compressed = this.compressed
 
@@ -269,16 +278,7 @@ export default class PrivateKey {
     } else {
       buf = Buffer.concat([new Buffer([network.privatekey]), this.bn])
     }
-    return Base58Check.encode(buf)
-  }
-
-  /**
-   * Will return the private key as a buffer
-   *
-   * @returns {Buffer} A buffer of the private key
-   */
-  toBuffer() {
-    return new Buffer(this.bn)
+    return buf
   }
 
   /**
