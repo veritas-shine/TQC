@@ -45,7 +45,7 @@ function UnspentOutput(data) {
   var script = new Script(data.scriptPubKey || data.script);
   $.checkArgument(!_.isUndefined(data.amount) || !_.isUndefined(data.glv),
                   'Must provide an amount for the output');
-  var amount = !_.isUndefined(data.amount) ? new Unit.fromBTC(data.amount).toGlv() : data.glv;
+  var amount = !_.isUndefined(data.amount) ? new Unit.fromPQC(data.amount).toGlv() : data.glv;
   $.checkArgument(_.isNumber(amount), 'Amount must be a number');
   JSUtil.defineImmutable(this, {
     address: address,

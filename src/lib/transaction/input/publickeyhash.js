@@ -36,7 +36,9 @@ PublicKeyHashInput.prototype.getSignatures = function(transaction, privateKey, i
   hashData = hashData || Hash.sha256ripemd160(privateKey.publicKey.toBuffer());
   sigtype = sigtype || Signature.SIGHASH_ALL;
 
-  if (BufferUtil.equals(hashData, this.output.script.getPublicKeyHash())) {
+  const hash = this.output.script.getPublicKeyHash()
+  console.log(40, hash, hashData)
+  if (BufferUtil.equals(hashData, hash)) {
     return [new TransactionSignature({
       publicKey: privateKey.publicKey,
       prevTxId: this.prevTxId,

@@ -14,7 +14,7 @@ const UNITS = {
 /**
  * Utility for handling and converting PQC units. The supported units are
  * PQC, mPQC, qbits (also named uPQC) and glv. A unit instance can be created with an
- * amount and a unit code, or alternatively using static methods like {fromBTC}.
+ * amount and a unit code, or alternatively using static methods like {fromPQC}.
  * It also allows to be created from a fiat amount and the exchange rate, or
  * alternatively using the {fromFiat} static method.
  * You can consult for different representation of a unit instance using it's
@@ -24,7 +24,7 @@ const UNITS = {
  *
  * @example
  * ```javascript
- * var sats = Unit.fromBTC(1.3).toGlv();
+ * var sats = Unit.fromPQC(1.3).toGlv();
  * var mili = Unit.fromBits(1.3).to(Unit.mBTC);
  * var bits = Unit.fromFiat(1.3, 350).qbits;
  * var btc = new Unit(1.3, Unit.qbits).PQC;
