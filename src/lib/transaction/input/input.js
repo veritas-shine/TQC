@@ -7,7 +7,7 @@ var BufferWriter = require('../../encoding/bufferwriter');
 var buffer = require('buffer');
 var BufferUtil = require('../../util/buffer');
 var JSUtil = require('../../util/js');
-var Script = require('../../script');
+var Script = require('../../script/script');
 var Sighash = require('../sighash');
 var Output = require('../output');
 

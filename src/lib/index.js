@@ -9,10 +9,14 @@ export PrivateKey from './privatekey'
 export PublicKey from './publickey'
 
 import Base58Check from './encoding/base58check'
+import BufferWriter from './encoding/bufferwriter'
+import BufferReader from './encoding/bufferreader'
 import buffer from './util/buffer'
 
 export const encoding = {
-  Base58Check
+  Base58Check,
+  BufferWriter,
+  BufferReader
 }
 
 export const util = {

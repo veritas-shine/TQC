@@ -1,7 +1,7 @@
-'use strict';
 
 var should = require('chai').should();
 var pqccore = require('../..');
+
 
 var Interpreter = pqccore.Script.Interpreter;
 var Transaction = pqccore.Transaction;
@@ -36,7 +36,7 @@ Script.frompqcoindString = function(str) {
     } else if (token[0] === '\'') {
       var tstr = token.slice(1, token.length - 1);
       var cbuf = new Buffer(tstr);
-      tbuf = Script().add(cbuf).toBuffer();
+      tbuf = new Script().add(cbuf).toBuffer();
       bw.write(tbuf);
     } else if (typeof Opcode['OP_' + token] !== 'undefined') {
       opstr = 'OP_' + token;
@@ -47,7 +47,7 @@ Script.frompqcoindString = function(str) {
       opcodenum = Opcode[opstr];
       bw.writeUInt8(opcodenum);
     } else if (!isNaN(parseInt(token))) {
-      var script = Script().add(new BN(token).toScriptNumBuffer());
+      var script = new Script().add(new BN(token).toScriptNumBuffer());
       tbuf = script.toBuffer();
       bw.write(tbuf);
     } else {
@@ -58,7 +58,7 @@ Script.frompqcoindString = function(str) {
   return this.fromBuffer(buf);
 };
 
-
+console.log(Interpreter)
 
 describe('Interpreter', function() {
 

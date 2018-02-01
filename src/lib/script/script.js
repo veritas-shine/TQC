@@ -2,7 +2,7 @@
 
 import Address from '../address';
 import PublicKey from '../publickey';
-import Interpreter from './interpreter'
+
 var BufferReader = require('../encoding/bufferreader');
 var BufferWriter = require('../encoding/bufferwriter');
 var Hash = require('../crypto/hash');
@@ -1082,7 +1082,5 @@ Script.prototype.getSignatureOperationsCount = function(accurate) {
   });
   return n;
 };
-
-Script.Interpreter = Interpreter
 
 module.exports = Script;

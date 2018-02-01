@@ -1,8 +1,8 @@
 'use strict';
 
 var _ = require('lodash');
-
-var Script = require('./script');
+import Script from './script'
+console.log(6, Script)
 var Opcode = require('../opcode');
 var BN = require('../crypto/bn');
 var Hash = require('../crypto/hash');
