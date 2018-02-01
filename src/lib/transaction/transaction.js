@@ -13,8 +13,7 @@ var BufferWriter = require('../encoding/bufferwriter');
 var Hash = require('../crypto/hash');
 var Signature = require('../crypto/signature');
 var Sighash = require('./sighash');
-
-var Address = require('../address');
+import Address from '../address'
 var UnspentOutput = require('./unspentoutput');
 var Input = require('./input');
 var PublicKeyHashInput = Input.PublicKeyHash;
@@ -741,7 +740,7 @@ Transaction.prototype.to = function(address, amount) {
     'Amount is expected to be a positive integer'
   );
   this.addOutput(new Output({
-    script: Script(new Address(address)),
+    script: new Script(new Address(address)),
     glv: amount
   }));
   return this;

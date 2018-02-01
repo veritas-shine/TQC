@@ -11,9 +11,10 @@ import Hash from '../crypto/hash'
 import $ from '../util/preconditions'
 import _ from 'lodash'
 import NTRUMLS from 'ntrumls'
+console.log(14, NTRUMLS)
 
-var SIGHASH_SINGLE_BUG = '0000000000000000000000000000000000000000000000000000000000000001';
-var BITS_64_ON = 'ffffffffffffffff';
+const SIGHASH_SINGLE_BUG = '0000000000000000000000000000000000000000000000000000000000000001';
+const BITS_64_ON = 'ffffffffffffffff';
 
 /**
  * Returns a buffer of length 32 bytes with the hash that needs to be signed

@@ -1,22 +1,22 @@
 'use strict';
 
 var should = require('chai').should();
-var bitcore = require('../../..');
-var Transaction = bitcore.Transaction;
-var PrivateKey = bitcore.PrivateKey;
+var pqccore = require('../../..');
+var Transaction = pqccore.Transaction;
+var PrivateKey = pqccore.PrivateKey;
 
 describe('PublicKeyInput', function() {
 
   var utxo = {
     txid: '7f3b688cb224ed83e12d9454145c26ac913687086a0a62f2ae0bc10934a4030f',
     vout: 0,
-    address: 'n4McBrSkw42eYGX5YMACGpkGUJKL3jVSbo',
+    address: 'Ge5xiW3MpM8Hp8iGBrWVM2znDoWrxETEFj',
     scriptPubKey: '2103c9594cb2ebfebcb0cfd29eacd40ba012606a197beef76f0269ed8c101e56ceddac',
     amount: 50,
     confirmations: 104,
     spendable: true
   };
-  var privateKey = PrivateKey.fromWIF('cQ7tSSQDEwaxg9usnnP1Aztqvm9nCQVfNWz9kU2rdocDjknF2vd6');
+  var privateKey = PrivateKey.fromWIF('2SRLnpdFnpiqzeAbJXSBoLeCvG65m7ham4N7ZuFuSgRSAmAVQwKDVrJnui3gY4Ywv7ZFVeW5QuFC4oakVAxetMxGVnvEyct');
   var address = privateKey.toAddress();
   utxo.address.should.equal(address.toString());
 
