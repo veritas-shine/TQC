@@ -184,7 +184,6 @@ export default class Address {
     var bufferVersion = Address._classifyFromVersion(buffer)
 
     if (!bufferVersion.network || (network && network !== bufferVersion.network)) {
-      console.log(187, buffer, bufferVersion, network)
       throw new TypeError('Address has mismatched network type.')
     }
 

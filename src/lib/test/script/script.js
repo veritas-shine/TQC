@@ -744,7 +744,7 @@ describe('Script', function() {
     });
 
     it('inherits network property form an address', function() {
-      var address = new Address('LSqMfCvCHqDFWKp3xnKduMRYjw2Tqdn3JK');
+      var address = new Address('MU34A8zNBEgJhweh92pj1ByedFTTN8AuAa');
       var script = Script.buildScriptHashOut(address);
       should.exist(script._network);
       script._network.should.equal(address.network);

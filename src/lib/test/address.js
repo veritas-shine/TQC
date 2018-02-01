@@ -46,11 +46,11 @@ describe('Address', function() {
 
   // livenet p2sh
   var P2SHLivenet = [
-    'GdypLqQuf57ntjyeqzpuBgiD5CN8oix4zC',
-    'GPgYeos6wX3mEUEUt1gY214yYcj4f4ksrV',
-    'GQXk4yFH6Ai9r4tmDkki45kVee42gp649i',
-    'GW6G88uB1BPGbeaW1KeBhBT86M9Akachfw',
-    '\t \nGW6G88uB1BPGbeaW1KeBhBT86M9Akachfw \r'
+    'MU34A8zNBEgJhweh92pj1ByedFTTN8AuAa',
+    'MDjnU7SZTgcH3fuXB3gMqWLR6fpPGACud4',
+    'MEaytGpjcLGffGZoWnkXsb1wCh9ME75h7n',
+    'ML9VwSUdXLwnQrFYJMe1WgiZeQEVGk1YPi',
+    '\t \nML9VwSUdXLwnQrFYJMe1WgiZeQEVGk1YPi \r'
   ];
 
   // testnet p2sh
@@ -103,10 +103,15 @@ describe('Address', function() {
     });
 
     it('validates correctly the P2PKH test vector', function() {
-      for (var i = 0; i < PKHLivenet.length; i++) {
-        var error = Address.getValidationError(PKHLivenet[i]);
+      var version = new Buffer([0x32])
+      PKHLivenet.forEach(str => {
+        var address = new Address(str)
+
+        var buf = Buffer.concat([version, address.hashBuffer])
+        console.log(Base58Check.encode(buf))
+        var error = Address.getValidationError(str);
         should.not.exist(error);
-      }
+      })
     });
 
     it('validates correctly the P2SH test vector', function() {
