@@ -349,6 +349,7 @@ Script.prototype.isPublicKeyOut = function() {
       this.chunks[1].opcodenum === Opcode.OP_CHECKSIG) {
     var pubkeyBuf = this.chunks[0].buf;
     var version = pubkeyBuf[0];
+    console.log(352, version)
     var isVersion = false;
     if ((version === 0x04 ||
          version === 0x06 ||

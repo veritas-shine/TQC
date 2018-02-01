@@ -54,8 +54,7 @@ function PublicKey(data, extra) {
   }
   extra = extra || {};
 
-  var info = this._classifyArgs(data, extra);
-
+  var info = this._classifyArgs(data, extra)
   JSUtil.defineImmutable(this, {
     buffer: info.buffer,
     compressed: info.compressed,
@@ -149,15 +148,16 @@ PublicKey._transformPrivateKey = function(privkey) {
 PublicKey._transformDER = function(buf, strict) {
   /* jshint maxstatements: 30 */
   /* jshint maxcomplexity: 12 */
-  $.checkArgument(PublicKey._isBuffer(buf), 'Must be a hex buffer of DER encoded public key');
-  const der = ASN1PublicKey.decode(buf, 'der')
-  const data = der['G'].data
+  $.checkArgument(PublicKey._isBuffer(buf), 'Must be a hex buffer of DER encoded public key')
+
+  // const der = ASN1PublicKey.decode(buf, 'der')
+  const data = buf.slice(1)
 
   // TODO
   return {
     buffer: data
-  };
-};
+  }
+}
 
 /**
  * Instantiate a PublicKey from a PrivateKey
@@ -178,7 +178,10 @@ PublicKey.fromPrivateKey = function(privkey) {
  * @returns {PublicKey} A new valid instance of PublicKey
  */
 PublicKey.fromDER = PublicKey.fromBuffer = function(buf, strict) {
-  $.checkArgument(PublicKey._isBuffer(buf), 'Must be a hex buffer of DER encoded public key');
+  $.checkArgument(PublicKey._isBuffer(buf), 'Must be a hex buffer of DER encoded public key')
+  if (buf[0] !== 0x04) {
+    throw new TypeError('Invalid buffer')
+  }
   var info = PublicKey._transformDER(buf, strict);
   return new PublicKey(info.buffer, {
     compressed: info.compressed
@@ -245,13 +248,8 @@ PublicKey.prototype.toBuffer = function() {
 };
 
 PublicKey.prototype.toDER = function () {
-  let buffer = this.buffer
-  return ASN1PublicKey.encode({
-    G: {
-      data: buffer,
-      unused: 0
-    }
-  }, 'der')
+  const prefix = new Buffer([0x04])
+  return Buffer.concat([prefix, this.buffer])
 }
 
     /**

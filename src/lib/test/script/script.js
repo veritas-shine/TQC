@@ -649,7 +649,7 @@ describe('Script', function() {
       var s = Script.buildMultisigOut(pubkeys, m);
       s.isMultisigOut().should.equal(true);
     };
-    for (var n = 1; n < 6; n++) {
+    for (var n = 1; n < 5; n++) {
       for (var m = 1; m <= n; m++) {
         it('should create ' + m + '-of-' + n, test_mn.bind(null, m, n));
       }
