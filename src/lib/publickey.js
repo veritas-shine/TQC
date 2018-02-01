@@ -146,8 +146,6 @@ PublicKey._transformPrivateKey = function(privkey) {
  * @private
  */
 PublicKey._transformDER = function(buf, strict) {
-  /* jshint maxstatements: 30 */
-  /* jshint maxcomplexity: 12 */
   $.checkArgument(PublicKey._isBuffer(buf), 'Must be a hex buffer of DER encoded public key')
 
   // const der = ASN1PublicKey.decode(buf, 'der')
