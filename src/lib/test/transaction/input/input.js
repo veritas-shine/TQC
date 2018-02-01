@@ -4,21 +4,21 @@ var should = require('chai').should();
 var expect = require('chai').expect;
 var _ = require('lodash');
 
-var bitcore = require('../../..');
-var errors = bitcore.errors;
-var PrivateKey = bitcore.PrivateKey;
-var Address = bitcore.Address;
-var Script = bitcore.Script;
-var Networks = bitcore.Networks;
-var Input = bitcore.Transaction.Input;
+var pqccore = require('../../..');
+var errors = pqccore.errors;
+var PrivateKey = pqccore.PrivateKey;
+var Address = pqccore.Address;
+var Script = pqccore.Script;
+var Networks = pqccore.Networks;
+var Input = pqccore.Transaction.Input;
 
 describe('Transaction.Input', function() {
 
-  var privateKey = new PrivateKey('KwF9LjRraetZuEjR8VqEq539z137LW5anYDUnVK11vM3mNMHTWb4');
+  var privateKey = new PrivateKey('2SRLnpdFnpiqzeAbJXSBoLeCvG65m7ham4N7ZuFuSgRSAmAVQwKDVrJnui3gY4Ywv7ZFVeW5QuFC4oakVAxetMxGVnvEyct');
   var publicKey = privateKey.publicKey;
   var address = new Address(publicKey, Networks.livenet);
   var output = {
-    address: '33zbk2aSZYdNbRsMPPt6jgy6Kq1kQreqeb',
+    address: 'Lfci7ooSc31oNijNG9zDeHBBHJddxrPEKX',
     prevTxId: '66e64ef8a3b384164b78453fa8c8194de9a473ba14f89485a0e433699daec140',
     outputIndex: 0,
     script: new Script(address),

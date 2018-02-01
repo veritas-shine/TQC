@@ -1,4 +1,5 @@
 export crypto from './crypto'
+export errors from './errors'
 export Opcode from './opcode'
 export Networks from './networks'
 export URI from './uri'

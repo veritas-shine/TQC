@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 var $ = require('../../util/preconditions');
-var errors = require('../../errors');
+import errors from '../../errors'
 var BufferWriter = require('../../encoding/bufferwriter');
 var buffer = require('buffer');
 var BufferUtil = require('../../util/buffer');
