@@ -55,10 +55,10 @@ describe('Address', function() {
 
   // testnet p2sh
   var P2SHTestnet = [
-    'LMedLCb4ogwHjENTdXv3Z66iXyBUNXdAJ9',
-    'LezoWDMEc46Hfowcs4LWzHkxpitMZSKLjY',
-    'LY87oF7mxcGf1YWC71gMAkWeHNS3Lkkpfw',
-    'LPHJVZARa3U3uNxv6A6cebUmHKS9QSMMHJ'
+    'BQayYRYARj6QG7AXXYVkt4Ayte1sZBgNi5',
+    'BAHhrPzMiB2NbqRMZZMPiNXkN4NoUFv7fB',
+    'BB8uGZNXrpgmDS5duJRZkTDGU5hmPEugsP',
+    'BGhRKj2RmqMsy1mNgsK3PYutunnuUW2eDL'
   ];
 
   //livenet bad checksums
@@ -103,7 +103,7 @@ describe('Address', function() {
     });
 
     it('validates correctly the P2PKH test vector', function() {
-      var version = new Buffer([0x32])
+      var version = new Buffer([0x19])
       PKHLivenet.forEach(str => {
         var address = new Address(str)
 
@@ -274,7 +274,6 @@ describe('Address', function() {
     it('should make an address from a pubkey hash buffer', function() {
       var hash = pubkeyhash; //use the same hash
       var a = Address.fromPublicKeyHash(hash, 'livenet');
-      console.log(275, a.toString(), str)
       a.network.should.equal(Networks.livenet);
       a.toString().should.equal(str);
       var b = Address.fromPublicKeyHash(hash, 'testnet');
@@ -365,12 +364,12 @@ describe('Address', function() {
       it('returns the same address if the script is a pay to public key hash out', function() {
         var address = 'GK5rMDZwypTxnMmn4DcGEf6BrEMG6b28Y8';
         var script = Script.buildPublicKeyHashOut(new Address(address));
-        Address(script, Networks.livenet).toString().should.equal(address);
+        new Address(script, Networks.livenet).toString().should.equal(address);
       });
       it('returns the same address if the script is a pay to script hash out', function() {
-        var address = '3BYmEwgV2vANrmfRymr1mFnHXgLjD6gAWm';
+        var address = 'MU34A8zNBEgJhweh92pj1ByedFTTN8AuAa';
         var script = Script.buildScriptHashOut(new Address(address));
-        Address(script, Networks.livenet).toString().should.equal(address);
+        new Address(script, Networks.livenet).toString().should.equal(address);
       });
     });
     it('should derive from this known address string livenet', function() {

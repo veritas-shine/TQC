@@ -269,7 +269,6 @@ export default class PrivateKey {
     } else {
       buf = Buffer.concat([new Buffer([network.privatekey]), this.bn])
     }
-    console.log(291, network.privatekey)
     return Base58Check.encode(buf)
   }
 

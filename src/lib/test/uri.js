@@ -16,8 +16,7 @@ describe('URI', function() {
 
     URI.parse.bind(URI, 'badURI').should.throw(TypeError);
 
-    uri = URI.parse('pqcoin:');
-    console.log(22, uri);
+    uri = URI.parse('pqcoin:')
     expect(uri.address).to.be.undefined;
     expect(uri.amount).to.be.undefined;
     expect(uri.otherParam).to.be.undefined;

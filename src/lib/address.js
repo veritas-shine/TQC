@@ -6,6 +6,7 @@ import Hash from './crypto/hash'
 import JSUtil from './util/js'
 import PublicKey from './publickey'
 import Script from './script/script'
+import errors from './errors'
 
 /**
  * Instantiate an address from an address String or Buffer, a public key or script hash Buffer,
@@ -97,6 +98,8 @@ export default class Address {
       return Address._transformPublicKey(data)
     } else if (typeof(data) === 'string') {
       return Address._transformString(data, network, type)
+    } else if (data instanceof Script) {
+      return Address._transformScript(data, network);
     } else if (_.isObject(data)) {
       return Address._transformObject(data)
     } else {
@@ -223,7 +226,6 @@ export default class Address {
   static _transformScript (script, network) {
     $.checkArgument(script instanceof Script, 'script must be a Script instance')
     var info = script.getAddressInfo(network)
-    console.log(226, info)
     if (!info) {
       throw new errors.Script.CantDeriveAddress(script)
     }
