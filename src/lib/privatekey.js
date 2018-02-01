@@ -8,30 +8,6 @@ import $ from './util/preconditions'
 import nacl from 'tweetnacl'
 
 /**
- * Instantiate a PrivateKey from a Buffer.
- *
- * @example
- * ```javascript
- * // generate a new random key
- * var key = PrivateKey()
- *
- * // get the associated address
- * var address = key.toAddress()
- *
- * // encode into wallet export format
- * var exported = key.toWIF()
- *
- * // instantiate from the exported (and saved) private key
- * var imported = PrivateKey.fromWIF(exported)
- * ```
- *
- * @param {string} data - The encoded data in various formats
- * @param {Network|string=} network - a {@link Network} object, or a string with the network name
- * @returns {PrivateKey} A new valid instance of an PrivateKey
- * @constructor
- */
-
-/**
  * Instantiate a PrivateKey from Buffer.
  *
  * @example
