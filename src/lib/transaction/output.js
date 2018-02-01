@@ -6,7 +6,7 @@ var buffer = require('buffer');
 var bufferUtil = require('../util/buffer');
 var JSUtil = require('../util/js');
 var BufferWriter = require('../encoding/bufferwriter');
-var Script = require('../script');
+var Script = require('../script/script');
 var $ = require('../util/preconditions');
 var errors = require('../errors');
 

@@ -212,7 +212,7 @@ describe('BufferReader', function() {
       br.readUInt64LEBN().toNumber().should.equal(num);
     });
 
-    it('should return max number of satoshis', function() {
+    it('should return max number of glv', function() {
       var maxSatoshis = 21000000 * 1e8;
       var maxSatoshisBuffer = new Buffer('0040075af0750700', 'hex');
       var br = new BufferReader(maxSatoshisBuffer);

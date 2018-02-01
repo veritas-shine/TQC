@@ -1,6 +1,7 @@
-'use strict';
-
-var Transaction = require('../../lib/transaction');
+import Transaction from '../../transaction'
+import chai from'chai'
+const should = chai.should()
+const expect = chai.expect
 
 var vectors_valid = require('../data/pqcoind/tx_valid.json');
 var vectors_invalid = require('../data/pqcoind/tx_invalid.json');

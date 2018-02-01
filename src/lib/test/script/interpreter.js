@@ -135,7 +135,7 @@ describe('Interpreter', function() {
         txId: 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
         outputIndex: 0,
         script: scriptPubkey,
-        satoshis: 100000
+        glv: 100000
       };
       var tx = new Transaction()
         .from(utxo)
@@ -211,7 +211,7 @@ describe('Interpreter', function() {
     }));
     credtx.addOutput(new Transaction.Output({
       script: scriptPubkey,
-      satoshis: 0
+      glv: 0
     }));
     var idbuf = credtx.id;
 
@@ -224,7 +224,7 @@ describe('Interpreter', function() {
     }));
     spendtx.addOutput(new Transaction.Output({
       script: new Script(),
-      satoshis: 0
+      glv: 0
     }));
 
     var interp = new Interpreter();
