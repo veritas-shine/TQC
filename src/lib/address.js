@@ -43,9 +43,7 @@ import errors from './errors'
  * @constructor
  */
 export default class Address {
-
   constructor(data, network, type) {
-
     if (_.isArray(data) && _.isNumber(network)) {
       return Address.createMultisig(data, network, type)
     }
@@ -65,7 +63,7 @@ export default class Address {
       throw new TypeError('Third argument must be "pubkeyhash" or "scripthash".')
     }
 
-    var info = this._classifyArguments(data, network, type)
+    const info = this._classifyArguments(data, network, type)
 
     // set defaults if not set
     info.network = info.network || Networks.get(network) || Networks.defaultNetwork
@@ -96,7 +94,7 @@ export default class Address {
       return Address._transformHash(hashBuffer)
     } else if (data instanceof PublicKey) {
       return Address._transformPublicKey(data)
-    } else if (typeof(data) === 'string') {
+    } else if (typeof (data) === 'string') {
       return Address._transformString(data, network, type)
     } else if (data instanceof Script) {
       return Address._transformScript(data, network);
@@ -119,7 +117,7 @@ export default class Address {
    * @private
    */
   static _transformHash(hash) {
-    var info = {}
+    const info = {}
     if (!(hash instanceof Buffer) && !(hash instanceof Uint8Array)) {
       throw new TypeError('Address supplied is not a buffer.')
     }
@@ -139,7 +137,7 @@ export default class Address {
     $.checkArgument(data.hash || data.hashBuffer, 'Must provide a `hash` or `hashBuffer` property')
     $.checkArgument(data.type, 'Must provide a `type` property')
     return {
-      hashBuffer: data.hash ? new Buffer(data.hash, 'hex') : data.hashBuffer,
+      hashBuffer: data.hash ? Buffer.from(data.hash, 'hex') : data.hashBuffer,
       network: Networks.get(data.network) || Networks.defaultNetwork,
       type: data.type
     }
@@ -151,11 +149,11 @@ export default class Address {
    * @returns {Object} An object with keys: network and type
    * @private
    */
-  static _classifyFromVersion (buffer) {
-    var version = {}
+  static _classifyFromVersion(buffer) {
+    const version = {}
 
-    var pubkeyhashNetwork = Networks.get(buffer[0], 'pubkeyhash')
-    var scripthashNetwork = Networks.get(buffer[0], 'scripthash')
+    const pubkeyhashNetwork = Networks.get(buffer[0], 'pubkeyhash')
+    const scripthashNetwork = Networks.get(buffer[0], 'scripthash')
 
     if (pubkeyhashNetwork) {
       version.network = pubkeyhashNetwork
@@ -176,15 +174,15 @@ export default class Address {
    * @returns {Object} An object with keys: hashBuffer, network and type
    * @private
    */
-  static _transformBuffer (buffer, network, type) {
+  static _transformBuffer(buffer, network, type) {
     /* jshint maxcomplexity: 9 */
-    var info = {}
+    const info = {}
     if (!(buffer instanceof Buffer) && !(buffer instanceof Uint8Array)) {
       throw new TypeError('Address supplied is not a buffer.')
     }
 
     network = Networks.get(network)
-    var bufferVersion = Address._classifyFromVersion(buffer)
+    const bufferVersion = Address._classifyFromVersion(buffer)
 
     if (!bufferVersion.network || (network && network !== bufferVersion.network)) {
       throw new TypeError('Address has mismatched network type.')
@@ -207,8 +205,8 @@ export default class Address {
    * @returns {Object} An object with keys: hashBuffer, type
    * @private
    */
-  static _transformPublicKey (pubkey) {
-    var info = {}
+  static _transformPublicKey(pubkey) {
+    const info = {}
     if (!(pubkey instanceof PublicKey)) {
       throw new TypeError('Address must be an instance of PublicKey.')
     }
@@ -223,9 +221,9 @@ export default class Address {
    * @returns {Object} An object with keys: hashBuffer, type
    * @private
    */
-  static _transformScript (script, network) {
+  static _transformScript(script, network) {
     $.checkArgument(script instanceof Script, 'script must be a Script instance')
-    var info = script.getAddressInfo(network)
+    const info = script.getAddressInfo(network)
     if (!info) {
       throw new errors.Script.CantDeriveAddress(script)
     }
@@ -244,11 +242,10 @@ export default class Address {
    * @param {String|Network} network - either a Network instance, 'livenet', or 'testnet'
    * @return {Address}
    */
-  static createMultisig (publicKeys, threshold, network) {
+  static createMultisig(publicKeys, threshold, network) {
     network = network || publicKeys[0].network || Networks.defaultNetwork
     return Address.payingTo(Script.buildMultisigOut(publicKeys, threshold), network)
   }
-
 
 
   /**
@@ -260,13 +257,13 @@ export default class Address {
    * @returns {Object} An object with keys: hashBuffer, network and type
    * @private
    */
-  static _transformString (data, network, type) {
-    if (typeof(data) !== 'string') {
+  static _transformString(data, network, type) {
+    if (typeof (data) !== 'string') {
       throw new TypeError('data parameter supplied is not a string.')
     }
     data = data.trim()
-    var addressBuffer = Base58Check.decode(data)
-    var info = Address._transformBuffer(addressBuffer, network, type)
+    const addressBuffer = Base58Check.decode(data)
+    const info = Address._transformBuffer(addressBuffer, network, type)
     return info
   }
 
@@ -277,8 +274,8 @@ export default class Address {
    * @param {String|Network} network - either a Network instance, 'livenet', or 'testnet'
    * @returns {Address} A new valid and frozen instance of an Address
    */
-  static fromPublicKey (pubkey, network) {
-    var info = Address._transformPublicKey(pubkey)
+  static fromPublicKey(pubkey, network) {
+    const info = Address._transformPublicKey(pubkey)
     network = network || Networks.defaultNetwork
     return new Address(pubkey, network, info.type)
   }
@@ -290,12 +287,12 @@ export default class Address {
    * @param {String|Network} network - either a Network instance, 'livenet', or 'testnet'
    * @returns {Address} A new valid and frozen instance of an Address
    */
-  static fromPublicKeyHash (hash, network) {
+  static fromPublicKeyHash(hash, network) {
     if (!(hash instanceof Buffer) && !(hash instanceof Uint8Array)) {
       throw new TypeError('Address supplied is not a buffer.')
     }
     const hashBuffer = Hash.sha256ripemd160(hash)
-    var info = Address._transformHash(hashBuffer)
+    const info = Address._transformHash(hashBuffer)
     return new Address(info.hashBuffer, network, Address.PayToPublicKeyHash)
   }
 
@@ -306,9 +303,9 @@ export default class Address {
    * @param {String|Network} network - either a Network instance, 'livenet', or 'testnet'
    * @returns {Address} A new valid and frozen instance of an Address
    */
-  static fromScriptHash (hash, network) {
+  static fromScriptHash(hash, network) {
     $.checkArgument(hash, 'hash parameter is required')
-    var info = Address._transformHash(hash)
+    const info = Address._transformHash(hash)
     return new Address(info.hashBuffer, network, Address.PayToScriptHash)
   }
   /**
@@ -321,7 +318,7 @@ export default class Address {
    * @param {String|Network} network - either a Network instance, 'livenet', or 'testnet'
    * @returns {Address} A new valid and frozen instance of an Address
    */
-  static payingTo (script, network) {
+  static payingTo(script, network) {
     $.checkArgument(script, 'script is required')
     $.checkArgument(script instanceof Script, 'script must be instance of Script')
     return Address.fromScriptHash(Hash.sha256ripemd160(script.toBuffer()), network)
@@ -340,9 +337,9 @@ export default class Address {
    * @param {String|Network} network - either a Network instance, 'livenet', or 'testnet'
    * @returns {Address} A new valid and frozen instance of an Address
    */
-  static fromScript (script, network) {
+  static fromScript(script, network) {
     $.checkArgument(script instanceof Script, 'script must be a Script instance')
-    var info = Address._transformScript(script, network)
+    const info = Address._transformScript(script, network)
     return new Address(info.hashBuffer, network, info.type)
   }
   /**
@@ -353,8 +350,8 @@ export default class Address {
    * @param {string=} type - The type of address: 'script' or 'pubkey'
    * @returns {Address} A new valid and frozen instance of an Address
    */
-  static fromBuffer (buffer, network, type) {
-    var info = Address._transformBuffer(buffer, network, type)
+  static fromBuffer(buffer, network, type) {
+    const info = Address._transformBuffer(buffer, network, type)
     return new Address(info.hashBuffer, info.network, info.type)
   }
   /**
@@ -365,8 +362,8 @@ export default class Address {
    * @param {string=} type - The type of address: 'script' or 'pubkey'
    * @returns {Address} A new valid and frozen instance of an Address
    */
-  static fromString (str, network, type) {
-    var info = Address._transformString(str, network, type)
+  static fromString(str, network, type) {
+    const info = Address._transformString(str, network, type)
     return new Address(info.hashBuffer, info.network, info.type)
   }
 
@@ -376,12 +373,12 @@ export default class Address {
    * @param {string} json - An JSON string or Object with keys: hash, network and type
    * @returns {Address} A new valid instance of an Address
    */
-  static fromObject (obj) {
+  static fromObject(obj) {
     $.checkState(
       JSUtil.isHexa(obj.hash),
-      'Unexpected hash property, "' + obj.hash + '", expected to be hex.'
+      `Unexpected hash property, "${obj.hash}", expected to be hex.`
     )
-    var hashBuffer = new Buffer(obj.hash, 'hex')
+    const hashBuffer = Buffer.from(obj.hash, 'hex')
     return new Address(hashBuffer, obj.network, obj.type)
   }
   /**
@@ -398,8 +395,8 @@ export default class Address {
    * @param {string} type - The type of address: 'script' or 'pubkey'
    * @returns {null|Error} The corresponding error message
    */
-  static getValidationError (data, network, type) {
-    var error
+  static getValidationError(data, network, type) {
+    let error
     try {
       new Address(data, network, type)
     } catch (e) {
@@ -420,7 +417,7 @@ export default class Address {
    * @param {string} type - The type of address: 'script' or 'pubkey'
    * @returns {boolean} The corresponding error message
    */
-  static isValid (data, network, type) {
+  static isValid(data, network, type) {
     return !Address.getValidationError(data, network, type)
   }
   /**
@@ -444,8 +441,8 @@ export default class Address {
    * @returns {Buffer} Bitcoin address buffer
    */
   toBuffer() {
-    var version = new Buffer([this.network[this.type]])
-    var buf = Buffer.concat([version, this.hashBuffer])
+    const version = new Buffer([this.network[this.type]])
+    const buf = Buffer.concat([version, this.hashBuffer])
     return buf
   }
 
@@ -477,7 +474,7 @@ export default class Address {
    * @returns {string} Bitcoin address
    */
   inspect() {
-    return '<Address: ' + this.toString() + ', type: ' + this.type + ', network: ' + this.network + '>'
+    return `<Address: ${this.toString()}, type: ${this.type}, network: ${this.network}>`
   }
 }
 

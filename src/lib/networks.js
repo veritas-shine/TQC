@@ -33,7 +33,7 @@ function get(arg, keys) {
     if (!_.isArray(keys)) {
       keys = [keys];
     }
-    var containsArg = function(key) {
+    const containsArg = function (key) {
       return networks[index][key] === arg;
     };
     for (var index in networks) {
@@ -65,8 +65,7 @@ function get(arg, keys) {
  * @return Network
  */
 function addNetwork(data) {
-
-  var network = new Network();
+  const network = new Network();
 
   JSUtil.defineImmutable(network, {
     name: data.name,
@@ -95,7 +94,7 @@ function addNetwork(data) {
       dnsSeeds: data.dnsSeeds
     });
   }
-  _.each(network, function(value) {
+  _.each(network, (value) => {
     if (!_.isUndefined(value) && !_.isObject(value)) {
       networkMaps[value] = network;
     }
@@ -104,7 +103,6 @@ function addNetwork(data) {
   networks.push(network);
 
   return network;
-
 }
 
 /**
@@ -114,12 +112,12 @@ function addNetwork(data) {
  * @param {Network} network
  */
 function removeNetwork(network) {
-  for (var i = 0; i < networks.length; i++) {
+  for (let i = 0; i < networks.length; i++) {
     if (networks[i] === network) {
       networks.splice(i, 1);
     }
   }
-  for (var key in networkMaps) {
+  for (const key in networkMaps) {
     if (networkMaps[key] === network) {
       delete networkMaps[key];
     }
@@ -143,7 +141,7 @@ addNetwork({
  * @instance
  * @member Networks#livenet
  */
-var livenet = get('livenet');
+const livenet = get('livenet');
 
 addNetwork({
   name: 'testnet',
@@ -159,11 +157,11 @@ addNetwork({
  * @instance
  * @member Networks#testnet
  */
-var testnet = get('testnet');
+const testnet = get('testnet');
 
 // Add configurable values for testnet/regtest
 
-var TESTNET = {
+const TESTNET = {
   PORT: 18333,
   NETWORK_MAGIC: BufferUtil.integerAsBuffer(0x0b110907),
   DNS_SEEDS: [
@@ -177,7 +175,7 @@ for (var key in TESTNET) {
   }
 }
 
-var REGTEST = {
+const REGTEST = {
   PORT: 18444,
   NETWORK_MAGIC: BufferUtil.integerAsBuffer(0xfabfb5da),
   DNS_SEEDS: []
@@ -192,7 +190,7 @@ for (var key in REGTEST) {
 Object.defineProperty(testnet, 'port', {
   enumerable: true,
   configurable: false,
-  get: function() {
+  get() {
     if (this.regtestEnabled) {
       return REGTEST.PORT;
     } else {
@@ -204,7 +202,7 @@ Object.defineProperty(testnet, 'port', {
 Object.defineProperty(testnet, 'networkMagic', {
   enumerable: true,
   configurable: false,
-  get: function() {
+  get() {
     if (this.regtestEnabled) {
       return REGTEST.NETWORK_MAGIC;
     } else {
@@ -216,7 +214,7 @@ Object.defineProperty(testnet, 'networkMagic', {
 Object.defineProperty(testnet, 'dnsSeeds', {
   enumerable: true,
   configurable: false,
-  get: function() {
+  get() {
     if (this.regtestEnabled) {
       return REGTEST.DNS_SEEDS;
     } else {
@@ -250,10 +248,10 @@ module.exports = {
   add: addNetwork,
   remove: removeNetwork,
   defaultNetwork: livenet,
-  livenet: livenet,
+  livenet,
   mainnet: livenet,
-  testnet: testnet,
-  get: get,
-  enableRegtest: enableRegtest,
-  disableRegtest: disableRegtest
+  testnet,
+  get,
+  enableRegtest,
+  disableRegtest
 };

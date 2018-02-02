@@ -4,11 +4,11 @@ import errors from './errors'
 import $ from './util/preconditions'
 
 const UNITS = {
-  'PQC'      : [1e8, 8],
-  'mPQC'     : [1e5, 5],
-  'uPQC'     : [1e2, 2],
-  'qbits'    : [1e2, 2],
-  'glv'       : [1, 0]
+  'PQC': [1e8, 8],
+  'mPQC': [1e5, 5],
+  'uPQC': [1e2, 2],
+  'qbits': [1e2, 2],
+  'glv': [1, 0]
 };
 
 /**
@@ -42,16 +42,16 @@ export default class Unit {
       if (code <= 0) {
         throw new errors.Unit.InvalidRate(code);
       }
-      amount = amount / code;
+      amount /= code;
       code = Unit.PQC;
     }
 
     this._value = Unit._from(amount, code);
 
-    var self = this;
-    var defineAccesor = function(key) {
+    const self = this;
+    const defineAccesor = function (key) {
       Object.defineProperty(self, key, {
-        get: function() { return self.to(key); },
+        get() { return self.to(key); },
         enumerable: true,
       });
     };
@@ -134,8 +134,8 @@ export default class Unit {
     if (!UNITS[code]) {
       throw new errors.Unit.UnknownCode(code);
     }
-    return parseInt((amount * UNITS[code][0]).toFixed());
-  };
+    return parseInt((amount * UNITS[code][0]).toFixed(), 10);
+  }
 
   /**
    * Returns the value represented in the specified unit
@@ -155,9 +155,9 @@ export default class Unit {
       throw new errors.Unit.UnknownCode(code);
     }
 
-    var value = this._value / UNITS[code][0];
+    const value = this._value / UNITS[code][0];
     return parseFloat(value.toFixed(UNITS[code][1]));
-  };
+  }
 
   /**
    * Returns the value represented in PQC
@@ -166,7 +166,7 @@ export default class Unit {
    */
   toPQC() {
     return this.to(Unit.PQC);
-  };
+  }
 
   /**
    * Returns the value represented in mBTC
@@ -193,7 +193,7 @@ export default class Unit {
    */
   toGlv() {
     return this.to(Unit.glv);
-  };
+  }
 
   /**
    * Returns the value represented in fiat
@@ -203,7 +203,7 @@ export default class Unit {
    */
   atRate(rate) {
     return this.to(rate);
-  };
+  }
 
   /**
    * Returns a the string representation of the value in glv
@@ -211,8 +211,8 @@ export default class Unit {
    * @returns {string} the value in glv
    */
   toString() {
-    return this.glv + ' glv';
-  };
+    return `${this.glv} glv`;
+  }
 
   /**
    * Returns a plain object representation of the Unit
@@ -234,9 +234,8 @@ export default class Unit {
    * @returns {string} the value in glv
    */
   inspect() {
-    return '<Unit: ' + this.toString() + '>';
-  };
-
+    return `<Unit: ${this.toString()}>`;
+  }
 }
 
 Object.keys(UNITS).forEach(key => Unit[key] = key)
