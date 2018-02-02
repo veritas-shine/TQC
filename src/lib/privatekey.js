@@ -87,7 +87,9 @@ export default class PrivateKey {
       info.network = Networks.get(data)
     } else if (typeof(data) === 'string'){
       if (JSUtil.isHexa(data)) {
-        info.bn = new Buffer(data, 'hex')
+        const buf = new Buffer(data, 'hex')
+        info.bn = buf.slice(1)
+        info.network = Networks.get(buf[0])
       } else {
         // from WIF string
         info = PrivateKey._transformWIF(data, network)
@@ -133,7 +135,7 @@ export default class PrivateKey {
     }
 
     info.compressed = false
-    info.bn = buf
+    info.bn = buf.slice(1)
 
     return info
   }
