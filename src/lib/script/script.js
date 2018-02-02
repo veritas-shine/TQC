@@ -320,9 +320,9 @@ Script.prototype.isPublicKeyHashIn = function () {
       const version = pubkeyBuf[0];
       if ((version === 0x04 ||
            version === 0x06 ||
-           version === 0x07) && pubkeyBuf.length === 65) {
+           version === 0x07)) {
         return true;
-      } else if ((version === 0x03 || version === 0x02) && pubkeyBuf.length === 33) {
+      } else if ((version === 0x03 || version === 0x02)) {
         return true;
       }
     }
