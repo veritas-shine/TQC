@@ -3,8 +3,7 @@ const $ = require('../../util/preconditions');
 
 import errors from '../../errors'
 
-const BufferWriter = require('../../encoding/bufferwriter');
-const buffer = require('buffer');
+const BufferWriter = require('../../encoding/bufferwriter')
 const BufferUtil = require('../../util/buffer');
 const JSUtil = require('../../util/js');
 const Script = require('../../script/script');
@@ -54,7 +53,7 @@ Input.fromObject = function (obj) {
 Input.prototype._fromObject = function (params) {
   let prevTxId;
   if (_.isString(params.prevTxId) && JSUtil.isHexa(params.prevTxId)) {
-    prevTxId = new buffer.Buffer(params.prevTxId, 'hex');
+    prevTxId = Buffer.from(params.prevTxId, 'hex');
   } else {
     prevTxId = params.prevTxId;
   }
@@ -120,7 +119,7 @@ Input.prototype.setScript = function (script) {
     this._scriptBuffer = script.toBuffer();
   } else if (JSUtil.isHexa(script)) {
     // hex string script
-    this._scriptBuffer = new buffer.Buffer(script, 'hex');
+    this._scriptBuffer = Buffer.from(script, 'hex');
   } else if (_.isString(script)) {
     // human readable string script
     this._script = new Script(script);
@@ -128,7 +127,7 @@ Input.prototype.setScript = function (script) {
     this._scriptBuffer = this._script.toBuffer();
   } else if (BufferUtil.isBuffer(script)) {
     // buffer script
-    this._scriptBuffer = new buffer.Buffer(script);
+    this._scriptBuffer = new Buffer(script);
   } else {
     throw new TypeError('Invalid argument type: script');
   }

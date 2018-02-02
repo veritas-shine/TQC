@@ -1,8 +1,7 @@
 
 
 const _ = require('lodash');
-const $ = require('../util/preconditions');
-const buffer = require('buffer');
+const $ = require('../util/preconditions')
 const compare = Buffer.compare || require('buffer-compare');
 
 const errors = require('../errors');
@@ -470,7 +469,7 @@ Transaction.prototype.getLockTime = function () {
 };
 
 Transaction.prototype.fromString = function (string) {
-  this.fromBuffer(new buffer.Buffer(string, 'hex'));
+  this.fromBuffer(Buffer.from(string, 'hex'));
 };
 
 Transaction.prototype._newTransaction = function () {

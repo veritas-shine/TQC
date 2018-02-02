@@ -12,8 +12,7 @@ const Signature = require('../crypto/signature');
 const Networks = require('../networks');
 const $ = require('../util/preconditions');
 const _ = require('lodash');
-const errors = require('../errors');
-const buffer = require('buffer');
+const errors = require('../errors')
 const BufferUtil = require('../util/buffer');
 const JSUtil = require('../util/js');
 
@@ -173,12 +172,12 @@ Script.fromASM = function (str) {
 };
 
 Script.fromHex = function (str) {
-  return new Script(new buffer.Buffer(str, 'hex'));
+  return new Script(Buffer.from(str, 'hex'));
 };
 
 Script.fromString = function (str) {
   if (JSUtil.isHexa(str) || str.length === 0) {
-    return new Script(new buffer.Buffer(str, 'hex'));
+    return new Script(Buffer.from(str, 'hex'));
   }
   const script = new Script();
   script.chunks = [];

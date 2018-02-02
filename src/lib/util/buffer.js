@@ -1,17 +1,15 @@
-'use strict';
+const buffer = require('buffer');
+const assert = require('assert');
 
-var buffer = require('buffer');
-var assert = require('assert');
-
-var js = require('./js');
-var $ = require('./preconditions');
+const js = require('./js');
+const $ = require('./preconditions');
 
 function equals(a, b) {
   if (a.length !== b.length) {
     return false;
   }
-  var length = a.length;
-  for (var i = 0; i < length; i++) {
+  const length = a.length;
+  for (let i = 0; i < length; i++) {
     if (a[i] !== b[i]) {
       return false;
     }
@@ -30,8 +28,8 @@ module.exports = {
   fill: function fill(buffer, value) {
     $.checkArgumentType(buffer, 'Buffer', 'buffer');
     $.checkArgumentType(value, 'number', 'value');
-    var length = buffer.length;
-    for (var i = 0; i < length; i++) {
+    const length = buffer.length;
+    for (let i = 0; i < length; i++) {
       buffer[i] = value;
     }
     return buffer;
@@ -43,8 +41,8 @@ module.exports = {
    * @param {Buffer} original
    * @return {Buffer}
    */
-  copy: function(original) {
-    var buffer = new Buffer(original.length);
+  copy(original) {
+    const buffer = new Buffer(original.length);
     original.copy(buffer);
     return buffer;
   },
@@ -68,8 +66,8 @@ module.exports = {
    */
   emptyBuffer: function emptyBuffer(bytes) {
     $.checkArgumentType(bytes, 'number', 'bytes');
-    var result = new buffer.Buffer(bytes);
-    for (var i = 0; i < bytes; i++) {
+    const result = new buffer.Buffer(bytes);
+    for (let i = 0; i < bytes; i++) {
       result.write('\0', i);
     }
     return result;
@@ -82,7 +80,7 @@ module.exports = {
    */
   concat: buffer.Buffer.concat,
 
-  equals: equals,
+  equals,
   equal: equals,
 
   /**
@@ -93,7 +91,7 @@ module.exports = {
    */
   integerAsSingleByteBuffer: function integerAsSingleByteBuffer(integer) {
     $.checkArgumentType(integer, 'number', 'integer');
-    return new buffer.Buffer([integer & 0xff]);
+    return new Buffer([integer & 0xff]);
   },
 
   /**
@@ -104,7 +102,7 @@ module.exports = {
    */
   integerAsBuffer: function integerAsBuffer(integer) {
     $.checkArgumentType(integer, 'number', 'integer');
-    var bytes = [];
+    const bytes = [];
     bytes.push((integer >> 24) & 0xff);
     bytes.push((integer >> 16) & 0xff);
     bytes.push((integer >> 8) & 0xff);
@@ -152,8 +150,8 @@ module.exports = {
    * @return {Buffer}
    */
   reverse: function reverse(param) {
-    var ret = new buffer.Buffer(param.length);
-    for (var i = 0; i < param.length; i++) {
+    const ret = new buffer.Buffer(param.length);
+    for (let i = 0; i < param.length; i++) {
       ret[i] = param[param.length - i - 1];
     }
     return ret;
@@ -169,7 +167,7 @@ module.exports = {
    */
   hexToBuffer: function hexToBuffer(string) {
     assert(js.isHexa(string));
-    return new buffer.Buffer(string, 'hex');
+    return Buffer.from(string, 'hex');
   }
 };
 

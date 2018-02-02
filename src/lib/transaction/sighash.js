@@ -1,6 +1,5 @@
 import _ from 'lodash'
 import NTRUMLS from 'ntrumls'
-const buffer = require('buffer');
 import BN from '../crypto/bn'
 import Hash from '../crypto/hash'
 import $ from '../util/preconditions'
@@ -65,7 +64,7 @@ function sighash(transaction, sighashType, inputNumber, subscript) {
 
     for (i = 0; i < inputNumber; i++) {
       txcopy.outputs[i] = new Output({
-        glv: BN.fromBuffer(new buffer.Buffer(BITS_64_ON, 'hex')),
+        glv: BN.fromBuffer(Buffer.from(BITS_64_ON, 'hex')),
         script: Script.empty()
       });
     }
