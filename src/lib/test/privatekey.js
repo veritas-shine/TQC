@@ -12,20 +12,17 @@ describe('PrivateKey', () => {
 
   it('should create private key from buffer', () => {
     const privatekey = PrivateKey.fromBuffer(buf);
-    privatekey.toString().should.equal(wifHex);
-    console.log(16, privatekey.toPublicKey().toString())
+    privatekey.toString().should.equal(wifHex)
   });
 
   it('should create private key from hex string', () => {
     const privatekey = PrivateKey.fromString(wifHex);
-    privatekey.toString().should.equal(wifHex);
-    console.log(16, privatekey.toPublicKey().toString())
+    privatekey.toString().should.equal(wifHex)
   });
 
   it('should create private key from wif string', () => {
     const privatekey = PrivateKey.fromString(wifLiveNet);
-    privatekey.toString().should.equal(wifHex);
-    console.log(16, privatekey.toPublicKey().toString())
+    privatekey.toString().should.equal(wifHex)
   });
 
   it('should create private key from JSON Object', () => {
@@ -33,22 +30,20 @@ describe('PrivateKey', () => {
       bn: buf.slice(1),
       network: buf[0]
     });
-    privatekey.toString().should.equal(wifHex);
-    console.log(16, privatekey.toPublicKey().toString())
+    privatekey.toString().should.equal(wifHex)
   });
 
-  // it('should create private key from randm bytes', () => {
-  //   for (let i = 0; i < 4; ++i) {
-  //     const privatekey = PrivateKey.fromRandom()
-  //     console.log(privatekey.toWIF(), privatekey.toString(), privatekey.toPublicKey().toString())
-  //     should.exist(privatekey)
-  //   }
-  // });
+  it('should create private key from randm bytes', () => {
+    for (let i = 0; i < 4; ++i) {
+      const privatekey = PrivateKey.fromRandom()
+      console.log(privatekey.toWIF(), privatekey.toString(), privatekey.toPublicKey().toString())
+      should.exist(privatekey)
+    }
+  });
 
   it('should encode private key to hex string', () => {
     const privatekey = PrivateKey.fromString(wifHex);
     privatekey.toString().should.equal(wifHex);
-    console.log(16, privatekey.toPublicKey().toString())
   });
 
   it('should encode private key to buffer', () => {
@@ -63,25 +58,25 @@ describe('PrivateKey', () => {
       publicKey.toString().should.equal(publicKeyHex);
     }
   });
-  //
-  // it('should generate address from a private key', () => {
-  //   for (let i = 0; i < 4; ++i) {
-  //     const privatekey = PrivateKey.fromRandom();
-  //     const address = privatekey.toAddress(Networks.get('testnet'));
-  //     console.log(address, privatekey.toPublicKey());
-  //   }
-  // });
-  //
-  // it('should convert to JSON Object', () => {
-  //   const privatekey = PrivateKey.fromBuffer(buf);
-  //   const obj = privatekey.toObject();
-  //   const json = privatekey.toJSON();
-  //   assert.deepEqual(obj, json);
-  // });
-  //
-  // it('should show inspect string', () => {
-  //   const privatekey = PrivateKey.fromBuffer(buf)
-  //   console.log(77, privatekey.toWIF(), privatekey.toString())
-  //   privatekey.inspect().should.equal(`<PrivateKey: ${wifHex}, network: livenet, uncompressed>`);
-  // });
+
+  it('should generate address from a private key', () => {
+    for (let i = 0; i < 4; ++i) {
+      const privatekey = PrivateKey.fromRandom();
+      const address = privatekey.toAddress(Networks.get('testnet'));
+      console.log(address, privatekey.toPublicKey());
+    }
+  });
+
+  it('should convert to JSON Object', () => {
+    const privatekey = PrivateKey.fromBuffer(buf);
+    const obj = privatekey.toObject();
+    const json = privatekey.toJSON();
+    assert.deepEqual(obj, json);
+  });
+
+  it('should show inspect string', () => {
+    const privatekey = PrivateKey.fromBuffer(buf)
+    console.log(77, privatekey.toWIF(), privatekey.toString())
+    privatekey.inspect().should.equal(`<PrivateKey: ${wifHex}, network: livenet, uncompressed>`);
+  });
 });
