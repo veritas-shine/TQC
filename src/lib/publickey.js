@@ -1,19 +1,13 @@
-'use strict';
+import ntru from 'ntrujs'
+import _ from 'lodash'
 import JSUtil from './util/js'
 import Hash from './crypto/hash'
 
 import Network from './networks'
-import _ from 'lodash'
 import $ from './util/preconditions'
 import Address from './address'
-import ntru from 'ntrujs'
-import asn1 from 'asn1.js'
-import {toBitArray} from 'lib/polyfill'
-import PrivateKey from './privatekey'
 
-const ASN1PublicKey = asn1.define('ASN1PublicKey', function() {
-  this.seq().obj(this.key('G').bitstr())
-});
+import PrivateKey from './privatekey'
 
 /**
  * Instantiate a PublicKey from a {@link PrivateKey}, `string`, or `Buffer`.
@@ -41,7 +35,6 @@ const ASN1PublicKey = asn1.define('ASN1PublicKey', function() {
  * @constructor
  */
 function PublicKey(data, extra) {
-
   if (!(this instanceof PublicKey)) {
     return new PublicKey(data, extra);
   }
@@ -54,7 +47,7 @@ function PublicKey(data, extra) {
   }
   extra = extra || {};
 
-  var info = this._classifyArgs(data, extra)
+  const info = this._classifyArgs(data, extra)
   JSUtil.defineImmutable(this, {
     buffer: info.buffer,
     compressed: info.compressed,
@@ -62,16 +55,16 @@ function PublicKey(data, extra) {
   });
 
   return this;
-};
+}
 
 /**
  * Internal function to differentiate between arguments passed to the constructor
  * @param {*} data
  * @param {Object} extra
  */
-PublicKey.prototype._classifyArgs = function(data, extra) {
+PublicKey.prototype._classifyArgs = function (data, extra) {
   /* jshint maxcomplexity: 10 */
-  var info = {
+  let info = {
     compressed: _.isUndefined(extra.compressed) || extra.compressed
   };
 
@@ -79,8 +72,8 @@ PublicKey.prototype._classifyArgs = function(data, extra) {
   if (data.buffer) {
     info.buffer = data.buffer
     info.network = data.network
-  } else if (typeof(data) === 'string') {
-    info = PublicKey._transformDER(new Buffer(data, 'hex'));
+  } else if (typeof (data) === 'string') {
+    info = PublicKey._transformDER(Buffer.from(data, 'hex'));
   } else if (PublicKey._isBuffer(data)) {
     info = PublicKey._transformDER(data);
   } else if (PublicKey._isPrivateKey(data)) {
@@ -101,7 +94,7 @@ PublicKey.prototype._classifyArgs = function(data, extra) {
  * @returns {boolean}
  * @private
  */
-PublicKey._isPrivateKey = function(param) {
+PublicKey._isPrivateKey = function (param) {
   return param instanceof PrivateKey;
 };
 
@@ -112,7 +105,7 @@ PublicKey._isPrivateKey = function(param) {
  * @returns {boolean}
  * @private
  */
-PublicKey._isBuffer = function(param) {
+PublicKey._isBuffer = function (param) {
   return (param instanceof Buffer) || (param instanceof Uint8Array);
 };
 
@@ -123,7 +116,7 @@ PublicKey._isBuffer = function(param) {
  * @returns {Object} An object with keys: point and compressed
  * @private
  */
-PublicKey._transformPrivateKey = function(privkey) {
+PublicKey._transformPrivateKey = function (privkey) {
   $.checkArgument(PublicKey._isPrivateKey(privkey), 'Must be an instance of PrivateKey');
 
   const seed = privkey.bn
@@ -145,7 +138,7 @@ PublicKey._transformPrivateKey = function(privkey) {
  * @returns {Object} An object with keys: point and compressed
  * @private
  */
-PublicKey._transformDER = function(buf, strict) {
+PublicKey._transformDER = function (buf) {
   $.checkArgument(PublicKey._isBuffer(buf), 'Must be a hex buffer of DER encoded public key')
 
   // const der = ASN1PublicKey.decode(buf, 'der')
@@ -163,9 +156,9 @@ PublicKey._transformDER = function(buf, strict) {
  * @param {PrivateKey} privkey - An instance of PrivateKey
  * @returns {PublicKey} A new valid instance of PublicKey
  */
-PublicKey.fromPrivateKey = function(privkey) {
+PublicKey.fromPrivateKey = function (privkey) {
   $.checkArgument(PublicKey._isPrivateKey(privkey), 'Must be an instance of PrivateKey');
-  var info = PublicKey._transformPrivateKey(privkey);
+  const info = PublicKey._transformPrivateKey(privkey);
   return new PublicKey(info);
 };
 
@@ -175,16 +168,18 @@ PublicKey.fromPrivateKey = function(privkey) {
  * @param {bool=} strict - if set to false, will loosen some conditions
  * @returns {PublicKey} A new valid instance of PublicKey
  */
-PublicKey.fromDER = PublicKey.fromBuffer = function(buf, strict) {
+PublicKey.fromBuffer = function (buf, strict) {
   $.checkArgument(PublicKey._isBuffer(buf), 'Must be a hex buffer of DER encoded public key')
   if (buf[0] !== 0x04) {
     throw new TypeError('Invalid buffer')
   }
-  var info = PublicKey._transformDER(buf, strict);
+  const info = PublicKey._transformDER(buf, strict);
   return new PublicKey(info.buffer, {
     compressed: info.compressed
   });
 };
+
+PublicKey.fromDER = PublicKey.fromBuffer
 
 /**
  * Instantiate a PublicKey from a DER hex encoded string
@@ -193,9 +188,9 @@ PublicKey.fromDER = PublicKey.fromBuffer = function(buf, strict) {
  * @param {String=} encoding - The type of string encoding
  * @returns {PublicKey} A new valid instance of PublicKey
  */
-PublicKey.fromString = function(str, encoding) {
-  var buf = new Buffer(str, encoding || 'hex');
-  var info = PublicKey._transformDER(buf);
+PublicKey.fromString = function (str, encoding) {
+  const buf = Buffer.from(str, encoding || 'hex');
+  const info = PublicKey._transformDER(buf);
   return new PublicKey(info);
 };
 
@@ -205,8 +200,8 @@ PublicKey.fromString = function(str, encoding) {
  * @param {string} data - The encoded data in various formats
  * @returns {null|Error} An error if exists
  */
-PublicKey.getValidationError = function(data) {
-  var error;
+PublicKey.getValidationError = function (data) {
+  let error;
   try {
     /* jshint nonew: false */
     new PublicKey(data);
@@ -222,26 +217,28 @@ PublicKey.getValidationError = function(data) {
  * @param {string} data - The encoded data in various formats
  * @returns {Boolean} If the public key would be valid
  */
-PublicKey.isValid = function(data) {
+PublicKey.isValid = function (data) {
   return !PublicKey.getValidationError(data);
 };
 
 /**
  * @returns {Object} A plain object of the PublicKey
  */
-PublicKey.prototype.toObject = PublicKey.prototype.toJSON = function toObject() {
+PublicKey.prototype.toJSON = function toObject() {
   return {
     buffer: this.buffer,
     compressed: this.compressed
   };
 };
 
+PublicKey.prototype.toObject = PublicKey.prototype.toJSON
+
 /**
  * Will output the PublicKey to a DER Buffer
  *
  * @returns {Buffer} A DER hex encoded buffer
  */
-PublicKey.prototype.toBuffer = function() {
+PublicKey.prototype.toBuffer = function () {
   return this.toDER()
 };
 
@@ -250,7 +247,7 @@ PublicKey.prototype.toDER = function () {
   return Buffer.concat([prefix, this.buffer])
 }
 
-    /**
+/**
  * Will return a sha256 + ripemd160 hash of the serialized public key
  * @see https://github.com/bitcoin/bitcoin/blob/master/src/pubkey.h#L141
  * @returns {Buffer}
@@ -265,7 +262,7 @@ PublicKey.prototype._getID = function _getID() {
  * @param {String|Network=} network - Which network should the address be for
  * @returns {Address} An address generated from the public key
  */
-PublicKey.prototype.toAddress = function(network) {
+PublicKey.prototype.toAddress = function (network) {
   return Address.fromPublicKey(this, network || this.network);
 };
 
@@ -274,7 +271,7 @@ PublicKey.prototype.toAddress = function(network) {
  *
  * @returns {string} A DER hex encoded string
  */
-PublicKey.prototype.toString = function() {
+PublicKey.prototype.toString = function () {
   return this.toDER().toString('hex');
 };
 
@@ -283,9 +280,9 @@ PublicKey.prototype.toString = function() {
  *
  * @returns {string} Public key
  */
-PublicKey.prototype.inspect = function() {
-  return '<PublicKey: ' + this.toString() +
-    (this.compressed ? '' : ', uncompressed') + '>';
+PublicKey.prototype.inspect = function () {
+  return `<PublicKey: ${this.toString()
+  }${this.compressed ? '' : ', uncompressed'}>`;
 };
 
 export default PublicKey;

@@ -1,11 +1,11 @@
 import _ from 'lodash'
-import Address from './address'
+import nacl from 'tweetnacl'
 import JSUtil from './util/js'
 import Networks from './networks'
 import PublicKey from './publickey'
 import Base58Check from './encoding/base58check'
 import $ from './util/preconditions'
-import nacl from 'tweetnacl'
+
 
 /**
  * Instantiate a PrivateKey from Buffer.
@@ -32,17 +32,14 @@ import nacl from 'tweetnacl'
  */
 export default class PrivateKey {
   constructor(data, network) {
-    if (!(this instanceof PrivateKey)) {
-      return new PrivateKey(data, network)
-    }
     if (data instanceof PrivateKey) {
       return data
     }
 
-    var info = this._classifyArguments(data, network)
+    const info = this._classifyArguments(data, network)
 
     // validation
-    if (typeof(info.network) === 'undefined') {
+    if (typeof (info.network) === 'undefined') {
       throw new TypeError('Must specify the network ("livenet" or "testnet")')
     }
 
@@ -70,24 +67,24 @@ export default class PrivateKey {
    */
   _classifyArguments(data, network) {
     /* jshint maxcomplexity: 10 */
-    var info = {
+    let info = {
       compressed: false,
       network: network ? Networks.get(network) : Networks.defaultNetwork
     }
 
     // detect type of data
-    if (_.isUndefined(data) || _.isNull(data)){
+    if (_.isUndefined(data) || _.isNull(data)) {
       info.bn = PrivateKey._getRandomBuffer()
     } else if (data instanceof Buffer || data instanceof Uint8Array) {
       info = PrivateKey._transformBuffer(data, network)
-    } else if (data.bn && data.network){
+    } else if (data.bn && data.network) {
       info = PrivateKey._transformObject(data)
     } else if (!network && Networks.get(data)) {
       info.bn = PrivateKey._getRandomBuffer()
       info.network = Networks.get(data)
-    } else if (typeof(data) === 'string'){
+    } else if (typeof (data) === 'string') {
       if (JSUtil.isHexa(data)) {
-        const buf = new Buffer(data, 'hex')
+        const buf = Buffer.from(data, 'hex')
         info.bn = buf.slice(1)
         info.network = Networks.get(buf[0])
       } else {
@@ -120,8 +117,7 @@ export default class PrivateKey {
    * @private
    */
   static _transformBuffer(buf, network) {
-
-    var info = {network}
+    const info = {network}
 
     if (!network) {
       info.network = Networks.get(buf[0], 'privatekey')
@@ -146,9 +142,9 @@ export default class PrivateKey {
    * @returns {Object} An object with keys: bn, network and compressed
    * @private
    */
-  static _transformWIF (str, network) {
+  static _transformWIF(str, network) {
     return PrivateKey._transformBuffer(Base58Check.decode(str), network);
-  };
+  }
 
   /**
    * Instantiate a PrivateKey from a Buffer with the DER or WIF representation
@@ -169,12 +165,12 @@ export default class PrivateKey {
    * @returns {Object} An object with keys: bn, network and compressed
    * @private
    */
-  static _transformObject (json) {
-    var bn = Buffer.from(json.bn, 'hex')
-    var network = Networks.get(json.network)
+  static _transformObject(json) {
+    const bn = Buffer.from(json.bn, 'hex')
+    const network = Networks.get(json.network)
     return {
-      bn: bn,
-      network: network,
+      bn,
+      network,
       compressed: json.compressed
     }
   }
@@ -185,7 +181,7 @@ export default class PrivateKey {
    * @param {string} str - The WIF encoded private key string
    * @returns {PrivateKey} A new valid instance of PrivateKey
    */
-  static fromString (str) {
+  static fromString(str) {
     $.checkArgument(_.isString(str), 'First argument is expected to be a string.')
     return new PrivateKey(str)
   }
@@ -197,7 +193,7 @@ export default class PrivateKey {
    *
    * @param {Object} obj - The output from privateKey.toObject()
    */
-  static fromObject (obj) {
+  static fromObject(obj) {
     $.checkArgument(_.isObject(obj), 'First argument is expected to be an object.')
     return new PrivateKey(obj)
   }
@@ -208,10 +204,9 @@ export default class PrivateKey {
    * @param {string=} network - Either "livenet" or "testnet"
    * @returns {PrivateKey} A new valid instance of PrivateKey
    */
-  static fromRandom (network) {
-    var bn = PrivateKey._getRandomBuffer()
+  static fromRandom(network) {
     network = network || Networks.defaultNetwork
-    return new PrivateKey(bn, network)
+    return new PrivateKey(null, network)
   }
 
   /**
@@ -223,7 +218,7 @@ export default class PrivateKey {
    */
 
   static getValidationError(data, network) {
-    var error
+    let error
     try {
       /* jshint nonew: false */
       new PrivateKey(data, network)
@@ -240,7 +235,7 @@ export default class PrivateKey {
    * @param {string=} network - Either "livenet" or "testnet"
    * @returns {Boolean} If the private key is would be valid
    */
-  static isValid(data, network){
+  static isValid(data, network) {
     if (!data) {
       return false
     }
@@ -271,8 +266,7 @@ export default class PrivateKey {
    * @returns {Buffer} A buffer of the private key
    */
   toBuffer() {
-    let network = this.network
-    let compressed = this.compressed
+    const {network, compressed} = this
 
     let buf
     if (compressed) {
@@ -324,8 +318,7 @@ export default class PrivateKey {
    * @returns {string} Private key
    */
   inspect() {
-    var uncompressed = !this.compressed ? ', uncompressed' : ''
-    return '<PrivateKey: ' + this.toString() + ', network: ' + this.network + uncompressed + '>'
+    const uncompressed = !this.compressed ? ', uncompressed' : ''
+    return `<PrivateKey: ${this.toString()}, network: ${this.network}${uncompressed}>`
   }
-
 }

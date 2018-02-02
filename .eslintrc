@@ -5,6 +5,7 @@
   },
   "parser": "babel-eslint",
   "rules": {
+    "semi": 0,
     "no-else-return": 0,
     "no-param-reassign": 0,
     "max-len": 0,
@@ -17,6 +18,9 @@
     "import/namespace": 0,
     "import/no-unresolved": 0,
     "import/no-named-as-default": 2,
+    "import/no-extraneous-dependencies": 0,
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "no-underscore-dangle": "off",
     "comma-dangle": 0,  // not sure why airbnb turned this on. gross!
     "indent": [2, 2, {"SwitchCase": 1}],
     "no-case-declarations": 0,
