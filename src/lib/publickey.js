@@ -243,7 +243,7 @@ PublicKey.prototype.toBuffer = function () {
 };
 
 PublicKey.prototype.toDER = function () {
-  const prefix = Buffer.from([this.network.pubkeyhash])
+  const prefix = Buffer.from([0x04])
   return Buffer.concat([prefix, this.buffer])
 }
 
