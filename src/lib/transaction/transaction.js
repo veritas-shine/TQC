@@ -1068,6 +1068,7 @@ Transaction.prototype.getSignatures = function (privKey, sigtype) {
   const transaction = this;
   const results = [];
   const hashData = Hash.sha256ripemd160(privKey.publicKey.toBuffer());
+  console.log(1070, privKey.publicKey.toString(), hashData.toString('hex'))
   _.each(this.inputs, (input, index) => {
     _.each(input.getSignatures(transaction, privKey, index, sigtype, hashData), (signature) => {
       results.push(signature);
