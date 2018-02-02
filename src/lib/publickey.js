@@ -127,7 +127,7 @@ PublicKey._transformPrivateKey = function(privkey) {
   $.checkArgument(PublicKey._isPrivateKey(privkey), 'Must be an instance of PrivateKey');
 
   const seed = privkey.bn
-  const pair = ntru.createKey(seed)
+  const pair = ntru.createKeyWithSeed(seed)
   const publicKey = pair.public
 
   const info = {}
