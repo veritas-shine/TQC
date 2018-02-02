@@ -2692,9 +2692,9 @@ npmlog@^4.0.1, npmlog@^4.0.2:
     gauge "~2.7.3"
     set-blocking "~2.0.0"
 
-ntrujs@^1.0.17:
-  version "1.0.17"
-  resolved "https://registry.yarnpkg.com/ntrujs/-/ntrujs-1.0.17.tgz#655a5fa3d1b3637709fe752b4399a4280bd842c9"
+"ntrujs@https://github.com/veritas-shine/ntrujs/tarball/dist":
+  version "1.0.7"
+  resolved "https://github.com/veritas-shine/ntrujs/tarball/dist#71c4786208983d33cfdb59a0b3af7d3fdcd1f352"
 
 ntrumls@^0.0.1:
   version "0.0.1"

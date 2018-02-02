@@ -47,7 +47,7 @@
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
     "node-bitarray": "^0.1.0",
-    "ntrujs": "^1.0.17",
+    "ntrujs": "https://github.com/veritas-shine/ntrujs/tarball/master",
     "ntrumls": "^0.0.1",
     "tweetnacl": "^1.0.0",
     "winston": "^2.4.0"
