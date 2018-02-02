@@ -1,17 +1,14 @@
-
-var buffer = require('buffer');
-
+import _ from 'lodash'
+import NTRUMLS from 'ntrumls'
+const buffer = require('buffer');
+import BN from '../crypto/bn'
+import Hash from '../crypto/hash'
+import $ from '../util/preconditions'
 import Signature from '../crypto/signature'
 import Script from '../script'
 import Output from './output'
 import BufferReader from '../encoding/bufferreader'
 import BufferWriter from '../encoding/bufferwriter'
-import BN from '../crypto/bn'
-import Hash from '../crypto/hash'
-import $ from '../util/preconditions'
-import _ from 'lodash'
-import NTRUMLS from 'ntrumls'
-console.log(14, NTRUMLS)
 
 const SIGHASH_SINGLE_BUG = '0000000000000000000000000000000000000000000000000000000000000001';
 const BITS_64_ON = 'ffffffffffffffff';
@@ -27,12 +24,12 @@ const BITS_64_ON = 'ffffffffffffffff';
  * @param {Script} subscript the script that will be signed
  */
 function sighash(transaction, sighashType, inputNumber, subscript) {
-  var Transaction = require('./transaction');
-  var Input = require('./input');
+  const Transaction = require('./transaction');
+  const Input = require('./input');
 
-  var i;
+  let i;
   // Copy transaction
-  var txcopy = Transaction.shallowCopy(transaction);
+  const txcopy = Transaction.shallowCopy(transaction);
 
   // Copy script
   subscript = new Script(subscript);
@@ -47,7 +44,6 @@ function sighash(transaction, sighashType, inputNumber, subscript) {
 
   if ((sighashType & 31) === Signature.SIGHASH_NONE ||
     (sighashType & 31) === Signature.SIGHASH_SINGLE) {
-
     // clear all sequenceNumbers
     for (i = 0; i < txcopy.inputs.length; i++) {
       if (i !== inputNumber) {
@@ -58,7 +54,6 @@ function sighash(transaction, sighashType, inputNumber, subscript) {
 
   if ((sighashType & 31) === Signature.SIGHASH_NONE) {
     txcopy.outputs = [];
-
   } else if ((sighashType & 31) === Signature.SIGHASH_SINGLE) {
     // The SIGHASH_SINGLE bug.
     // https://pqcointalk.org/index.php?topic=260595.0
@@ -80,14 +75,14 @@ function sighash(transaction, sighashType, inputNumber, subscript) {
     txcopy.inputs = [txcopy.inputs[inputNumber]];
   }
 
-  var buf = new BufferWriter()
+  const buf = new BufferWriter()
     .write(txcopy.toBuffer())
     .writeInt32LE(sighashType)
     .toBuffer();
-  var ret = Hash.sha256sha256(buf);
+  let ret = Hash.sha256sha256(buf);
   ret = new BufferReader(ret).readReverse();
   return ret;
-};
+}
 
 /**
  * Create a signature
@@ -101,8 +96,8 @@ function sighash(transaction, sighashType, inputNumber, subscript) {
  * @return {Signature}
  */
 function sign(transaction, privateKey, sighashType, inputIndex, subscript) {
-  var hashbuf = sighash(transaction, sighashType, inputIndex, subscript);
-  var sig = NTRUMLS.sign(hashbuf, privateKey).set({
+  const hashbuf = sighash(transaction, sighashType, inputIndex, subscript);
+  const sig = NTRUMLS.sign(hashbuf, privateKey).set({
     nhashtype: sighashType
   });
   return sig;
@@ -122,7 +117,7 @@ function sign(transaction, privateKey, sighashType, inputIndex, subscript) {
 function verify(transaction, signature, publicKey, inputIndex, subscript) {
   $.checkArgument(!_.isUndefined(transaction));
   $.checkArgument(!_.isUndefined(signature) && !_.isUndefined(signature.nhashtype));
-  var hashbuf = sighash(transaction, signature.nhashtype, inputIndex, subscript);
+  const hashbuf = sighash(transaction, signature.nhashtype, inputIndex, subscript);
   return NTRUMLS.verify(signature, hashbuf, publicKey);
 }
 
@@ -130,7 +125,7 @@ function verify(transaction, signature, publicKey, inputIndex, subscript) {
  * @namespace Signing
  */
 module.exports = {
-  sighash: sighash,
-  sign: sign,
-  verify: verify
+  sighash,
+  sign,
+  verify
 };
