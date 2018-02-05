@@ -10,8 +10,8 @@ const Input = require('./input');
 const Output = require('../output');
 const Sighash = require('../sighash');
 const Script = require('../../script');
-const Signature = require('../../crypto/signature');
-const TransactionSignature = require('../signature');
+import Signature from '../../crypto/signature'
+import TransactionSignature from '../signature'
 
 /**
  * Represents a special kind of input of PayToPublicKeyHash kind.

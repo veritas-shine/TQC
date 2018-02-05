@@ -10,7 +10,7 @@ const Opcode = require('../opcode');
 
 const Signature = require('../crypto/signature');
 const Networks = require('../networks');
-const $ = require('../util/preconditions');
+import $ from '../util/preconditions';
 const _ = require('lodash');
 const errors = require('../errors')
 const BufferUtil = require('../util/buffer');

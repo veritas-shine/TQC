@@ -1,8 +1,6 @@
-const buffer = require('buffer');
-const assert = require('assert');
-
-const js = require('./js');
-const $ = require('./preconditions');
+import assert from 'assert'
+const js = require('./js')
+import $ from './preconditions'
 
 function equals(a, b) {
   if (a.length !== b.length) {
@@ -17,7 +15,17 @@ function equals(a, b) {
   return true;
 }
 
-module.exports = {
+function fill(buffer, value) {
+  $.checkArgumentType(buffer, 'Buffer', 'buffer');
+  $.checkArgumentType(value, 'number', 'value');
+  const length = buffer.length;
+  for (let i = 0; i < length; i++) {
+    buffer[i] = value;
+  }
+  return buffer;
+}
+
+export default {
   /**
    * Fill a buffer with a value.
    *
@@ -25,15 +33,7 @@ module.exports = {
    * @param {number} value
    * @return {Buffer}
    */
-  fill: function fill(buffer, value) {
-    $.checkArgumentType(buffer, 'Buffer', 'buffer');
-    $.checkArgumentType(value, 'number', 'value');
-    const length = buffer.length;
-    for (let i = 0; i < length; i++) {
-      buffer[i] = value;
-    }
-    return buffer;
-  },
+  fill,
 
   /**
    * Return a copy of a buffer
@@ -66,7 +66,7 @@ module.exports = {
    */
   emptyBuffer: function emptyBuffer(bytes) {
     $.checkArgumentType(bytes, 'number', 'bytes');
-    const result = new buffer.Buffer(bytes);
+    const result = new Buffer(bytes);
     for (let i = 0; i < bytes; i++) {
       result.write('\0', i);
     }
@@ -76,9 +76,9 @@ module.exports = {
   /**
    * Concatenates a buffer
    *
-   * Shortcut for <tt>buffer.Buffer.concat</tt>
+   * Shortcut for <tt>Buffer.concat</tt>
    */
-  concat: buffer.Buffer.concat,
+  concat: Buffer.concat,
 
   equals,
   equal: equals,
@@ -134,7 +134,7 @@ module.exports = {
   /**
    * Transforms a buffer into a string with a number in hexa representation
    *
-   * Shorthand for <tt>buffer.toString('hex')</tt>
+   * Shorthand for <tt>toString('hex')</tt>
    *
    * @param {Buffer} buffer
    * @return {string}
@@ -150,7 +150,7 @@ module.exports = {
    * @return {Buffer}
    */
   reverse: function reverse(param) {
-    const ret = new buffer.Buffer(param.length);
+    const ret = new Buffer(param.length);
     for (let i = 0; i < param.length; i++) {
       ret[i] = param[param.length - i - 1];
     }
@@ -171,5 +171,5 @@ module.exports = {
   }
 };
 
-module.exports.NULL_HASH = module.exports.fill(new Buffer(32), 0);
-module.exports.EMPTY_BUFFER = new Buffer(0);
+export const NULL_HASH = fill(new Buffer(32), 0);
+export const EMPTY_BUFFER = new Buffer(0);

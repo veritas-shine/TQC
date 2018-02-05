@@ -1,4 +1,4 @@
-const $ = require('../util/preconditions');
+import $ from '../util/preconditions';
 const BufferUtil = require('../util/buffer');
 const JSUtil = require('../util/js');
 

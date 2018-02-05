@@ -29,7 +29,7 @@ describe('TransactionSignature', () => {
     console.log(privKey.toAddress(), privKey.toPublicKey())
     const signature = getSignatureFromTransaction();
     const serialized = signature.toObject();
-    const nonew = TransactionSignature(serialized);
+    const nonew = new TransactionSignature(serialized);
     expect(nonew.toObject()).to.deep.equal(serialized);
   });
   //

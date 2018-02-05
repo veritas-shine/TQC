@@ -1,7 +1,7 @@
 
 
 const _ = require('lodash');
-const $ = require('../util/preconditions')
+import $ from '../util/preconditions'
 const compare = Buffer.compare || require('buffer-compare');
 
 const errors = require('../errors');

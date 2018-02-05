@@ -97,8 +97,10 @@ function sighash(transaction, sighashType, inputNumber, subscript) {
 function sign(transaction, privateKey, sighashType, inputIndex, subscript) {
   const hashbuf = sighash(transaction, sighashType, inputIndex, subscript)
   const privateSignKey = privateKey.signKeypair.private
-  const sig = xmss.sign(hashbuf, privateSignKey)
-  return new Signature(sig)
+  const data = xmss.sign(hashbuf, privateSignKey)
+  const sig = new Signature()
+  sig.buffer = data
+  return sig
 }
 
 /**

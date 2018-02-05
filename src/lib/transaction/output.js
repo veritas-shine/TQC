@@ -5,7 +5,7 @@ const bufferUtil = require('../util/buffer');
 const JSUtil = require('../util/js');
 const BufferWriter = require('../encoding/bufferwriter');
 const Script = require('../script/script');
-const $ = require('../util/preconditions');
+import $ from '../util/preconditions';
 const errors = require('../errors');
 
 const MAX_SAFE_INTEGER = 0x1fffffffffffff;
