@@ -1,10 +1,13 @@
 import _ from 'lodash'
 import nacl from 'tweetnacl'
+import ntru from 'ntrujs'
+import xmss from 'xmss'
 import JSUtil from './util/js'
 import Networks from './networks'
 import PublicKey from './publickey'
 import Base58Check from './encoding/base58check'
 import $ from './util/preconditions'
+
 
 /**
  * Instantiate a PrivateKey from Buffer.
@@ -42,11 +45,16 @@ export default class PrivateKey {
       throw new TypeError('Must specify the network ("livenet" or "testnet")')
     }
 
-    JSUtil.defineImmutable(this, {
+    const obj = {
       bn: info.bn,
       compressed: info.compressed,
       network: info.network
-    })
+    }
+    if (info.bn) {
+      Object.assign(obj, PrivateKey._prepareBuffers(info.bn))
+    }
+
+    JSUtil.defineImmutable(this, obj)
 
     Object.defineProperty(this, 'publicKey', {
       configurable: false,
@@ -97,14 +105,25 @@ export default class PrivateKey {
   }
 
   /**
+   * @returns {Object} NTRU Keypair & XMSS Keypair
+   * @private
+   */
+  static _prepareBuffers(bn) {
+    const keypair = ntru.createKeyWithSeed(bn)
+    const signKeypair = xmss.createKeypair(bn)
+    return {
+      keypair,
+      signKeypair
+    }
+  }
+  /**
    * Internal function to get a random Buffer
    *
    * @returns {Uint8Array} A new randomly generated Buffer
    * @private
    */
   static _getRandomBuffer() {
-    const buf = nacl.randomBytes(64)
-    return buf
+    return nacl.randomBytes(64)
   }
 
   /**

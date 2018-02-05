@@ -1,4 +1,4 @@
-import ntru from 'ntrujs'
+
 import _ from 'lodash'
 import JSUtil from './util/js'
 import Hash from './crypto/hash'
@@ -119,9 +119,7 @@ PublicKey._isBuffer = function (param) {
 PublicKey._transformPrivateKey = function (privkey) {
   $.checkArgument(PublicKey._isPrivateKey(privkey), 'Must be an instance of PrivateKey');
 
-  const seed = privkey.bn
-  const pair = ntru.createKeyWithSeed(seed)
-  const publicKey = pair.public
+  const publicKey = privkey.keypair.public
 
   const info = {}
   info.buffer = publicKey
