@@ -2692,13 +2692,9 @@ npmlog@^4.0.1, npmlog@^4.0.2:
     gauge "~2.7.3"
     set-blocking "~2.0.0"
 
-"ntrujs@https://github.com/veritas-shine/ntrujs/tarball/master":
+"ntrujs@https://github.com/veritas-shine/ntrujs/tarball/dist":
   version "1.0.7"
-  resolved "https://github.com/veritas-shine/ntrujs/tarball/master#71c4786208983d33cfdb59a0b3af7d3fdcd1f352"
-
-ntrumls@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/ntrumls/-/ntrumls-0.0.1.tgz#050b0e09f5e25c409dd780c4c3531c73588bf0e2"
+  resolved "https://github.com/veritas-shine/ntrujs/tarball/dist#71c4786208983d33cfdb59a0b3af7d3fdcd1f352"
 
 number-is-nan@^1.0.0:
   version "1.0.1"
@@ -3695,6 +3691,10 @@ write@^0.2.1:
   resolved "https://registry.yarnpkg.com/write/-/write-0.2.1.tgz#5fc03828e264cea3fe91455476f7a3c566cb0757"
   dependencies:
     mkdirp "^0.5.1"
+
+xmss@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/xmss/-/xmss-0.0.2.tgz#4be00fc3588613aa753337f57ec756fa65672172"
 
 xtend@4.0.1, xtend@^4.0.0, xtend@~4.0.0:
   version "4.0.1"

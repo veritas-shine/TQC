@@ -6,7 +6,6 @@ import PublicKey from './publickey'
 import Base58Check from './encoding/base58check'
 import $ from './util/preconditions'
 
-
 /**
  * Instantiate a PrivateKey from Buffer.
  *
@@ -36,7 +35,7 @@ export default class PrivateKey {
       return data
     }
 
-    const info = this._classifyArguments(data, network)
+    const info = PrivateKey._classifyArguments(data, network)
 
     // validation
     if (typeof (info.network) === 'undefined') {
@@ -65,7 +64,7 @@ export default class PrivateKey {
    * @param {Network|string=} network - a {@link Network} object, or a string with the network name
    * @return {Object}
    */
-  _classifyArguments(data, network) {
+  static _classifyArguments(data, network) {
     /* jshint maxcomplexity: 10 */
     let info = {
       compressed: false,
@@ -270,9 +269,9 @@ export default class PrivateKey {
 
     let buf
     if (compressed) {
-      buf = Buffer.concat([new Buffer([network.privatekey]), this.bn, new Buffer([0x01])])
+      buf = Buffer.concat([Buffer.from([network.privatekey]), this.bn, Buffer.from([0x01])])
     } else {
-      buf = Buffer.concat([new Buffer([network.privatekey]), this.bn])
+      buf = Buffer.concat([Buffer.from([network.privatekey]), this.bn])
     }
     return buf
   }

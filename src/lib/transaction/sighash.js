@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import NTRUMLS from 'ntrumls'
+import xmss from 'xmss'
 import BN from '../crypto/bn'
 import Hash from '../crypto/hash'
 import $ from '../util/preconditions'
@@ -96,7 +96,7 @@ function sighash(transaction, sighashType, inputNumber, subscript) {
  */
 function sign(transaction, privateKey, sighashType, inputIndex, subscript) {
   const hashbuf = sighash(transaction, sighashType, inputIndex, subscript);
-  const sig = NTRUMLS.sign(hashbuf, privateKey).set({
+  const sig = xmss.sign(hashbuf, privateKey).set({
     nhashtype: sighashType
   });
   return sig;
@@ -117,7 +117,7 @@ function verify(transaction, signature, publicKey, inputIndex, subscript) {
   $.checkArgument(!_.isUndefined(transaction));
   $.checkArgument(!_.isUndefined(signature) && !_.isUndefined(signature.nhashtype));
   const hashbuf = sighash(transaction, signature.nhashtype, inputIndex, subscript);
-  return NTRUMLS.verify(signature, hashbuf, publicKey);
+  return xmss.verify(signature, hashbuf, publicKey);
 }
 
 /**
