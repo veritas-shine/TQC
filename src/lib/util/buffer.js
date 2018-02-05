@@ -55,7 +55,7 @@ module.exports = {
    * @return {boolean}
    */
   isBuffer: function isBuffer(arg) {
-    return buffer.Buffer.isBuffer(arg) || arg instanceof Uint8Array;
+    return Buffer.isBuffer(arg) || arg instanceof Uint8Array;
   },
 
   /**
