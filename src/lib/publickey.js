@@ -49,6 +49,7 @@ function PublicKey(data, extra) {
 
   const info = this._classifyArgs(data, extra)
   JSUtil.defineImmutable(this, {
+    signKey: info.signKey,
     buffer: info.buffer,
     compressed: info.compressed,
     network: info.network || Network.defaultNetwork
@@ -120,9 +121,10 @@ PublicKey._transformPrivateKey = function (privkey) {
   $.checkArgument(PublicKey._isPrivateKey(privkey), 'Must be an instance of PrivateKey');
 
   const publicKey = privkey.keypair.public
-
+  const signKey = privkey.signKeypair.public
   const info = {}
   info.buffer = publicKey
+  info.signKey = signKey
   info.compressed = privkey.compressed
   info.network = privkey.network
   return info

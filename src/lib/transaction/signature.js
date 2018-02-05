@@ -1,13 +1,15 @@
-'use strict';
+
 import _ from 'lodash'
 import $ from '../util/preconditions'
-var inherits = require('inherits');
-var BufferUtil = require('../util/buffer');
-var JSUtil = require('../util/js');
+
+const inherits = require('inherits');
+const BufferUtil = require('../util/buffer');
+const JSUtil = require('../util/js');
 
 import PublicKey from '../publickey'
-var errors = require('../errors');
-var Signature = require('../crypto/signature');
+
+const errors = require('../errors');
+const Signature = require('../crypto/signature');
 
 /**
  * @desc
@@ -30,20 +32,20 @@ function TransactionSignature(arg) {
 }
 inherits(TransactionSignature, Signature);
 
-TransactionSignature.prototype._fromObject = function(arg) {
+TransactionSignature.prototype._fromObject = function (arg) {
   this._checkObjectArgs(arg);
   this.publicKey = new PublicKey(arg.publicKey);
   this.prevTxId = BufferUtil.isBuffer(arg.prevTxId) ? arg.prevTxId : new Buffer(arg.prevTxId, 'hex');
   this.outputIndex = arg.outputIndex;
   this.inputIndex = arg.inputIndex;
   this.signature = (arg.signature instanceof Signature) ? arg.signature :
-                     BufferUtil.isBuffer(arg.signature) ? Signature.fromBuffer(arg.signature) :
-                     Signature.fromString(arg.signature);
+    BufferUtil.isBuffer(arg.signature) ? Signature.fromBuffer(arg.signature) :
+      Signature.fromString(arg.signature);
   this.sigtype = arg.sigtype;
   return this;
 };
 
-TransactionSignature.prototype._checkObjectArgs = function(arg) {
+TransactionSignature.prototype._checkObjectArgs = function (arg) {
   $.checkArgument(PublicKey(arg.publicKey), 'publicKey');
   $.checkArgument(!_.isUndefined(arg.inputIndex), 'inputIndex');
   $.checkArgument(!_.isUndefined(arg.outputIndex), 'outputIndex');
@@ -80,7 +82,7 @@ TransactionSignature.prototype.toObject = TransactionSignature.prototype.toJSON 
  * @param {Object} object
  * @return {TransactionSignature}
  */
-TransactionSignature.fromObject = function(object) {
+TransactionSignature.fromObject = function (object) {
   $.checkArgument(object);
   return new TransactionSignature(object);
 };

@@ -95,9 +95,10 @@ function sighash(transaction, sighashType, inputNumber, subscript) {
  * @return {Signature}
  */
 function sign(transaction, privateKey, sighashType, inputIndex, subscript) {
-  const hashbuf = sighash(transaction, sighashType, inputIndex, subscript);
-  const sig = xmss.sign(hashbuf, privateKey);
-  return sig;
+  const hashbuf = sighash(transaction, sighashType, inputIndex, subscript)
+  const privateSignKey = privateKey.signKeypair.private
+  const sig = xmss.sign(hashbuf, privateSignKey)
+  return new Signature(sig)
 }
 
 /**
@@ -115,7 +116,8 @@ function verify(transaction, signature, publicKey, inputIndex, subscript) {
   $.checkArgument(!_.isUndefined(transaction));
   $.checkArgument(!_.isUndefined(signature) && !_.isUndefined(signature.nhashtype));
   const hashbuf = sighash(transaction, signature.nhashtype, inputIndex, subscript);
-  return xmss.verify(signature, hashbuf, publicKey);
+  const signPublicKey = publicKey.signKey
+  return xmss.verify(signature, hashbuf, signPublicKey);
 }
 
 /**
