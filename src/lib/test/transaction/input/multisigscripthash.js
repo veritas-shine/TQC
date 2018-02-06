@@ -54,14 +54,14 @@ describe('MultiSigScriptHashInput', () => {
       .to(address, 1000000);
     const input = transaction.inputs[0];
 
-    _.all(input.publicKeysWithoutSignature(), (publicKeyMissing) => {
+    _.every(input.publicKeysWithoutSignature(), (publicKeyMissing) => {
       const serialized = publicKeyMissing.toString();
       return serialized === public1.toString() ||
               serialized === public2.toString() ||
               serialized === public3.toString();
     }).should.equal(true);
     transaction.sign(privateKey1);
-    _.all(input.publicKeysWithoutSignature(), (publicKeyMissing) => {
+    _.every(input.publicKeysWithoutSignature(), (publicKeyMissing) => {
       const serialized = publicKeyMissing.toString();
       return serialized === public2.toString() ||
               serialized === public3.toString();
