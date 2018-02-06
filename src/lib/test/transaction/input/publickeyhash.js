@@ -1,64 +1,62 @@
-'use strict';
-/* jshint unused: false */
 
-var should = require('chai').should();
-var expect = require('chai').expect;
-var _ = require('lodash');
+const should = require('chai').should();
+const expect = require('chai').expect;
+const _ = require('lodash');
 
-var bitcore = require('../../..');
-var Transaction = bitcore.Transaction;
-var PrivateKey = bitcore.PrivateKey;
-var Address = bitcore.Address;
-var Script = bitcore.Script;
-var Networks = bitcore.Networks;
-var Signature = bitcore.crypto.Signature;
+const bitcore = require('../../..');
 
-describe('PublicKeyHashInput', function() {
+const Transaction = bitcore.Transaction;
+const PrivateKey = bitcore.PrivateKey;
+const Address = bitcore.Address;
+const Script = bitcore.Script;
+const Networks = bitcore.Networks;
+const Signature = bitcore.crypto.Signature;
 
-  var privateKey = new PrivateKey('2SRLnpdFnpiqzeAbJXSBoLeCvG65m7ham4N7ZuFuSgRSAmAVQwKDVrJnui3gY4Ywv7ZFVeW5QuFC4oakVAxetMxGVnvEyct');
-  var publicKey = privateKey.publicKey;
-  var address = new Address(publicKey, Networks.livenet);
+describe('PublicKeyHashInput', () => {
+  const privateKey = new PrivateKey('2SRLnpdFnpiqzeAbJXSBoLeCvG65m7ham4N7ZuFuSgRSAmAVQwKDVrJnui3gY4Ywv7ZFVeW5QuFC4oakVAxetMxGVnvEyct');
+  const publicKey = privateKey.publicKey;
+  const address = new Address(publicKey, Networks.livenet);
 
-  var output = {
+  const output = {
     address: 'Lfci7ooSc31oNijNG9zDeHBBHJddxrPEKX',
     txId: '66e64ef8a3b384164b78453fa8c8194de9a473ba14f89485a0e433699daec140',
     outputIndex: 0,
     script: new Script(address),
     glv: 1000000
   };
-  it('can count missing signatures', function() {
-    var transaction = new Transaction()
+  it('can count missing signatures', () => {
+    const transaction = new Transaction()
       .from(output)
       .to(address, 1000000);
-    var input = transaction.inputs[0];
+    const input = transaction.inputs[0];
 
     input.isFullySigned().should.equal(false);
     transaction.sign(privateKey);
     input.isFullySigned().should.equal(true);
   });
-  it('it\'s size can be estimated', function() {
-    var transaction = new Transaction()
+  it('it\'s size can be estimated', () => {
+    const transaction = new Transaction()
       .from(output)
       .to(address, 1000000);
-    var input = transaction.inputs[0];
+    const input = transaction.inputs[0];
     input._estimateSize().should.equal(107);
   });
-  it('it\'s signature can be removed', function() {
-    var transaction = new Transaction()
+  it('it\'s signature can be removed', () => {
+    const transaction = new Transaction()
       .from(output)
       .to(address, 1000000);
-    var input = transaction.inputs[0];
+    const input = transaction.inputs[0];
 
     transaction.sign(privateKey);
     input.clearSignatures();
     input.isFullySigned().should.equal(false);
   });
-  it('returns an empty array if private key mismatches', function() {
-    var transaction = new Transaction()
+  it('returns an empty array if private key mismatches', () => {
+    const transaction = new Transaction()
       .from(output)
       .to(address, 1000000);
-    var input = transaction.inputs[0];
-    var signatures = input.getSignatures(transaction, new PrivateKey(), 0);
+    const input = transaction.inputs[0];
+    const signatures = input.getSignatures(transaction, new PrivateKey(), 0);
     signatures.length.should.equal(0);
   });
 });
