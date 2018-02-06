@@ -704,7 +704,7 @@ Script.buildMultisigOut = function (publicKeys, threshold, opts) {
   opts = opts || {};
   const script = new Script();
   script.add(Opcode.smallInt(threshold));
-  publicKeys = _.map(publicKeys, PublicKey);
+  publicKeys = publicKeys.map(looper => new PublicKey(looper))
   let sorted = publicKeys;
   if (!opts.noSorting) {
     sorted = _.sortBy(publicKeys, (publicKey) => {

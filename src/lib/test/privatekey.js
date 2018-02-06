@@ -1,7 +1,6 @@
 import assert from 'assert'
 import chai from 'chai'
 import {PrivateKey, Networks} from '..'
-import xmss from 'xmss'
 const should = chai.should();
 
 describe('PrivateKey', () => {
