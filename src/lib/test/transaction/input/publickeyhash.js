@@ -24,7 +24,8 @@ describe('PublicKeyHashInput', () => {
     script: new Script(address),
     glv: 1000000
   };
-  it('can count missing signatures', () => {
+  it('can count missing signatures', function() {
+    this.timeout(20 * 1000)
     const transaction = new Transaction()
       .from(output)
       .to(address, 1000000);
@@ -34,14 +35,16 @@ describe('PublicKeyHashInput', () => {
     transaction.sign(privateKey);
     input.isFullySigned().should.equal(true);
   });
-  it('it\'s size can be estimated', () => {
+  it('it\'s size can be estimated', function() {
+    this.timeout(20 * 1000)
     const transaction = new Transaction()
       .from(output)
       .to(address, 1000000);
     const input = transaction.inputs[0];
     input._estimateSize().should.equal(107);
   });
-  it('it\'s signature can be removed', () => {
+  it('it\'s signature can be removed', function() {
+    this.timeout(20 * 1000)
     const transaction = new Transaction()
       .from(output)
       .to(address, 1000000);
@@ -51,7 +54,8 @@ describe('PublicKeyHashInput', () => {
     input.clearSignatures();
     input.isFullySigned().should.equal(false);
   });
-  it('returns an empty array if private key mismatches', () => {
+  it('returns an empty array if private key mismatches', function() {
+    this.timeout(20 * 1000)
     const transaction = new Transaction()
       .from(output)
       .to(address, 1000000);

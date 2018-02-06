@@ -1,15 +1,15 @@
+import Address from '../../../address'
+
 const should = require('chai').should();
 const pqccore = require('../../..');
-
-const Transaction = pqccore.Transaction;
-const PrivateKey = pqccore.PrivateKey;
+const {Transaction, PrivateKey, Script} = pqccore
 
 describe('PublicKeyInput', () => {
   const utxo = {
     txid: '7f3b688cb224ed83e12d9454145c26ac913687086a0a62f2ae0bc10934a4030f',
     vout: 0,
     address: 'GSn1S1616tfDk3DzaWe5NJvtkPj4DKt7dN',
-    scriptPubKey: '2103c9594cb2ebfebcb0cfd29eacd40ba012606a197beef76f0269ed8c101e56ceddac',
+    scriptPubKey: '76a91461fba7935d468f52ae5545d6e0a308030d20d25688ac',
     amount: 50,
     confirmations: 104,
     spendable: true
@@ -19,8 +19,12 @@ describe('PublicKeyInput', () => {
   utxo.address.should.equal(address.toString());
 
   const destKey = new PrivateKey();
+  const fromAddress = new Address('GSn1S1616tfDk3DzaWe5NJvtkPj4DKt7dN')
+  const scriptPubkey = Script.buildPublicKeyHashOut(fromAddress)
+  console.log(26, scriptPubkey.toHex())
 
-  it('will correctly sign a publickey out transaction', () => {
+  it('will correctly sign a publickey out transaction', function() {
+    this.timeout(20 * 1000)
     const tx = new Transaction();
     tx.from(utxo);
     tx.to(destKey.toAddress(), 10000);
@@ -28,7 +32,8 @@ describe('PublicKeyInput', () => {
     tx.inputs[0].script.toBuffer().length.should.be.above(0);
   });
 
-  it('count can count missing signatures', () => {
+  it('count can count missing signatures', function() {
+    this.timeout(20 * 1000)
     const tx = new Transaction();
     tx.from(utxo);
     tx.to(destKey.toAddress(), 10000);
@@ -38,7 +43,8 @@ describe('PublicKeyInput', () => {
     input.isFullySigned().should.equal(true);
   });
 
-  it('it\'s size can be estimated', () => {
+  it('it\'s size can be estimated', function() {
+    this.timeout(20 * 1000)
     const tx = new Transaction();
     tx.from(utxo);
     tx.to(destKey.toAddress(), 10000);
@@ -46,7 +52,8 @@ describe('PublicKeyInput', () => {
     input._estimateSize().should.equal(73);
   });
 
-  it('it\'s signature can be removed', () => {
+  it('it\'s signature can be removed', function() {
+    this.timeout(20 * 1000)
     const tx = new Transaction();
     tx.from(utxo);
     tx.to(destKey.toAddress(), 10000);
@@ -57,7 +64,8 @@ describe('PublicKeyInput', () => {
     input.isFullySigned().should.equal(false);
   });
 
-  it('returns an empty array if private key mismatches', () => {
+  it('returns an empty array if private key mismatches', function() {
+    this.timeout(20 * 1000)
     const tx = new Transaction();
     tx.from(utxo);
     tx.to(destKey.toAddress(), 10000);
