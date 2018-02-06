@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "better-npm-run dev",
     "test": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/*/test.js",
-    "test-transaction": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/transaction/signature.js",
+    "test-transaction": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/transaction/input/*.js",
     "test-block": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/block/*.js",
     "test-script": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/script/interpreter.js",
     "test-base": "npm run test-other && npm run test-crypto && npm run test-encoding && npm run test-util",
@@ -56,6 +56,7 @@
     "mkdirp": "^0.5.1",
     "node-bitarray": "^0.1.0",
     "ntrujs": "https://github.com/veritas-shine/ntrujs/tarball/dist",
+    "sinon": "^4.2.2",
     "tweetnacl": "^1.0.0",
     "winston": "^2.4.0",
     "xmss": "0.0.4"
