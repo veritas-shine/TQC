@@ -109,7 +109,8 @@ describe('PublicKey', () => {
   });
 
   describe('#fromPrivateKey', () => {
-    it('should make a public key from a privkey', () => {
+    it('should make a public key from a privkey', function() {
+      this.timeout(20 * 1000)
       should.exist(PublicKey.fromPrivateKey(PrivateKey.fromRandom()));
     });
 
@@ -123,7 +124,7 @@ describe('PublicKey', () => {
   describe('#fromBuffer', () => {
     it('should throw an error on this invalid public key', () => {
       (function () {
-        PublicKey.fromBuffer(new Buffer('091ff0fe0f7b15ffaa85ff9f4744d539139c252a49710fb053bb9f2b933173ff9a', 'hex'));
+        PublicKey.fromBuffer(Buffer.from('091ff0fe0f7b15ffaa85ff9f4744d539139c252a49710fb053bb9f2b933173ff9a', 'hex'));
       }).should.throw();
     });
 

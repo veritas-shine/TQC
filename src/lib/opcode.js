@@ -1,8 +1,7 @@
 
-
-const _ = require('lodash');
-const $ = require('./util/preconditions');
-const BufferUtil = require('./util/buffer');
+import _ from 'lodash'
+import $ from './util/preconditions'
+import BufferUtil from './util/buffer'
 const JSUtil = require('./util/js');
 
 function Opcode(num) {

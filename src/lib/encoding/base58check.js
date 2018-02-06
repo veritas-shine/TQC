@@ -1,6 +1,7 @@
-const _ = require('lodash');
+import _ from 'lodash'
 const Base58 = require('./base58')
-const sha256sha256 = require('../crypto/hash').sha256sha256;
+import Hash from '../crypto/hash'
+const {sha256sha256} = Hash
 
 const Base58Check = function Base58Check(obj) {
   if (!(this instanceof Base58Check)) { return new Base58Check(obj); }

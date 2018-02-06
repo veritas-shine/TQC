@@ -1,6 +1,6 @@
 const should = require('chai').should();
 const expect = require('chai').expect;
-const _ = require('lodash');
+import _ from 'lodash'
 
 const pqccore = require('../..');
 
@@ -24,7 +24,8 @@ describe('TransactionSignature', () => {
     return transaction.getSignatures(privateKey)[0];
   };
 
-  it('can be created without the `new` keyword', () => {
+  it('can be created without the `new` keyword', function() {
+    this.timeout(20 * 1000)
     const privKey = new PrivateKey(privateKey)
     console.log(privKey.toAddress(), privKey.toPublicKey())
     const signature = getSignatureFromTransaction();

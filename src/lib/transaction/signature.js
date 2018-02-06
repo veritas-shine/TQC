@@ -3,7 +3,7 @@ import _ from 'lodash'
 import $ from '../util/preconditions'
 
 const inherits = require('inherits');
-const BufferUtil = require('../util/buffer');
+import BufferUtil from '../util/buffer';
 const JSUtil = require('../util/js');
 
 import PublicKey from '../publickey'

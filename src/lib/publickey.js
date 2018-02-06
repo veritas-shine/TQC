@@ -75,7 +75,7 @@ PublicKey.prototype._classifyArgs = function (data, extra) {
     info.network = data.network
   } else if (typeof (data) === 'string') {
     info = PublicKey._transformDER(Buffer.from(data, 'hex'));
-  } else if (BufferUtil._isBuffer(data)) {
+  } else if (BufferUtil.isBuffer(data)) {
     info = PublicKey._transformDER(data);
   } else if (PublicKey._isPrivateKey(data)) {
     info = PublicKey._transformPrivateKey(data);
@@ -128,7 +128,7 @@ PublicKey._transformPrivateKey = function (privkey) {
  * @private
  */
 PublicKey._transformDER = function (buf) {
-  $.checkArgument(BufferUtil._isBuffer(buf), 'Must be a hex buffer of DER encoded public key')
+  $.checkArgument(BufferUtil.isBuffer(buf), 'Must be a hex buffer of DER encoded public key')
 
   // const der = ASN1PublicKey.decode(buf, 'der')
   const data = buf.slice(1)
@@ -158,7 +158,7 @@ PublicKey.fromPrivateKey = function (privkey) {
  * @returns {PublicKey} A new valid instance of PublicKey
  */
 PublicKey.fromBuffer = function (buf, strict) {
-  $.checkArgument(BufferUtil._isBuffer(buf), 'Must be a hex buffer of DER encoded public key')
+  $.checkArgument(BufferUtil.isBuffer(buf), 'Must be a hex buffer of DER encoded public key')
   if (buf[0] !== 0x04) {
     throw new TypeError('Invalid buffer')
   }

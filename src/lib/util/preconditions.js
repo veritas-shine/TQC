@@ -1,6 +1,6 @@
 
 const errors = require('../errors');
-const _ = require('lodash');
+import _ from 'lodash'
 
 export default {
   checkState(condition, message) {

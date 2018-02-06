@@ -1,5 +1,5 @@
 import $ from '../util/preconditions';
-const BufferUtil = require('../util/buffer');
+import BufferUtil from '../util/buffer';
 const JSUtil = require('../util/js');
 
 export default class Signature {

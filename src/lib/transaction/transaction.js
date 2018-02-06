@@ -1,15 +1,15 @@
 
 
-const _ = require('lodash');
+import _ from 'lodash'
 import $ from '../util/preconditions'
 const compare = Buffer.compare || require('buffer-compare');
 
 const errors = require('../errors');
-const BufferUtil = require('../util/buffer');
+import BufferUtil from '../util/buffer';
 const JSUtil = require('../util/js');
 const BufferReader = require('../encoding/bufferreader');
 const BufferWriter = require('../encoding/bufferwriter');
-const Hash = require('../crypto/hash');
+import Hash from '../crypto/hash';
 const Signature = require('../crypto/signature');
 const Sighash = require('./sighash');
 
@@ -27,7 +27,7 @@ const Output = require('./output');
 import Script from '../script/script'
 import PrivateKey from '../privatekey'
 
-const BN = require('../crypto/bn');
+import BN from '../crypto/bn'
 
 /**
  * Represents a transaction, a set of inputs and outputs to change ownership of tokens

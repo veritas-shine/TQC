@@ -1,10 +1,10 @@
-const _ = require('lodash');
-const $ = require('../../util/preconditions');
+import _ from 'lodash'
+import $ from '../../util/preconditions'
 
 import errors from '../../errors'
 
 const BufferWriter = require('../../encoding/bufferwriter')
-const BufferUtil = require('../../util/buffer');
+import BufferUtil from '../../util/buffer';
 const JSUtil = require('../../util/js');
 const Script = require('../../script/script');
 const Sighash = require('../sighash');

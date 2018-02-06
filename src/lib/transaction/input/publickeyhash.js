@@ -2,10 +2,10 @@
 
 const inherits = require('inherits');
 
-const $ = require('../../util/preconditions');
-const BufferUtil = require('../../util/buffer');
+import $ from '../../util/preconditions'
+import BufferUtil from '../../util/buffer'
 
-const Hash = require('../../crypto/hash');
+import Hash from '../../crypto/hash'
 const Input = require('./input');
 const Output = require('../output');
 const Sighash = require('../sighash');

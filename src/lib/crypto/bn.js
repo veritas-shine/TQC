@@ -1,12 +1,11 @@
-'use strict';
+import BN from 'bn.js'
+import _ from 'lodash'
+import $ from '../util/preconditions'
 
-var BN = require('bn.js');
-var $ = require('../util/preconditions');
-var _ = require('lodash');
 
-var reversebuf = function(buf) {
-  var buf2 = new Buffer(buf.length);
-  for (var i = 0; i < buf.length; i++) {
+const reversebuf = function (buf) {
+  const buf2 = new Buffer(buf.length);
+  for (let i = 0; i < buf.length; i++) {
     buf2[i] = buf[buf.length - 1 - i];
   }
   return buf2;
@@ -16,22 +15,22 @@ BN.Zero = new BN(0);
 BN.One = new BN(1);
 BN.Minus1 = new BN(-1);
 
-BN.fromNumber = function(n) {
+BN.fromNumber = function (n) {
   $.checkArgument(_.isNumber(n));
   return new BN(n);
 };
 
-BN.fromString = function(str, base) {
+BN.fromString = function (str, base) {
   $.checkArgument(_.isString(str));
   return new BN(str, base);
 };
 
-BN.fromBuffer = function(buf, opts) {
+BN.fromBuffer = function (buf, opts) {
   if (typeof opts !== 'undefined' && opts.endian === 'little') {
     buf = reversebuf(buf);
   }
-  var hex = buf.toString('hex');
-  var bn = new BN(hex, 16);
+  const hex = buf.toString('hex');
+  const bn = new BN(hex, 16);
   return bn;
 };
 
@@ -39,13 +38,13 @@ BN.fromBuffer = function(buf, opts) {
  * Instantiate a BigNumber from a "signed magnitude buffer"
  * (a buffer where the most significant bit represents the sign (0 = positive, -1 = negative))
  */
-BN.fromSM = function(buf, opts) {
-  var ret;
+BN.fromSM = function (buf, opts) {
+  let ret;
   if (buf.length === 0) {
     return BN.fromBuffer(new Buffer([0]));
   }
 
-  var endian = 'big';
+  let endian = 'big';
   if (opts) {
     endian = opts.endian;
   }
@@ -54,7 +53,7 @@ BN.fromSM = function(buf, opts) {
   }
 
   if (buf[0] & 0x80) {
-    buf[0] = buf[0] & 0x7f;
+    buf[0] &= 0x7f;
     ret = BN.fromBuffer(buf);
     ret.neg().copy(ret);
   } else {
@@ -64,15 +63,16 @@ BN.fromSM = function(buf, opts) {
 };
 
 
-BN.prototype.toNumber = function() {
+BN.prototype.toNumber = function () {
   return parseInt(this.toString(10), 10);
 };
 
-BN.prototype.toBuffer = function(opts) {
-  var buf, hex;
+BN.prototype.toBuffer = function (opts) {
+  let buf,
+    hex;
   if (opts && opts.size) {
     hex = this.toString(16, 2);
-    var natlen = hex.length / 2;
+    const natlen = hex.length / 2;
     buf = new Buffer(hex, 'hex');
 
     if (natlen === opts.size) {
@@ -94,14 +94,14 @@ BN.prototype.toBuffer = function(opts) {
   return buf;
 };
 
-BN.prototype.toSMBigEndian = function() {
-  var buf;
+BN.prototype.toSMBigEndian = function () {
+  let buf;
   if (this.cmp(BN.Zero) === -1) {
     buf = this.neg().toBuffer();
     if (buf[0] & 0x80) {
       buf = Buffer.concat([new Buffer([0x80]), buf]);
     } else {
-      buf[0] = buf[0] | 0x80;
+      buf[0] |= 0x80;
     }
   } else {
     buf = this.toBuffer();
@@ -116,9 +116,9 @@ BN.prototype.toSMBigEndian = function() {
   return buf;
 };
 
-BN.prototype.toSM = function(opts) {
-  var endian = opts ? opts.endian : 'big';
-  var buf = this.toSMBigEndian();
+BN.prototype.toSM = function (opts) {
+  const endian = opts ? opts.endian : 'big';
+  let buf = this.toSMBigEndian();
 
   if (endian === 'little') {
     buf = reversebuf(buf);
@@ -134,8 +134,8 @@ BN.prototype.toSM = function(opts) {
  * 4 bytes. We copy that behavior here. A third argument, `size`, is provided to
  * extend the hard limit of 4 bytes, as some usages require more than 4 bytes.
  */
-BN.fromScriptNumBuffer = function(buf, fRequireMinimal, size) {
-  var nMaxNumSize = size || 4;
+BN.fromScriptNumBuffer = function (buf, fRequireMinimal, size) {
+  const nMaxNumSize = size || 4;
   $.checkArgument(buf.length <= nMaxNumSize, new Error('script number overflow'));
   if (fRequireMinimal && buf.length > 0) {
     // Check that the number is encoded with the minimum possible
@@ -166,30 +166,30 @@ BN.fromScriptNumBuffer = function(buf, fRequireMinimal, size) {
  * performing a numerical operation that results in an overflow to more than 4
  * bytes).
  */
-BN.prototype.toScriptNumBuffer = function() {
+BN.prototype.toScriptNumBuffer = function () {
   return this.toSM({
     endian: 'little'
   });
 };
 
-BN.prototype.gt = function(b) {
+BN.prototype.gt = function (b) {
   return this.cmp(b) > 0;
 };
 
-BN.prototype.gte = function(b) {
+BN.prototype.gte = function (b) {
   return this.cmp(b) >= 0;
 };
 
-BN.prototype.lt = function(b) {
+BN.prototype.lt = function (b) {
   return this.cmp(b) < 0;
 };
 
-BN.trim = function(buf, natlen) {
+BN.trim = function (buf, natlen) {
   return buf.slice(natlen - buf.length, buf.length);
 };
 
-BN.pad = function(buf, natlen, size) {
-  var rbuf = new Buffer(size);
+BN.pad = function (buf, natlen, size) {
+  const rbuf = new Buffer(size);
   for (var i = 0; i < buf.length; i++) {
     rbuf[rbuf.length - 1 - i] = buf[buf.length - 1 - i];
   }

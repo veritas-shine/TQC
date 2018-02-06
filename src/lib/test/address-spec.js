@@ -77,7 +77,7 @@ describe('Address', function() {
     '1Jz2yCRdOST1p2gUqFB5wsSQfdmEJaffg7'
   ];
 
-  //testnet valid
+  // testnet valid
   var PKHTestnet = [
     'Lfci7ooSc31oNijNG9zDeHBBHJddxrPEKX',
     'LSqMfCvCHqDFWKp3xnKduMRYjw2Tqdn3JK',

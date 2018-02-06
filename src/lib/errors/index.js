@@ -1,6 +1,6 @@
 
 
-const _ = require('lodash');
+import _ from 'lodash'
 
 function format(message, args) {
   return message

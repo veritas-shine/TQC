@@ -5,15 +5,15 @@ import PublicKey from '../publickey';
 
 const BufferReader = require('../encoding/bufferreader');
 const BufferWriter = require('../encoding/bufferwriter');
-const Hash = require('../crypto/hash');
+import Hash from '../crypto/hash';
 const Opcode = require('../opcode');
 
 const Signature = require('../crypto/signature');
 const Networks = require('../networks');
 import $ from '../util/preconditions';
-const _ = require('lodash');
+import _ from 'lodash'
 const errors = require('../errors')
-const BufferUtil = require('../util/buffer');
+import BufferUtil from '../util/buffer'
 const JSUtil = require('../util/js');
 
 /**

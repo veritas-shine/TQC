@@ -1,7 +1,7 @@
 const BASE58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 const bs58 = require('base-x')(BASE58)
 
-const _ = require('lodash');
+import _ from 'lodash'
 
 const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'.split('');
 
