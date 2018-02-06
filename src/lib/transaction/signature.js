@@ -2,7 +2,6 @@
 import _ from 'lodash'
 import $ from '../util/preconditions'
 
-const inherits = require('inherits');
 import BufferUtil from '../util/buffer';
 const JSUtil = require('../util/js');
 
@@ -29,7 +28,7 @@ export default class TransactionSignature extends Signature {
   _fromObject(arg) {
     this._checkObjectArgs(arg);
     this.publicKey = new PublicKey(arg.publicKey);
-    this.prevTxId = BufferUtil.isBuffer(arg.prevTxId) ? arg.prevTxId : new Buffer(arg.prevTxId, 'hex');
+    this.prevTxId = BufferUtil.isBuffer(arg.prevTxId) ? arg.prevTxId : Buffer.from(arg.prevTxId, 'hex');
     this.outputIndex = arg.outputIndex;
     this.inputIndex = arg.inputIndex;
     this.signature = (arg.signature instanceof Signature) ? arg.signature :
@@ -40,7 +39,7 @@ export default class TransactionSignature extends Signature {
   };
 
   _checkObjectArgs(arg) {
-    $.checkArgument(PublicKey(arg.publicKey), 'publicKey');
+    $.checkArgument(new PublicKey(arg.publicKey), 'publicKey');
     $.checkArgument(!_.isUndefined(arg.inputIndex), 'inputIndex');
     $.checkArgument(!_.isUndefined(arg.outputIndex), 'outputIndex');
     $.checkState(_.isNumber(arg.inputIndex), 'inputIndex must be a number');

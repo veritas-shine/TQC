@@ -100,6 +100,7 @@ function sign(transaction, privateKey, sighashType, inputIndex, subscript) {
   const data = xmss.sign(hashbuf, privateSignKey)
   const sig = new Signature()
   sig.buffer = data
+  console.log(100, hashbuf.toString('hex'), privateSignKey.toString('hex'), data.toString('hex'))
   return sig
 }
 
@@ -119,6 +120,7 @@ function verify(transaction, signature, publicKey, inputIndex, subscript) {
   $.checkArgument(!_.isUndefined(signature) && !_.isUndefined(signature.nhashtype));
   const hashbuf = sighash(transaction, signature.nhashtype, inputIndex, subscript);
   const signPublicKey = publicKey.signKey
+  console.log(123, signature.buffer.toString('hex'), hashbuf.toString('hex'), signPublicKey.toString('hex'))
   return xmss.verify(signature.buffer, hashbuf, signPublicKey);
 }
 

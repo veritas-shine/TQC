@@ -9,7 +9,7 @@ import Hash from '../../crypto/hash'
 const Input = require('./input');
 const Output = require('../output');
 const Sighash = require('../sighash');
-const Script = require('../../script');
+import Script from '../../script'
 import Signature from '../../crypto/signature'
 import TransactionSignature from '../signature'
 
@@ -37,7 +37,6 @@ PublicKeyHashInput.prototype.getSignatures = function (transaction, privateKey, 
   sigtype = sigtype || Signature.SIGHASH_ALL;
 
   const hash = this.output.script.getPublicKeyHash()
-  console.log(40, hash, hashData)
   if (BufferUtil.equals(hashData, hash)) {
     return [new TransactionSignature({
       publicKey: privateKey.publicKey,
