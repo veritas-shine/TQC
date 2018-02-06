@@ -35,14 +35,14 @@ describe('BufferReader', () => {
 
   describe('#eof', () => {
     it('should return true for a blank br', () => {
-      const br = new BufferReader(new Buffer([]));
+      const br = new BufferReader(Buffer.from([]));
       br.finished().should.equal(true);
     });
   });
 
   describe('read', () => {
     it('should return the same buffer', () => {
-      const buf = new Buffer([0]);
+      const buf = Buffer.from([0]);
       const br = new BufferReader(buf);
       br.readAll().toString('hex').should.equal(buf.toString('hex'));
     });
@@ -227,19 +227,19 @@ describe('BufferReader', () => {
 
   describe('#readVarintBuf', () => {
     it('should read a 1 byte varint', () => {
-      const buf = new Buffer([50]);
+      const buf = Buffer.from([50]);
       const br = new BufferReader(buf);
       br.readVarintBuf().length.should.equal(1);
     });
 
     it('should read a 3 byte varint', () => {
-      const buf = new Buffer([253, 253, 0]);
+      const buf = Buffer.from([253, 253, 0]);
       const br = new BufferReader(buf);
       br.readVarintBuf().length.should.equal(3);
     });
 
     it('should read a 5 byte varint', () => {
-      const buf = new Buffer([254, 0, 0, 0, 0]);
+      const buf = Buffer.from([254, 0, 0, 0, 0]);
       buf.writeUInt32LE(50000, 1);
       const br = new BufferReader(buf);
       br.readVarintBuf().length.should.equal(5);
@@ -254,19 +254,19 @@ describe('BufferReader', () => {
 
   describe('#readVarintNum', () => {
     it('should read a 1 byte varint', () => {
-      const buf = new Buffer([50]);
+      const buf = Buffer.from([50]);
       const br = new BufferReader(buf);
       br.readVarintNum().should.equal(50);
     });
 
     it('should read a 3 byte varint', () => {
-      const buf = new Buffer([253, 253, 0]);
+      const buf = Buffer.from([253, 253, 0]);
       const br = new BufferReader(buf);
       br.readVarintNum().should.equal(253);
     });
 
     it('should read a 5 byte varint', () => {
-      const buf = new Buffer([254, 0, 0, 0, 0]);
+      const buf = Buffer.from([254, 0, 0, 0, 0]);
       buf.writeUInt32LE(50000, 1);
       const br = new BufferReader(buf);
       br.readVarintNum().should.equal(50000);
@@ -291,26 +291,26 @@ describe('BufferReader', () => {
 
   describe('#readVarintBN', () => {
     it('should read a 1 byte varint', () => {
-      const buf = new Buffer([50]);
+      const buf = Buffer.from([50]);
       const br = new BufferReader(buf);
       br.readVarintBN().toNumber().should.equal(50);
     });
 
     it('should read a 3 byte varint', () => {
-      const buf = new Buffer([253, 253, 0]);
+      const buf = Buffer.from([253, 253, 0]);
       const br = new BufferReader(buf);
       br.readVarintBN().toNumber().should.equal(253);
     });
 
     it('should read a 5 byte varint', () => {
-      const buf = new Buffer([254, 0, 0, 0, 0]);
+      const buf = Buffer.from([254, 0, 0, 0, 0]);
       buf.writeUInt32LE(50000, 1);
       const br = new BufferReader(buf);
       br.readVarintBN().toNumber().should.equal(50000);
     });
 
     it('should read a 9 byte varint', () => {
-      const buf = Buffer.concat([new Buffer([255]), Buffer.from('ffffffffffffffff', 'hex')]);
+      const buf = Buffer.concat([Buffer.from([255]), Buffer.from('ffffffffffffffff', 'hex')]);
       const br = new BufferReader(buf);
       br.readVarintBN().toNumber().should.equal(Math.pow(2, 64));
     });
@@ -318,7 +318,7 @@ describe('BufferReader', () => {
 
   describe('#reverse', () => {
     it('should reverse this [0, 1]', () => {
-      const buf = new Buffer([0, 1]);
+      const buf = Buffer.from([0, 1]);
       const br = new BufferReader(buf);
       br.reverse().readAll().toString('hex').should.equal('0100');
     });

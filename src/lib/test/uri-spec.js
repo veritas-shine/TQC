@@ -1,12 +1,10 @@
+import chai from 'chai'
 
+const pqccore = require('..')
 
-var chai = chai || require('chai');
-const pqccore = require('..');
-
-const expect = chai.expect;
-const Networks = pqccore.Networks;
-const should = chai.should();
-const URI = pqccore.URI;
+const {expect} = chai
+const {Networks, URI} = pqccore
+const should = chai.should()
 
 describe('URI', () => {
   /* jshint maxstatements: 30 */

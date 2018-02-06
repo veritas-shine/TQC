@@ -1,9 +1,8 @@
+import $ from '../../util/preconditions'
 
-
-const should = require('chai').should();
+const should = require('chai').should()
 
 const errors = require('../../errors')
-import $ from '../../util/preconditions'
 
 describe('preconditions', () => {
   it('can be used to assert state', () => {

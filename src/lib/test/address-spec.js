@@ -103,12 +103,12 @@ describe('Address', () => {
 
     it('validates correctly the P2PKH test vector', () => {
       const version = Buffer.from([0x19])
-      PKHLivenet.forEach((str) => {
-        const address = new Address(str)
+      PKHLivenet.forEach((ilooper) => {
+        const address = new Address(ilooper)
 
-        const buf = Buffer.concat([version, address.hashBuffer])
-        console.log(Base58Check.encode(buf))
-        const error = Address.getValidationError(str);
+        const b = Buffer.concat([version, address.hashBuffer])
+        console.log(Base58Check.encode(b))
+        const error = Address.getValidationError(ilooper);
         should.not.exist(error);
       })
     });
@@ -150,8 +150,8 @@ describe('Address', () => {
     });
 
     it('should not validate on a network mismatch', () => {
-      let error,
-        i;
+      let error;
+      let i;
       for (i = 0; i < PKHLivenet.length; i++) {
         error = Address.getValidationError(PKHLivenet[i], 'testnet', 'pubkeyhash');
         should.exist(error);
@@ -236,13 +236,13 @@ describe('Address', () => {
 
     it('should error because of incorrect format for pubkey hash', () => {
       (function () {
-        return new Address.fromPublicKeyHash('notahash');
+        return Address.fromPublicKeyHash('notahash');
       }).should.throw('Address supplied is not a buffer.');
     });
 
     it('should error because of incorrect format for script hash', () => {
       (function () {
-        return new Address.fromScriptHash('notascript');
+        return Address.fromScriptHash('notascript');
       }).should.throw('Address supplied is not a buffer.');
     });
 
@@ -326,10 +326,10 @@ describe('Address', () => {
         networkMagic: 0x0c110907,
         port: 7333
       };
-      const addressString = 'CX4WePxBwq1Y6u7VyMJfmmitE7GiTgC9aE';
+      const addrString = 'CX4WePxBwq1Y6u7VyMJfmmitE7GiTgC9aE';
       Networks.add(custom);
       const network = Networks.get('customnetwork');
-      const address = Address.fromString(addressString);
+      const address = Address.fromString(addrString);
       address.type.should.equal(Address.PayToPublicKeyHash);
       address.network.should.equal(network);
       Networks.remove(network);

@@ -1,126 +1,102 @@
-'use strict';
+const should = require('chai').should();
 
-var should = require('chai').should();
+const BufferWriter = require('../../encoding/bufferwriter');
+const BufferReader = require('../../encoding/bufferreader');
+const BN = require('../../crypto/bn');
+const Varint = require('../../encoding/varint');
 
-var BufferWriter = require('../../encoding/bufferwriter');
-var BufferReader = require('../../encoding/bufferreader');
-var BN = require('../../crypto/bn');
-var Varint = require('../../encoding/varint');
-
-describe('Varint', function() {
-
-  it('should make a new varint', function() {
-    var buf = new Buffer('00', 'hex');
-    var varint = new Varint(buf);
+describe('Varint', () => {
+  it('should make a new varint', () => {
+    const buf = Buffer.from('00', 'hex');
+    let varint = new Varint(buf);
     should.exist(varint);
     varint.buf.toString('hex').should.equal('00');
     varint = Varint(buf);
     should.exist(varint);
     varint.buf.toString('hex').should.equal('00');
 
-    //various ways to use the constructor
+    // various ways to use the constructor
     Varint(Varint(0).toBuffer()).toNumber().should.equal(0);
     Varint(0).toNumber().should.equal(0);
     Varint(new BN(0)).toNumber().should.equal(0);
   });
 
-  describe('#set', function() {
-
-    it('should set a buffer', function() {
-      var buf = new Buffer('00', 'hex');
-      var varint = Varint().set({buf: buf});
+  describe('#set', () => {
+    it('should set a buffer', () => {
+      const buf = Buffer.from('00', 'hex');
+      const varint = Varint().set({buf});
       varint.buf.toString('hex').should.equal('00');
       varint.set({});
       varint.buf.toString('hex').should.equal('00');
     });
-
   });
 
-  describe('#fromString', function() {
-
-    it('should set a buffer', function() {
-      var buf = BufferWriter().writeVarintNum(5).concat();
-      var varint = Varint().fromString(buf.toString('hex'));
+  describe('#fromString', () => {
+    it('should set a buffer', () => {
+      const buf = BufferWriter().writeVarintNum(5).concat();
+      const varint = Varint().fromString(buf.toString('hex'));
       varint.toNumber().should.equal(5);
     });
-
   });
 
-  describe('#toString', function() {
-
-    it('should return a buffer', function() {
-      var buf = BufferWriter().writeVarintNum(5).concat();
-      var varint = Varint().fromString(buf.toString('hex'));
+  describe('#toString', () => {
+    it('should return a buffer', () => {
+      const buf = BufferWriter().writeVarintNum(5).concat();
+      const varint = Varint().fromString(buf.toString('hex'));
       varint.toString().should.equal('05');
     });
-
   });
 
-  describe('#fromBuffer', function() {
-
-    it('should set a buffer', function() {
-      var buf = BufferWriter().writeVarintNum(5).concat();
-      var varint = Varint().fromBuffer(buf);
+  describe('#fromBuffer', () => {
+    it('should set a buffer', () => {
+      const buf = BufferWriter().writeVarintNum(5).concat();
+      const varint = Varint().fromBuffer(buf);
       varint.toNumber().should.equal(5);
     });
-
   });
 
-  describe('#fromBufferReader', function() {
-
-    it('should set a buffer reader', function() {
-      var buf = BufferWriter().writeVarintNum(5).concat();
-      var br = BufferReader(buf);
-      var varint = Varint().fromBufferReader(br);
+  describe('#fromBufferReader', () => {
+    it('should set a buffer reader', () => {
+      const buf = BufferWriter().writeVarintNum(5).concat();
+      const br = BufferReader(buf);
+      const varint = Varint().fromBufferReader(br);
       varint.toNumber().should.equal(5);
     });
-
   });
 
-  describe('#fromBN', function() {
-
-    it('should set a number', function() {
-      var varint = Varint().fromBN(new BN(5));
+  describe('#fromBN', () => {
+    it('should set a number', () => {
+      const varint = Varint().fromBN(new BN(5));
       varint.toNumber().should.equal(5);
     });
-
   });
 
-  describe('#fromNumber', function() {
-
-    it('should set a number', function() {
-      var varint = Varint().fromNumber(5);
+  describe('#fromNumber', () => {
+    it('should set a number', () => {
+      const varint = Varint().fromNumber(5);
       varint.toNumber().should.equal(5);
     });
-
   });
 
-  describe('#toBuffer', function() {
-
-    it('should return a buffer', function() {
-      var buf = BufferWriter().writeVarintNum(5).concat();
-      var varint = Varint(buf);
+  describe('#toBuffer', () => {
+    it('should return a buffer', () => {
+      const buf = BufferWriter().writeVarintNum(5).concat();
+      const varint = Varint(buf);
       varint.toBuffer().toString('hex').should.equal(buf.toString('hex'));
     });
-
   });
 
-  describe('#toBN', function() {
-
-    it('should return a buffer', function() {
-      var varint = Varint(5);
+  describe('#toBN', () => {
+    it('should return a buffer', () => {
+      const varint = Varint(5);
       varint.toBN().toString().should.equal(new BN(5).toString());
     });
-
   });
 
-  describe('#toNumber', function() {
-
-    it('should return a buffer', function() {
-      var varint = Varint(5);
+  describe('#toNumber', () => {
+    it('should return a buffer', () => {
+      const varint = Varint(5);
       varint.toNumber().should.equal(5);
     });
-
   });
-
 });
