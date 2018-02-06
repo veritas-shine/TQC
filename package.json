@@ -8,7 +8,7 @@
     "test": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/*/test.js",
     "test-lib": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/transaction/signature.js",
     "test-block": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/block/*.js",
-    "test-script": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/script/*.js",
+    "test-script": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/script/script.js",
     "test-base": "npm run test-other && npm run test-crypto && npm run test-encoding && npm run test-util",
     "test-other": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/*-spec.js",
     "test-privatekey": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/privatekey.js",

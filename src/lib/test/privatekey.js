@@ -40,7 +40,7 @@ describe('PrivateKey', () => {
     this.timeout(20 * 1000)
     for (let i = 0; i < 4; ++i) {
       const privatekey = PrivateKey.fromRandom()
-      console.log(privatekey.toWIF(), privatekey.toString(), privatekey.toPublicKey().toString())
+      console.log(privatekey.toWIF(), privatekey.toPublicKey().toString())
       should.exist(privatekey)
     }
   });
