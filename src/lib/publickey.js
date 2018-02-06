@@ -11,6 +11,10 @@ import PrivateKey from './privatekey'
 /**
  * Instantiate a PublicKey from a {@link PrivateKey}, `string`, or `Buffer`.
  *
+ * buffer structure:
+ *   ----------------------------------------------------------
+ *   | header | signBufferLength | signBuffer | encryptBuffer |
+ *   ----------------------------------------------------------
  * There are two internal properties, `network` and `compressed`, that deal with importing
  * a PublicKey from a PrivateKey in WIF format. More details described on {@link PrivateKey}
  *
@@ -69,6 +73,7 @@ export default class PublicKey {
     // detect type of data
     if (data.buffer) {
       info.buffer = data.buffer
+      info.signKey = data.signKey
       info.network = data.network
     } else if (typeof (data) === 'string') {
       info = PublicKey._transformDER(Buffer.from(data, 'hex'))
@@ -127,12 +132,14 @@ export default class PublicKey {
   static _transformDER(buf) {
     $.checkArgument(BufferUtil.isBuffer(buf), 'Must be a hex buffer of DER encoded public key')
 
-    // const der = ASN1PublicKey.decode(buf, 'der')
-    const data = buf.slice(1)
-
+    // const header = buf[0]
+    const signBufferLength = buf[1]
+    const signBuffer = buf.slice(2, 2 + signBufferLength)
+    const encryptBuffer = buf.slice(2 + signBufferLength, buf.length)
     // TODO
     return {
-      buffer: data
+      buffer: encryptBuffer,
+      signKey: signBuffer
     }
   }
 
@@ -160,9 +167,7 @@ export default class PublicKey {
       throw new TypeError('Invalid buffer')
     }
     const info = PublicKey._transformDER(buf, strict)
-    return new PublicKey(info.buffer, {
-      compressed: info.compressed
-    })
+    return new PublicKey(info)
   }
 
   static fromDER = PublicKey.fromBuffer
@@ -213,6 +218,7 @@ export default class PublicKey {
   toJSON() {
     return {
       buffer: this.buffer,
+      signKey: this.signKey,
       compressed: this.compressed
     }
   }
@@ -227,8 +233,9 @@ export default class PublicKey {
   toBuffer = this.toDER
 
   toDER() {
-    const prefix = Buffer.from([0x04])
-    return Buffer.concat([prefix, this.buffer])
+    const signKeyLength = this.signKey.length
+    const prefix = Buffer.from([0x04, signKeyLength])
+    return Buffer.concat([prefix, this.signKey, this.buffer])
   }
 
   /**

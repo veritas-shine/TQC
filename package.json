@@ -11,11 +11,11 @@
     "test-script": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/script/*.js",
     "test-base": "npm run test-other && npm run test-crypto && npm run test-encoding && npm run test-util",
     "test-other": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/*-spec.js",
-    "test-key": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/*key.js",
+    "test-privatekey": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/privatekey.js",
+    "test-publickey": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/publickey.js",
     "test-crypto": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/crypto/*.js",
     "test-encoding": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/encoding/*.js",
     "test-util": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/util/*.js"
-
   },
   "betterScripts": {
     "dev": {
@@ -58,7 +58,7 @@
     "ntrujs": "https://github.com/veritas-shine/ntrujs/tarball/dist",
     "tweetnacl": "^1.0.0",
     "winston": "^2.4.0",
-    "xmss": "^0.0.4"
+    "xmss": "0.0.4"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
