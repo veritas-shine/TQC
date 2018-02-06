@@ -300,8 +300,6 @@ export default class PrivateKey {
   toPublicKey() {
     if (!this._pubkey) {
       this._pubkey = PublicKey.fromPrivateKey(this)
-      this._pubkey.buffer = this.keypair.public
-      this._pubkey.signKey = this.signKeypair.public
     }
     return this._pubkey
   }
