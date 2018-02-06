@@ -36,14 +36,14 @@ describe('Script', () => {
     });
 
     it('should parse this buffer containing three bytes of data', () => {
-      const buf = new Buffer([3, 1, 2, 3]);
+      const buf = Buffer.from([3, 1, 2, 3]);
       const script = Script.fromBuffer(buf);
       script.chunks.length.should.equal(1);
       script.chunks[0].buf.toString('hex').should.equal('010203');
     });
 
     it('should parse this buffer containing OP_PUSHDATA1 and three bytes of data', () => {
-      const buf = new Buffer([0, 0, 1, 2, 3]);
+      const buf = Buffer.from([0, 0, 1, 2, 3]);
       buf[0] = Opcode.OP_PUSHDATA1;
       buf.writeUInt8(3, 1);
       const script = Script.fromBuffer(buf);
@@ -52,7 +52,7 @@ describe('Script', () => {
     });
 
     it('should parse this buffer containing OP_PUSHDATA2 and three bytes of data', () => {
-      const buf = new Buffer([0, 0, 0, 1, 2, 3]);
+      const buf = Buffer.from([0, 0, 0, 1, 2, 3]);
       buf[0] = Opcode.OP_PUSHDATA2;
       buf.writeUInt16LE(3, 1);
       const script = Script.fromBuffer(buf);
@@ -61,7 +61,7 @@ describe('Script', () => {
     });
 
     it('should parse this buffer containing OP_PUSHDATA4 and three bytes of data', () => {
-      const buf = new Buffer([0, 0, 0, 0, 0, 1, 2, 3]);
+      const buf = Buffer.from([0, 0, 0, 0, 0, 1, 2, 3]);
       buf[0] = Opcode.OP_PUSHDATA4;
       buf.writeUInt16LE(3, 1);
       const script = Script.fromBuffer(buf);
@@ -70,7 +70,7 @@ describe('Script', () => {
     });
 
     it('should parse this buffer an OP code, data, and another OP code', () => {
-      const buf = new Buffer([0, 0, 0, 0, 0, 0, 1, 2, 3, 0]);
+      const buf = Buffer.from([0, 0, 0, 0, 0, 0, 1, 2, 3, 0]);
       buf[0] = Opcode.OP_0;
       buf[1] = Opcode.OP_PUSHDATA4;
       buf.writeUInt16LE(3, 2);
@@ -103,7 +103,7 @@ describe('Script', () => {
     });
 
     it('should output this buffer containing three bytes of data', () => {
-      const buf = new Buffer([3, 1, 2, 3]);
+      const buf = Buffer.from([3, 1, 2, 3]);
       const script = Script.fromBuffer(buf);
       script.chunks.length.should.equal(1);
       script.chunks[0].buf.toString('hex').should.equal('010203');
@@ -111,7 +111,7 @@ describe('Script', () => {
     });
 
     it('should output this buffer containing OP_PUSHDATA1 and three bytes of data', () => {
-      const buf = new Buffer([0, 0, 1, 2, 3]);
+      const buf = Buffer.from([0, 0, 1, 2, 3]);
       buf[0] = Opcode.OP_PUSHDATA1;
       buf.writeUInt8(3, 1);
       const script = Script.fromBuffer(buf);
@@ -121,7 +121,7 @@ describe('Script', () => {
     });
 
     it('should output this buffer containing OP_PUSHDATA2 and three bytes of data', () => {
-      const buf = new Buffer([0, 0, 0, 1, 2, 3]);
+      const buf = Buffer.from([0, 0, 0, 1, 2, 3]);
       buf[0] = Opcode.OP_PUSHDATA2;
       buf.writeUInt16LE(3, 1);
       const script = Script.fromBuffer(buf);
@@ -131,7 +131,7 @@ describe('Script', () => {
     });
 
     it('should output this buffer containing OP_PUSHDATA4 and three bytes of data', () => {
-      const buf = new Buffer([0, 0, 0, 0, 0, 1, 2, 3]);
+      const buf = Buffer.from([0, 0, 0, 0, 0, 1, 2, 3]);
       buf[0] = Opcode.OP_PUSHDATA4;
       buf.writeUInt16LE(3, 1);
       const script = Script.fromBuffer(buf);
@@ -141,7 +141,7 @@ describe('Script', () => {
     });
 
     it('should output this buffer an OP code, data, and another OP code', () => {
-      const buf = new Buffer([0, 0, 0, 0, 0, 0, 1, 2, 3, 0]);
+      const buf = Buffer.from([0, 0, 0, 0, 0, 0, 1, 2, 3, 0]);
       buf[0] = Opcode.OP_0;
       buf[1] = Opcode.OP_PUSHDATA4;
       buf.writeUInt16LE(3, 2);
@@ -184,7 +184,7 @@ describe('Script', () => {
     });
 
     it('should output this buffer an OP code, data, and another OP code', () => {
-      const buf = new Buffer([0, 0, 0, 0, 0, 0, 1, 2, 3, 0]);
+      const buf = Buffer.from([0, 0, 0, 0, 0, 0, 1, 2, 3, 0]);
       buf[0] = Opcode.OP_0;
       buf[1] = Opcode.OP_PUSHDATA4;
       buf.writeUInt16LE(3, 2);
@@ -205,7 +205,7 @@ describe('Script', () => {
 
   describe('toHex', () => {
     it('should return an hexa string "03010203" as expected from [3, 1, 2, 3]', () => {
-      const buf = new Buffer([3, 1, 2, 3]);
+      const buf = Buffer.from([3, 1, 2, 3]);
       const script = Script.fromBuffer(buf);
       script.toHex().should.equal('03010203');
     });
@@ -777,7 +777,7 @@ describe('Script', () => {
       Script().add(1000).checkMinimalPush(0).should.equal(true);
       Script().add(0xffffffff).checkMinimalPush(0).should.equal(true);
       Script().add(0xffffffffffffffff).checkMinimalPush(0).should.equal(true);
-      Script().add(new Buffer([0])).checkMinimalPush(0).should.equal(true);
+      Script().add(Buffer.from([0])).checkMinimalPush(0).should.equal(true);
 
       let buf = new Buffer(75);
       buf.fill(1);
@@ -815,7 +815,7 @@ describe('Script', () => {
       assert.equal(BufferUtil.equal(script.getData(), address.hashBuffer), true);
     });
     it('for a standard opreturn output', () => {
-      assert.equal(BufferUtil.equal(Script('OP_RETURN 1 0xFF').getData(), new Buffer([255])), true);
+      assert.equal(BufferUtil.equal(Script('OP_RETURN 1 0xFF').getData(), Buffer.from([255])), true);
     });
     it('fails if content is not recognized', () => {
       expect(() => {

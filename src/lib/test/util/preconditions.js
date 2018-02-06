@@ -1,35 +1,34 @@
-'use strict';
 
-var should = require('chai').should();
 
-var errors = require('../../errors')
-var $ = require('../../util/preconditions')
+const should = require('chai').should();
 
-describe('preconditions', function() {
+const errors = require('../../errors')
+import $ from '../../util/preconditions'
 
-  it('can be used to assert state', function() {
-    (function() {
+describe('preconditions', () => {
+  it('can be used to assert state', () => {
+    (function () {
       $.checkState(false, 'testing');
     }).should.throw(errors.InvalidState);
   });
-  it('throws no false negative', function() {
-    (function() {
+  it('throws no false negative', () => {
+    (function () {
       $.checkState(true, 'testing');
     }).should.not.throw();
   });
 
-  it('can be used to check an argument', function() {
-    (function() {
+  it('can be used to check an argument', () => {
+    (function () {
       $.checkArgument(false, 'testing');
     }).should.throw(errors.InvalidArgument);
 
-    (function() {
+    (function () {
       $.checkArgument(true, 'testing');
     }).should.not.throw(errors.InvalidArgument);
   });
 
-  it('can be used to check an argument type', function() {
-    var error;
+  it('can be used to check an argument type', () => {
+    let error;
     try {
       $.checkArgumentType(1, 'string', 'argumentName');
     } catch (e) {
@@ -38,19 +37,19 @@ describe('preconditions', function() {
     }
     should.exist(error);
   });
-  it('has no false negatives when used to check an argument type', function() {
-    (function() {
+  it('has no false negatives when used to check an argument type', () => {
+    (function () {
       $.checkArgumentType('a String', 'string', 'argumentName');
     }).should.not.throw();
   });
 
-  it('formats correctly a message on InvalidArgument()', function() {
-    var error = new errors.InvalidArgument();
+  it('formats correctly a message on InvalidArgument()', () => {
+    const error = new errors.InvalidArgument();
     error.message.should.equal('Invalid Argument');
   });
 
-  it('formats correctly a message on checkArgument', function() {
-    var error;
+  it('formats correctly a message on checkArgument', () => {
+    let error;
     try {
       $.checkArgument(null, 'parameter must be provided');
     } catch (e) {

@@ -7,23 +7,23 @@ import BufferUtil from '../../util/buffer'
 describe('buffer utils', () => {
   describe('equals', () => {
     it('recognizes these two equal buffers', () => {
-      const bufferA = new Buffer([1, 2, 3]);
-      const bufferB = new Buffer('010203', 'hex');
+      const bufferA = Buffer.from([1, 2, 3]);
+      const bufferB = Buffer.from('010203', 'hex');
       BufferUtil.equal(bufferA, bufferB).should.equal(true);
     });
     it('no false positive: returns false with two different buffers', () => {
-      const bufferA = new Buffer([1, 2, 3]);
-      const bufferB = new Buffer('010204', 'hex');
+      const bufferA = Buffer.from([1, 2, 3]);
+      const bufferB = Buffer.from('010204', 'hex');
       BufferUtil.equal(bufferA, bufferB).should.equal(false);
     });
     it('coverage: quickly realizes a difference in size and returns false', () => {
-      const bufferA = new Buffer([1, 2, 3]);
-      const bufferB = new Buffer([]);
+      const bufferA = Buffer.from([1, 2, 3]);
+      const bufferB = Buffer.from([]);
       BufferUtil.equal(bufferA, bufferB).should.equal(false);
     });
     it('"equals" is an an alias for "equal"', () => {
-      const bufferA = new Buffer([1, 2, 3]);
-      const bufferB = new Buffer([1, 2, 3]);
+      const bufferA = Buffer.from([1, 2, 3]);
+      const bufferB = Buffer.from([1, 2, 3]);
       BufferUtil.equal(bufferA, bufferB).should.equal(true);
       BufferUtil.equals(bufferA, bufferB).should.equal(true);
     });
@@ -35,7 +35,7 @@ describe('buffer utils', () => {
         BufferUtil.fill('something');
       }).to.throw(errors.InvalidArgumentType);
       expect(() => {
-        BufferUtil.fill(new Buffer([0, 0, 0]), 'invalid');
+        BufferUtil.fill(Buffer.from([0, 0, 0]), 'invalid');
       }).to.throw(errors.InvalidArgumentType);
     });
     it('works correctly for a small buffer', () => {
@@ -87,7 +87,7 @@ describe('buffer utils', () => {
       expect(BufferUtil.integerAsSingleByteBuffer(-1)[0]).to.equal(255);
     });
     it('does a round trip', () => {
-      expect(BufferUtil.integerAsSingleByteBuffer(BufferUtil.integerFromSingleByteBuffer(new Buffer([255])))[0]).to.equal(255);
+      expect(BufferUtil.integerAsSingleByteBuffer(BufferUtil.integerFromSingleByteBuffer(Buffer.from([255])))[0]).to.equal(255);
     });
   });
 
@@ -119,7 +119,7 @@ describe('buffer utils', () => {
 
   describe('buffer to hex', () => {
     it('returns an expected value in hexa', () => {
-      expect(BufferUtil.bufferToHex(new Buffer([255, 0, 128]))).to.equal('ff0080');
+      expect(BufferUtil.bufferToHex(Buffer.from([255, 0, 128]))).to.equal('ff0080');
     });
     it('checks the argument type', () => {
       expect(() => {
@@ -127,7 +127,7 @@ describe('buffer utils', () => {
       }).to.throw(errors.InvalidArgumentType);
     });
     it('round trips', () => {
-      const original = new Buffer([255, 0, 128]);
+      const original = Buffer.from([255, 0, 128]);
       const hexa = BufferUtil.bufferToHex(original);
       const back = BufferUtil.hexToBuffer(hexa);
       expect(BufferUtil.equal(original, back)).to.equal(true);
@@ -137,7 +137,7 @@ describe('buffer utils', () => {
   describe('reverse', () => {
     it('reverses a buffer', () => {
       // http://bit.ly/1J2Ai4x
-      const original = new Buffer([255, 0, 128]);
+      const original = Buffer.from([255, 0, 128]);
       const reversed = BufferUtil.reverse(original);
       original[0].should.equal(reversed[2]);
       original[1].should.equal(reversed[1]);
