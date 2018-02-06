@@ -119,7 +119,7 @@ function verify(transaction, signature, publicKey, inputIndex, subscript) {
   $.checkArgument(!_.isUndefined(signature) && !_.isUndefined(signature.nhashtype));
   const hashbuf = sighash(transaction, signature.nhashtype, inputIndex, subscript);
   const signPublicKey = publicKey.signKey
-  return xmss.verify(signature, hashbuf, signPublicKey);
+  return xmss.verify(signature.buffer, hashbuf, signPublicKey);
 }
 
 /**

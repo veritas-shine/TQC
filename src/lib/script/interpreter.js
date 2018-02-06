@@ -1,12 +1,14 @@
-'use strict';
 
-var _ = require('lodash');
+
+const _ = require('lodash');
+
 import Script from './script'
-var Opcode = require('../opcode');
-var BN = require('../crypto/bn');
-var Hash = require('../crypto/hash');
-var Signature = require('../crypto/signature');
-var PublicKey = require('../publickey');
+
+const Opcode = require('../opcode');
+const BN = require('../crypto/bn');
+import Hash from '../crypto/hash'
+import Signature from '../crypto/signature'
+import PublicKey from '../publickey'
 
 /**
  * pqcoin transactions contain scripts. Each input has a script called the
@@ -18,7 +20,7 @@ var PublicKey = require('../publickey');
  * The primary way to use this class is via the verify function.
  * e.g., Interpreter().verify( ... );
  */
-var Interpreter = function Interpreter(obj) {
+const Interpreter = function Interpreter(obj) {
   if (!(this instanceof Interpreter)) {
     return new Interpreter(obj);
   }
@@ -43,8 +45,8 @@ var Interpreter = function Interpreter(obj) {
  *
  * Translated from pqcoind's VerifyScript
  */
-Interpreter.prototype.verify = function(scriptSig, scriptPubkey, tx, nin, flags) {
-  var Transaction = require('../transaction');
+Interpreter.prototype.verify = function (scriptSig, scriptPubkey, tx, nin, flags) {
+  const Transaction = require('../transaction');
   if (_.isUndefined(tx)) {
     tx = new Transaction();
   }
@@ -56,11 +58,11 @@ Interpreter.prototype.verify = function(scriptSig, scriptPubkey, tx, nin, flags)
   }
   this.set({
     script: scriptSig,
-    tx: tx,
-    nin: nin,
-    flags: flags
+    tx,
+    nin,
+    flags
   });
-  var stackCopy;
+  let stackCopy;
 
   if ((flags & Interpreter.SCRIPT_VERIFY_SIGPUSHONLY) !== 0 && !scriptSig.isPushOnly()) {
     this.errstr = 'SCRIPT_ERR_SIG_PUSHONLY';
@@ -76,14 +78,14 @@ Interpreter.prototype.verify = function(scriptSig, scriptPubkey, tx, nin, flags)
     stackCopy = this.stack.slice();
   }
 
-  var stack = this.stack;
+  const stack = this.stack;
   this.initialize();
   this.set({
     script: scriptPubkey,
-    stack: stack,
-    tx: tx,
-    nin: nin,
-    flags: flags
+    stack,
+    tx,
+    nin,
+    flags
   });
 
   // evaluate scriptPubkey
@@ -96,7 +98,7 @@ Interpreter.prototype.verify = function(scriptSig, scriptPubkey, tx, nin, flags)
     return false;
   }
 
-  var buf = this.stack[this.stack.length - 1];
+  const buf = this.stack[this.stack.length - 1];
   if (!Interpreter.castToBool(buf)) {
     this.errstr = 'SCRIPT_ERR_EVAL_FALSE_IN_STACK';
     return false;
@@ -117,17 +119,17 @@ Interpreter.prototype.verify = function(scriptSig, scriptPubkey, tx, nin, flags)
       throw new Error('internal error - stack copy empty');
     }
 
-    var redeemScriptSerialized = stackCopy[stackCopy.length - 1];
-    var redeemScript = Script.fromBuffer(redeemScriptSerialized);
+    const redeemScriptSerialized = stackCopy[stackCopy.length - 1];
+    const redeemScript = Script.fromBuffer(redeemScriptSerialized);
     stackCopy.pop();
 
     this.initialize();
     this.set({
       script: redeemScript,
       stack: stackCopy,
-      tx: tx,
-      nin: nin,
-      flags: flags
+      tx,
+      nin,
+      flags
     });
 
     // evaluate redeemScript
@@ -153,7 +155,7 @@ Interpreter.prototype.verify = function(scriptSig, scriptPubkey, tx, nin, flags)
 
 module.exports = Interpreter;
 
-Interpreter.prototype.initialize = function(obj) {
+Interpreter.prototype.initialize = function (obj) {
   this.stack = [];
   this.altstack = [];
   this.pc = 0;
@@ -164,7 +166,7 @@ Interpreter.prototype.initialize = function(obj) {
   this.flags = 0;
 };
 
-Interpreter.prototype.set = function(obj) {
+Interpreter.prototype.set = function (obj) {
   this.script = obj.script || this.script;
   this.tx = obj.tx || this.tx;
   this.nin = typeof obj.nin !== 'undefined' ? obj.nin : this.nin;
@@ -231,8 +233,8 @@ Interpreter.SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS = (1 << 7);
 // CLTV See BIP65 for details.
 Interpreter.SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY = (1 << 9);
 
-Interpreter.castToBool = function(buf) {
-  for (var i = 0; i < buf.length; i++) {
+Interpreter.castToBool = function (buf) {
+  for (let i = 0; i < buf.length; i++) {
     if (buf[i] !== 0) {
       // can be negative zero
       if (i === buf.length - 1 && buf[i] === 0x80) {
@@ -247,8 +249,8 @@ Interpreter.castToBool = function(buf) {
 /**
  * Translated from pqcoind's CheckSignatureEncoding
  */
-Interpreter.prototype.checkSignatureEncoding = function(buf) {
-  var sig;
+Interpreter.prototype.checkSignatureEncoding = function (buf) {
+  let sig;
   if ((this.flags & (Interpreter.SCRIPT_VERIFY_DERSIG | Interpreter.SCRIPT_VERIFY_LOW_S | Interpreter.SCRIPT_VERIFY_STRICTENC)) !== 0 && !Signature.isTxDER(buf)) {
     this.errstr = 'SCRIPT_ERR_SIG_DER_INVALID_FORMAT';
     return false;
@@ -271,7 +273,7 @@ Interpreter.prototype.checkSignatureEncoding = function(buf) {
 /**
  * Translated from pqcoind's CheckPubKeyEncoding
  */
-Interpreter.prototype.checkPubkeyEncoding = function(buf) {
+Interpreter.prototype.checkPubkeyEncoding = function (buf) {
   if ((this.flags & Interpreter.SCRIPT_VERIFY_STRICTENC) !== 0 && !PublicKey.isValid(buf)) {
     this.errstr = 'SCRIPT_ERR_PUBKEYTYPE';
     return false;
@@ -284,7 +286,7 @@ Interpreter.prototype.checkPubkeyEncoding = function(buf) {
  * Interpreter.prototype.step()
  * pqcoind commit: b5d1b1092998bc95313856d535c632ea5a8f9104
  */
-Interpreter.prototype.evaluate = function() {
+Interpreter.prototype.evaluate = function () {
   if (this.script.toBuffer().length > 10000) {
     this.errstr = 'SCRIPT_ERR_SCRIPT_SIZE';
     return false;
@@ -292,7 +294,7 @@ Interpreter.prototype.evaluate = function() {
 
   try {
     while (this.pc < this.script.chunks.length) {
-      var fSuccess = this.step();
+      const fSuccess = this.step();
       if (!fSuccess) {
         return false;
       }
@@ -304,7 +306,7 @@ Interpreter.prototype.evaluate = function() {
       return false;
     }
   } catch (e) {
-    this.errstr = 'SCRIPT_ERR_UNKNOWN_ERROR: ' + e;
+    this.errstr = `SCRIPT_ERR_UNKNOWN_ERROR: ${e}`;
     return false;
   }
 
@@ -328,13 +330,12 @@ Interpreter.prototype.evaluate = function() {
  * @return {boolean} true if the transaction's locktime is less than or equal to
  *                   the transaction's locktime
  */
-Interpreter.prototype.checkLockTime = function(nLockTime) {
-
+Interpreter.prototype.checkLockTime = function (nLockTime) {
   // We want to compare apples to apples, so fail the script
   // unless the type of nLockTime being tested is the same as
   // the nLockTime in the transaction.
   if (!(
-    (this.tx.nLockTime <  Interpreter.LOCKTIME_THRESHOLD && nLockTime.lt(Interpreter.LOCKTIME_THRESHOLD_BN)) ||
+    (this.tx.nLockTime < Interpreter.LOCKTIME_THRESHOLD && nLockTime.lt(Interpreter.LOCKTIME_THRESHOLD_BN)) ||
     (this.tx.nLockTime >= Interpreter.LOCKTIME_THRESHOLD && nLockTime.gte(Interpreter.LOCKTIME_THRESHOLD_BN))
   )) {
     return false;
@@ -367,20 +368,33 @@ Interpreter.prototype.checkLockTime = function(nLockTime) {
  * Based on the inner loop of pqcoind's EvalScript function
  * pqcoind commit: b5d1b1092998bc95313856d535c632ea5a8f9104
  */
-Interpreter.prototype.step = function() {
+Interpreter.prototype.step = function () {
+  const fRequireMinimal = (this.flags & Interpreter.SCRIPT_VERIFY_MINIMALDATA) !== 0;
 
-  var fRequireMinimal = (this.flags & Interpreter.SCRIPT_VERIFY_MINIMALDATA) !== 0;
-
-  //bool fExec = !count(vfExec.begin(), vfExec.end(), false);
-  var fExec = (this.vfExec.indexOf(false) === -1);
-  var buf, buf1, buf2, spliced, n, x1, x2, bn, bn1, bn2, bufSig, bufPubkey, subscript;
-  var sig, pubkey;
-  var fValue, fSuccess;
+  // bool fExec = !count(vfExec.begin(), vfExec.end(), false);
+  const fExec = (this.vfExec.indexOf(false) === -1);
+  let buf,
+    buf1,
+    buf2,
+    spliced,
+    n,
+    x1,
+    x2,
+    bn,
+    bn1,
+    bn2,
+    bufSig,
+    bufPubkey,
+    subscript;
+  let sig,
+    pubkey;
+  let fValue,
+    fSuccess;
 
   // Read instruction
-  var chunk = this.script.chunks[this.pc];
+  const chunk = this.script.chunks[this.pc];
   this.pc++;
-  var opcodenum = chunk.opcodenum;
+  const opcodenum = chunk.opcodenum;
   if (_.isUndefined(opcodenum)) {
     this.errstr = 'SCRIPT_ERR_UNDEFINED_OPCODE';
     return false;
@@ -416,7 +430,7 @@ Interpreter.prototype.step = function() {
     return false;
   }
 
-  if (fExec && 0 <= opcodenum && opcodenum <= Opcode.OP_PUSHDATA4) {
+  if (fExec && opcodenum >= 0 && opcodenum <= Opcode.OP_PUSHDATA4) {
     if (fRequireMinimal && !this.script.checkMinimalPush(this.pc - 1)) {
       this.errstr = 'SCRIPT_ERR_MINIMALDATA';
       return false;
@@ -657,7 +671,7 @@ Interpreter.prototype.step = function() {
           }
           buf1 = this.stack[this.stack.length - 3];
           buf2 = this.stack[this.stack.length - 2];
-          var buf3 = this.stack[this.stack.length - 1];
+          const buf3 = this.stack[this.stack.length - 1];
           this.stack.push(buf1);
           this.stack.push(buf2);
           this.stack.push(buf3);
@@ -807,7 +821,7 @@ Interpreter.prototype.step = function() {
           }
           x1 = this.stack[this.stack.length - 3];
           x2 = this.stack[this.stack.length - 2];
-          var x3 = this.stack[this.stack.length - 1];
+          const x3 = this.stack[this.stack.length - 1];
           this.stack[this.stack.length - 3] = x2;
           this.stack[this.stack.length - 2] = x3;
           this.stack[this.stack.length - 1] = x1;
@@ -858,7 +872,7 @@ Interpreter.prototype.step = function() {
         //
       case Opcode.OP_EQUAL:
       case Opcode.OP_EQUALVERIFY:
-        //case Opcode.OP_NOTEQUAL: // use Opcode.OP_NUMNOTEQUAL
+        // case Opcode.OP_NOTEQUAL: // use Opcode.OP_NUMNOTEQUAL
         {
           // (x1 x2 - bool)
           if (this.stack.length < 2) {
@@ -867,7 +881,7 @@ Interpreter.prototype.step = function() {
           }
           buf1 = this.stack[this.stack.length - 2];
           buf2 = this.stack[this.stack.length - 1];
-          var fEqual = buf1.toString('hex') === buf2.toString('hex');
+          const fEqual = buf1.toString('hex') === buf2.toString('hex');
           this.stack.pop();
           this.stack.pop();
           this.stack.push(fEqual ? Interpreter.true : Interpreter.false);
@@ -921,7 +935,7 @@ Interpreter.prototype.step = function() {
             case Opcode.OP_0NOTEQUAL:
               bn = new BN((bn.cmp(BN.Zero) !== 0) + 0);
               break;
-              //default:      assert(!'invalid opcode'); break; // TODO: does this ever occur?
+              // default:      assert(!'invalid opcode'); break; // TODO: does this ever occur?
           }
           this.stack.pop();
           this.stack.push(bn.toScriptNumBuffer());
@@ -1029,8 +1043,8 @@ Interpreter.prototype.step = function() {
           }
           bn1 = BN.fromScriptNumBuffer(this.stack[this.stack.length - 3], fRequireMinimal);
           bn2 = BN.fromScriptNumBuffer(this.stack[this.stack.length - 2], fRequireMinimal);
-          var bn3 = BN.fromScriptNumBuffer(this.stack[this.stack.length - 1], fRequireMinimal);
-          //bool fValue = (bn2 <= bn1 && bn1 < bn3);
+          const bn3 = BN.fromScriptNumBuffer(this.stack[this.stack.length - 1], fRequireMinimal);
+          // bool fValue = (bn2 <= bn1 && bn1 < bn3);
           fValue = (bn2.cmp(bn1) <= 0) && (bn1.cmp(bn3) < 0);
           this.stack.pop();
           this.stack.pop();
@@ -1055,9 +1069,9 @@ Interpreter.prototype.step = function() {
             return false;
           }
           buf = this.stack[this.stack.length - 1];
-          //valtype vchHash((opcode == Opcode.OP_RIPEMD160 ||
+          // valtype vchHash((opcode == Opcode.OP_RIPEMD160 ||
           //                 opcode == Opcode.OP_SHA1 || opcode == Opcode.OP_HASH160) ? 20 : 32);
-          var bufHash;
+          let bufHash;
           if (opcodenum === Opcode.OP_RIPEMD160) {
             bufHash = Hash.ripemd160(buf);
           } else if (opcodenum === Opcode.OP_SHA1) {
@@ -1100,7 +1114,7 @@ Interpreter.prototype.step = function() {
           });
 
           // Drop the signature, since there's no way for a signature to sign itself
-          var tmpScript = new Script().add(bufSig);
+          const tmpScript = new Script().add(bufSig);
           subscript.findAndDelete(tmpScript);
 
           if (!this.checkSignatureEncoding(bufSig) || !this.checkPubkeyEncoding(bufPubkey)) {
@@ -1112,7 +1126,7 @@ Interpreter.prototype.step = function() {
             pubkey = PublicKey.fromBuffer(bufPubkey, false);
             fSuccess = this.tx.verifySignature(sig, pubkey, this.nin, subscript);
           } catch (e) {
-            //invalid sig or pubkey
+            // invalid sig or pubkey
             fSuccess = false;
           }
 
@@ -1136,13 +1150,13 @@ Interpreter.prototype.step = function() {
         {
           // ([sig ...] num_of_signatures [pubkey ...] num_of_pubkeys -- bool)
 
-          var i = 1;
+          let i = 1;
           if (this.stack.length < i) {
             this.errstr = 'SCRIPT_ERR_INVALID_STACK_OPERATION';
             return false;
           }
 
-          var nKeysCount = BN.fromScriptNumBuffer(this.stack[this.stack.length - i], fRequireMinimal).toNumber();
+          let nKeysCount = BN.fromScriptNumBuffer(this.stack[this.stack.length - i], fRequireMinimal).toNumber();
           if (nKeysCount < 0 || nKeysCount > 20) {
             this.errstr = 'SCRIPT_ERR_PUBKEY_COUNT';
             return false;
@@ -1153,20 +1167,20 @@ Interpreter.prototype.step = function() {
             return false;
           }
           // int ikey = ++i;
-          var ikey = ++i;
+          let ikey = ++i;
           i += nKeysCount;
           if (this.stack.length < i) {
             this.errstr = 'SCRIPT_ERR_INVALID_STACK_OPERATION';
             return false;
           }
 
-          var nSigsCount = BN.fromScriptNumBuffer(this.stack[this.stack.length - i], fRequireMinimal).toNumber();
+          let nSigsCount = BN.fromScriptNumBuffer(this.stack[this.stack.length - i], fRequireMinimal).toNumber();
           if (nSigsCount < 0 || nSigsCount > nKeysCount) {
             this.errstr = 'SCRIPT_ERR_SIG_COUNT';
             return false;
           }
           // int isig = ++i;
-          var isig = ++i;
+          let isig = ++i;
           i += nSigsCount;
           if (this.stack.length < i) {
             this.errstr = 'SCRIPT_ERR_INVALID_STACK_OPERATION';
@@ -1179,7 +1193,7 @@ Interpreter.prototype.step = function() {
           });
 
           // Drop the signatures, since there's no way for a signature to sign itself
-          for (var k = 0; k < nSigsCount; k++) {
+          for (let k = 0; k < nSigsCount; k++) {
             bufSig = this.stack[this.stack.length - isig - k];
             subscript.findAndDelete(new Script().add(bufSig));
           }
@@ -1201,7 +1215,7 @@ Interpreter.prototype.step = function() {
               pubkey = PublicKey.fromBuffer(bufPubkey, false);
               fOk = this.tx.verifySignature(sig, pubkey, this.nin, subscript);
             } catch (e) {
-              //invalid sig or pubkey
+              // invalid sig or pubkey
               fOk = false;
             }
 

@@ -50,16 +50,25 @@ export default class PrivateKey {
       compressed: info.compressed,
       network: info.network
     }
-    if (info.bn) {
-      Object.assign(obj, PrivateKey._prepareBuffers(info.bn))
-    }
 
     JSUtil.defineImmutable(this, obj)
+
+    Object.defineProperty(this, 'keypair', {
+      configurable: false,
+      enumerable: true,
+      get: this.getKeypair
+    })
+
+    Object.defineProperty(this, 'signKeypair', {
+      configurable: false,
+      enumerable: true,
+      get: this.getSignKeypair
+    })
 
     Object.defineProperty(this, 'publicKey', {
       configurable: false,
       enumerable: true,
-      get: this.toPublicKey.bind(this)
+      get: this.toPublicKey
     })
   }
 
@@ -104,18 +113,6 @@ export default class PrivateKey {
     return info
   }
 
-  /**
-   * @returns {Object} NTRU Keypair & XMSS Keypair
-   * @private
-   */
-  static _prepareBuffers(bn) {
-    const keypair = ntru.createKeyWithSeed(bn)
-    const signKeypair = xmss.createKeypair(bn)
-    return {
-      keypair,
-      signKeypair
-    }
-  }
   /**
    * Internal function to get a random Buffer
    *
@@ -303,10 +300,25 @@ export default class PrivateKey {
   toPublicKey() {
     if (!this._pubkey) {
       this._pubkey = PublicKey.fromPrivateKey(this)
+      this._pubkey.buffer = this.keypair.public
+      this._pubkey.signKey = this.signKeypair.public
     }
     return this._pubkey
   }
 
+  getKeypair() {
+    if (!this._keypair) {
+      this._keypair = ntru.createKeyWithSeed(this.bn)
+    }
+    return this._keypair
+  }
+
+  getSignKeypair() {
+    if (!this._signKeypair) {
+      this._signKeypair = xmss.createKeypair(this.bn)
+    }
+    return this._signKeypair
+  }
   /**
    * Will return an address for the private key
    * @param {Network=} network - optional parameter specifying

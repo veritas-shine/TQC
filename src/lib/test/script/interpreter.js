@@ -1,28 +1,28 @@
 
-var should = require('chai').should();
-var pqccore = require('../..');
+const should = require('chai').should();
+const pqccore = require('../..');
 
 
-var Interpreter = pqccore.Script.Interpreter;
-var Transaction = pqccore.Transaction;
-var PrivateKey = pqccore.PrivateKey;
-var Script = pqccore.Script;
-var BN = pqccore.crypto.BN;
-var BufferWriter = pqccore.encoding.BufferWriter;
-var Opcode = pqccore.Opcode;
-var _ = require('lodash');
+const Interpreter = pqccore.Script.Interpreter;
+const Transaction = pqccore.Transaction;
+const PrivateKey = pqccore.PrivateKey;
+const Script = pqccore.Script;
+const BN = pqccore.crypto.BN;
+const BufferWriter = pqccore.encoding.BufferWriter;
+const Opcode = pqccore.Opcode;
+const _ = require('lodash');
 
-var script_valid = require('../data/pqcoind/script_valid');
-var script_invalid = require('../data/pqcoind/script_invalid');
-var tx_valid = require('../data/pqcoind/tx_valid');
-var tx_invalid = require('../data/pqcoind/tx_invalid');
+const script_valid = require('../data/pqcoind/script_valid');
+const script_invalid = require('../data/pqcoind/script_invalid');
+const tx_valid = require('../data/pqcoind/tx_valid');
+const tx_invalid = require('../data/pqcoind/tx_invalid');
 
-//the script string format used in pqcoind data tests
-Script.frompqcoindString = function(str) {
-  var bw = new BufferWriter();
-  var tokens = str.split(' ');
-  for (var i = 0; i < tokens.length; i++) {
-    var token = tokens[i];
+// the script string format used in pqcoind data tests
+Script.frompqcoindString = function (str) {
+  const bw = new BufferWriter();
+  const tokens = str.split(' ');
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i];
     if (token === '') {
       continue;
     }
@@ -31,15 +31,15 @@ Script.frompqcoindString = function(str) {
     var opcodenum;
     var tbuf;
     if (token[0] === '0' && token[1] === 'x') {
-      var hex = token.slice(2);
+      const hex = token.slice(2);
       bw.write(new Buffer(hex, 'hex'));
     } else if (token[0] === '\'') {
-      var tstr = token.slice(1, token.length - 1);
-      var cbuf = new Buffer(tstr);
+      const tstr = token.slice(1, token.length - 1);
+      const cbuf = new Buffer(tstr);
       tbuf = new Script().add(cbuf).toBuffer();
       bw.write(tbuf);
-    } else if (typeof Opcode['OP_' + token] !== 'undefined') {
-      opstr = 'OP_' + token;
+    } else if (typeof Opcode[`OP_${token}`] !== 'undefined') {
+      opstr = `OP_${token}`;
       opcodenum = Opcode[opstr];
       bw.writeUInt8(opcodenum);
     } else if (typeof Opcode[token] === 'number') {
@@ -47,23 +47,22 @@ Script.frompqcoindString = function(str) {
       opcodenum = Opcode[opstr];
       bw.writeUInt8(opcodenum);
     } else if (!isNaN(parseInt(token))) {
-      var script = new Script().add(new BN(token).toScriptNumBuffer());
+      const script = new Script().add(new BN(token).toScriptNumBuffer());
       tbuf = script.toBuffer();
       bw.write(tbuf);
     } else {
       throw new Error('Could not determine type of script value');
     }
   }
-  var buf = bw.concat();
+  const buf = bw.concat();
   return this.fromBuffer(buf);
 };
 
 console.log(Interpreter)
 
-describe('Interpreter', function() {
-
-  it('should make a new interp', function() {
-    var interp = new Interpreter();
+describe('Interpreter', () => {
+  it('should make a new interp', () => {
+    const interp = new Interpreter();
     (interp instanceof Interpreter).should.equal(true);
     interp.stack.length.should.equal(0);
     interp.altstack.length.should.equal(0);
@@ -75,13 +74,12 @@ describe('Interpreter', function() {
     interp.flags.should.equal(0);
   });
 
-  describe('@castToBool', function() {
-
-    it('should cast these bufs to bool correctly', function() {
+  describe('@castToBool', () => {
+    it('should cast these bufs to bool correctly', () => {
       Interpreter.castToBool(new BN(0).toSM({
         endian: 'little'
       })).should.equal(false);
-      Interpreter.castToBool(new Buffer('0080', 'hex')).should.equal(false); //negative 0
+      Interpreter.castToBool(new Buffer('0080', 'hex')).should.equal(false); // negative 0
       Interpreter.castToBool(new BN(1).toSM({
         endian: 'little'
       })).should.equal(true);
@@ -89,20 +87,18 @@ describe('Interpreter', function() {
         endian: 'little'
       })).should.equal(true);
 
-      var buf = new Buffer('00', 'hex');
-      var bool = BN.fromSM(buf, {
+      const buf = new Buffer('00', 'hex');
+      const bool = BN.fromSM(buf, {
         endian: 'little'
       }).cmp(BN.Zero) !== 0;
       Interpreter.castToBool(buf).should.equal(bool);
     });
-
   });
 
-  describe('#verify', function() {
-
-    it('should verify these trivial scripts', function() {
-      var verified;
-      var si = Interpreter();
+  describe('#verify', () => {
+    it('should verify these trivial scripts', () => {
+      let verified;
+      const si = Interpreter();
       verified = si.verify(Script('OP_1'), Script('OP_1'));
       verified.should.equal(true);
       verified = Interpreter().verify(Script('OP_1'), Script('OP_0'));
@@ -123,86 +119,86 @@ describe('Interpreter', function() {
       verified.should.equal(true);
     });
 
-    it('should verify these simple transaction', function() {
+    it('should verify these simple transaction', () => {
       // first we create a transaction
-      var privateKey = new PrivateKey('cSBnVM4xvxarwGQuAfQFwqDg9k5tErHUHzgWsEfD4zdwUasvqRVY');
-      var publicKey = privateKey.publicKey;
-      var fromAddress = publicKey.toAddress();
-      var toAddress = 'mrU9pEmAx26HcbKVrABvgL7AwA5fjNFoDc';
-      var scriptPubkey = Script.buildPublicKeyHashOut(fromAddress);
-      var utxo = {
+      const privateKey = new PrivateKey('2SRLnpdFnpiqzeAbJXSBoLeCvG65m7ham4N7ZuFuSgRSAmAVQwKDVrJnui3gY4Ywv7ZFVeW5QuFC4oakVAxetMxGVnvEyct');
+      const publicKey = privateKey.publicKey;
+      const fromAddress = publicKey.toAddress();
+      const toAddress = 'Lfci7ooSc31oNijNG9zDeHBBHJddxrPEKX';
+      const scriptPubkey = Script.buildPublicKeyHashOut(fromAddress);
+      const utxo = {
         address: fromAddress,
         txId: 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
         outputIndex: 0,
         script: scriptPubkey,
         glv: 100000
       };
-      var tx = new Transaction()
+      const tx = new Transaction()
         .from(utxo)
         .to(toAddress, 100000)
         .sign(privateKey);
 
       // we then extract the signature from the first input
-      var inputIndex = 0;
-      var signature = tx.getSignatures(privateKey)[inputIndex].signature;
+      const inputIndex = 0;
+      const signature = tx.getSignatures(privateKey)[inputIndex].signature;
 
-      var scriptSig = Script.buildPublicKeyHashIn(publicKey, signature);
-      var flags = Interpreter.SCRIPT_VERIFY_P2SH | Interpreter.SCRIPT_VERIFY_STRICTENC;
-      var verified = Interpreter().verify(scriptSig, scriptPubkey, tx, inputIndex, flags);
+      const scriptSig = Script.buildPublicKeyHashIn(publicKey, signature);
+      const flags = Interpreter.SCRIPT_VERIFY_P2SH | Interpreter.SCRIPT_VERIFY_STRICTENC;
+      const verified = Interpreter().verify(scriptSig, scriptPubkey, tx, inputIndex, flags);
       verified.should.equal(true);
     });
   });
 
 
-  var getFlags = function getFlags(flagstr) {
-    var flags = 0;
+  const getFlags = function getFlags(flagstr) {
+    let flags = 0;
     if (flagstr.indexOf('NONE') !== -1) {
-      flags = flags | Interpreter.SCRIPT_VERIFY_NONE;
+      flags |= Interpreter.SCRIPT_VERIFY_NONE;
     }
     if (flagstr.indexOf('P2SH') !== -1) {
-      flags = flags | Interpreter.SCRIPT_VERIFY_P2SH;
+      flags |= Interpreter.SCRIPT_VERIFY_P2SH;
     }
     if (flagstr.indexOf('STRICTENC') !== -1) {
-      flags = flags | Interpreter.SCRIPT_VERIFY_STRICTENC;
+      flags |= Interpreter.SCRIPT_VERIFY_STRICTENC;
     }
     if (flagstr.indexOf('DERSIG') !== -1) {
-      flags = flags | Interpreter.SCRIPT_VERIFY_DERSIG;
+      flags |= Interpreter.SCRIPT_VERIFY_DERSIG;
     }
     if (flagstr.indexOf('LOW_S') !== -1) {
-      flags = flags | Interpreter.SCRIPT_VERIFY_LOW_S;
+      flags |= Interpreter.SCRIPT_VERIFY_LOW_S;
     }
     if (flagstr.indexOf('NULLDUMMY') !== -1) {
-      flags = flags | Interpreter.SCRIPT_VERIFY_NULLDUMMY;
+      flags |= Interpreter.SCRIPT_VERIFY_NULLDUMMY;
     }
     if (flagstr.indexOf('SIGPUSHONLY') !== -1) {
-      flags = flags | Interpreter.SCRIPT_VERIFY_SIGPUSHONLY;
+      flags |= Interpreter.SCRIPT_VERIFY_SIGPUSHONLY;
     }
     if (flagstr.indexOf('MINIMALDATA') !== -1) {
-      flags = flags | Interpreter.SCRIPT_VERIFY_MINIMALDATA;
+      flags |= Interpreter.SCRIPT_VERIFY_MINIMALDATA;
     }
     if (flagstr.indexOf('DISCOURAGE_UPGRADABLE_NOPS') !== -1) {
-      flags = flags | Interpreter.SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS;
+      flags |= Interpreter.SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS;
     }
     if (flagstr.indexOf('CHECKLOCKTIMEVERIFY') !== -1) {
-      flags = flags | Interpreter.SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
+      flags |= Interpreter.SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
     }
     return flags;
   };
 
 
-  var testToFromString = function(script) {
-    var s = script.toString();
+  const testToFromString = function (script) {
+    const s = script.toString();
     Script.fromString(s).toString().should.equal(s);
   };
 
-  var testFixture = function(vector, expected) {
-    var scriptSig = Script.frompqcoindString(vector[0]);
-    var scriptPubkey = Script.frompqcoindString(vector[1]);
-    var flags = getFlags(vector[2]);
+  const testFixture = function (vector, expected) {
+    const scriptSig = Script.frompqcoindString(vector[0]);
+    const scriptPubkey = Script.frompqcoindString(vector[1]);
+    const flags = getFlags(vector[2]);
 
-    var hashbuf = new Buffer(32);
+    const hashbuf = new Buffer(32);
     hashbuf.fill(0);
-    var credtx = new Transaction();
+    const credtx = new Transaction();
     credtx.uncheckedAddInput(new Transaction.Input({
       prevTxId: '0000000000000000000000000000000000000000000000000000000000000000',
       outputIndex: 0xffffffff,
@@ -213,9 +209,9 @@ describe('Interpreter', function() {
       script: scriptPubkey,
       glv: 0
     }));
-    var idbuf = credtx.id;
+    const idbuf = credtx.id;
 
-    var spendtx = new Transaction();
+    const spendtx = new Transaction();
     spendtx.uncheckedAddInput(new Transaction.Input({
       prevTxId: idbuf.toString('hex'),
       outputIndex: 0,
@@ -227,86 +223,84 @@ describe('Interpreter', function() {
       glv: 0
     }));
 
-    var interp = new Interpreter();
-    var verified = interp.verify(scriptSig, scriptPubkey, spendtx, 0, flags);
+    const interp = new Interpreter();
+    const verified = interp.verify(scriptSig, scriptPubkey, spendtx, 0, flags);
     verified.should.equal(expected);
   };
-  describe('pqcoind script evaluation fixtures', function() {
-    var testAllFixtures = function(set, expected) {
-      var c = 0;
-      set.forEach(function(vector) {
+  describe('pqcoind script evaluation fixtures', () => {
+    const testAllFixtures = function (set, expected) {
+      let c = 0;
+      set.forEach((vector) => {
         if (vector.length === 1) {
           return;
         }
         c++;
-        var descstr = vector[3];
-        var fullScriptString = vector[0] + ' ' + vector[1];
-        var comment = descstr ? (' (' + descstr + ')') : '';
-        it('should pass script_' + (expected ? '' : 'in') + 'valid ' +
-          'vector #' + c + ': ' + fullScriptString + comment,
-          function() {
+        const descstr = vector[3];
+        const fullScriptString = `${vector[0]} ${vector[1]}`;
+        const comment = descstr ? (` (${descstr})`) : '';
+        it(
+          `should pass script_${expected ? '' : 'in'}valid ` +
+          `vector #${c}: ${fullScriptString}${comment}`,
+          () => {
             testFixture(vector, expected);
-          });
+          }
+        );
       });
     };
     testAllFixtures(script_valid, true);
     testAllFixtures(script_invalid, false);
-
   });
-  describe('pqcoind transaction evaluation fixtures', function() {
-    var test_txs = function(set, expected) {
-      var c = 0;
-      set.forEach(function(vector) {
+  describe('pqcoind transaction evaluation fixtures', () => {
+    const test_txs = function (set, expected) {
+      let c = 0;
+      set.forEach((vector) => {
         if (vector.length === 1) {
           return;
         }
         c++;
-        var cc = c; //copy to local
-        it('should pass tx_' + (expected ? '' : 'in') + 'valid vector ' + cc, function() {
-          var inputs = vector[0];
-          var txhex = vector[1];
-          var flags = getFlags(vector[2]);
+        const cc = c; // copy to local
+        it(`should pass tx_${expected ? '' : 'in'}valid vector ${cc}`, () => {
+          const inputs = vector[0];
+          const txhex = vector[1];
+          const flags = getFlags(vector[2]);
 
-          var map = {};
-          inputs.forEach(function(input) {
-            var txid = input[0];
-            var txoutnum = input[1];
-            var scriptPubKeyStr = input[2];
+          const map = {};
+          inputs.forEach((input) => {
+            const txid = input[0];
+            let txoutnum = input[1];
+            const scriptPubKeyStr = input[2];
             if (txoutnum === -1) {
-              txoutnum = 0xffffffff; //pqcoind casts -1 to an unsigned int
+              txoutnum = 0xffffffff; // pqcoind casts -1 to an unsigned int
             }
-            map[txid + ':' + txoutnum] = Script.frompqcoindString(scriptPubKeyStr);
+            map[`${txid}:${txoutnum}`] = Script.frompqcoindString(scriptPubKeyStr);
           });
 
-          var tx = new Transaction(txhex);
-          var allInputsVerified = true;
-          tx.inputs.forEach(function(txin, j) {
+          const tx = new Transaction(txhex);
+          let allInputsVerified = true;
+          tx.inputs.forEach((txin, j) => {
             if (txin.isNull()) {
               return;
             }
-            var scriptSig = txin.script;
-            var txidhex = txin.prevTxId.toString('hex');
-            var txoutnum = txin.outputIndex;
-            var scriptPubkey = map[txidhex + ':' + txoutnum];
+            const scriptSig = txin.script;
+            const txidhex = txin.prevTxId.toString('hex');
+            const txoutnum = txin.outputIndex;
+            const scriptPubkey = map[`${txidhex}:${txoutnum}`];
             should.exist(scriptPubkey);
             (scriptSig !== undefined).should.equal(true);
-            var interp = new Interpreter();
-            var verified = interp.verify(scriptSig, scriptPubkey, tx, j, flags);
+            const interp = new Interpreter();
+            const verified = interp.verify(scriptSig, scriptPubkey, tx, j, flags);
             if (!verified) {
               allInputsVerified = false;
             }
           });
-          var txVerified = tx.verify();
-          txVerified = (txVerified === true) ? true : false;
+          let txVerified = tx.verify();
+          txVerified = (txVerified === true);
           allInputsVerified = allInputsVerified && txVerified;
           allInputsVerified.should.equal(expected);
-
         });
       });
     };
     test_txs(tx_valid, true);
     test_txs(tx_invalid, false);
-
   });
-
 });

@@ -7,8 +7,7 @@ const BufferReader = require('../encoding/bufferreader');
 const BufferWriter = require('../encoding/bufferwriter');
 import Hash from '../crypto/hash';
 const Opcode = require('../opcode');
-
-const Signature = require('../crypto/signature');
+import Signature from '../crypto/signature'
 const Networks = require('../networks');
 import $ from '../util/preconditions';
 import _ from 'lodash'

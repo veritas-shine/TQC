@@ -10,7 +10,7 @@ const JSUtil = require('../util/js');
 const BufferReader = require('../encoding/bufferreader');
 const BufferWriter = require('../encoding/bufferwriter');
 import Hash from '../crypto/hash';
-const Signature = require('../crypto/signature');
+import Signature from '../crypto/signature'
 const Sighash = require('./sighash');
 
 import Address from '../address'
