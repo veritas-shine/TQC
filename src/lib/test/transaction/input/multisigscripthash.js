@@ -1,18 +1,17 @@
 
 /* jshint unused: false */
 
+import Hash from '../../../crypto/hash'
+
 const should = require('chai').should();
 const expect = require('chai').expect;
 const _ = require('lodash');
 
 const bitcore = require('../../..');
 
-const Transaction = bitcore.Transaction;
-const PrivateKey = bitcore.PrivateKey;
-const Address = bitcore.Address;
-const Script = bitcore.Script;
-const Signature = bitcore.crypto.Signature;
-const MultiSigScriptHashInput = bitcore.Transaction.Input.MultiSigScriptHash;
+const {Transaction, PrivateKey, Address, Script} = bitcore
+const {Signature} = bitcore.crypto
+const MultiSigScriptHashInput = Transaction.Input.MultiSigScriptHash;
 
 describe('MultiSigScriptHashInput', () => {
   const privateKey1 = new PrivateKey('2ShLGGW7NPNdTJsYKkVxx8Wp5ThyASmpumDKkj5P8iCGia7s3yXY3AnhCQRs9kQeYEoHjGHgmDCLhynE2RZPfQYh8ej1YGK');
@@ -21,16 +20,20 @@ describe('MultiSigScriptHashInput', () => {
   const public1 = privateKey1.publicKey;
   const public2 = privateKey2.publicKey;
   const public3 = privateKey3.publicKey;
-  const address = new Address('Lfci7ooSc31oNijNG9zDeHBBHJddxrPEKX');
+  const address = new Address('BM2RGJPwgFrUy2cFXQvxcdb4bLPofpjf3w');
 
   const output = {
-    address: 'Lfci7ooSc31oNijNG9zDeHBBHJddxrPEKX',
+    address: 'BM2RGJPwgFrUy2cFXQvxcdb4bLPofpjf3w',
     txId: '66e64ef8a3b384164b78453fa8c8194de9a473ba14f89485a0e433699daec140',
     outputIndex: 0,
     script: new Script(address),
     glv: 1000000
   };
-  it('can count missing signatures', () => {
+  const add = Address.createMultisig([public1, public2, public3], 2, 'testnet')
+  console.log(36, add.toString())
+
+  it('can count missing signatures', function() {
+    this.timeout(20 * 1000)
     const transaction = new Transaction()
       .from(output, [public1, public2, public3], 2)
       .to(address, 1000000);
@@ -48,7 +51,8 @@ describe('MultiSigScriptHashInput', () => {
     input.countMissingSignatures().should.equal(0);
     input.isFullySigned().should.equal(true);
   });
-  it('returns a list of public keys with missing signatures', () => {
+  it('returns a list of public keys with missing signatures', function() {
+    this.timeout(20 * 1000)
     const transaction = new Transaction()
       .from(output, [public1, public2, public3], 2)
       .to(address, 1000000);
@@ -67,7 +71,8 @@ describe('MultiSigScriptHashInput', () => {
               serialized === public3.toString();
     }).should.equal(true);
   });
-  it('can clear all signatures', () => {
+  it('can clear all signatures', function() {
+    this.timeout(20 * 1000)
     const transaction = new Transaction()
       .from(output, [public1, public2, public3], 2)
       .to(address, 1000000)
@@ -79,14 +84,16 @@ describe('MultiSigScriptHashInput', () => {
     input.clearSignatures();
     input.isFullySigned().should.equal(false);
   });
-  it('can estimate how heavy is the output going to be', () => {
+  it('can estimate how heavy is the output going to be', function() {
+    this.timeout(20 * 1000)
     const transaction = new Transaction()
       .from(output, [public1, public2, public3], 2)
       .to(address, 1000000);
     const input = transaction.inputs[0];
     input._estimateSize().should.equal(257);
   });
-  it('uses SIGHASH_ALL by default', () => {
+  it('uses SIGHASH_ALL by default', function() {
+    this.timeout(20 * 1000)
     const transaction = new Transaction()
       .from(output, [public1, public2, public3], 2)
       .to(address, 1000000);
@@ -94,7 +101,8 @@ describe('MultiSigScriptHashInput', () => {
     const sigs = input.getSignatures(transaction, privateKey1, 0);
     sigs[0].sigtype.should.equal(Signature.SIGHASH_ALL);
   });
-  it('roundtrips to/from object', () => {
+  it('roundtrips to/from object', function() {
+    this.timeout(20 * 1000)
     const transaction = new Transaction()
       .from(output, [public1, public2, public3], 2)
       .to(address, 1000000)
@@ -103,7 +111,8 @@ describe('MultiSigScriptHashInput', () => {
     const roundtrip = new MultiSigScriptHashInput(input.toObject());
     roundtrip.toObject().should.deep.equal(input.toObject());
   });
-  it('roundtrips to/from object when not signed', () => {
+  it('roundtrips to/from object when not signed', function() {
+    this.timeout(20 * 1000)
     const transaction = new Transaction()
       .from(output, [public1, public2, public3], 2)
       .to(address, 1000000);

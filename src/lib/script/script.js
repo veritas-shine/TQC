@@ -420,13 +420,11 @@ Script.prototype.isScriptHashIn = function () {
  * @returns {boolean} if this is a mutlsig output script
  */
 Script.prototype.isMultisigOut = function () {
-  return (this.chunks.length > 3 &&
-    Opcode.isSmallIntOp(this.chunks[0].opcodenum) &&
-    this.chunks.slice(1, this.chunks.length - 2).every((obj) => {
-      return obj.buf && BufferUtil.isBuffer(obj.buf);
-    }) &&
-    Opcode.isSmallIntOp(this.chunks[this.chunks.length - 2].opcodenum) &&
-    this.chunks[this.chunks.length - 1].opcodenum === Opcode.OP_CHECKMULTISIG);
+  const f1 = Opcode.isSmallIntOp(this.chunks[0].opcodenum)
+  const fm = this.chunks.slice(1, this.chunks.length - 2).every(obj => BufferUtil.isBuffer(obj.buf))
+  const f2 = Opcode.isSmallIntOp(this.chunks[this.chunks.length - 2].opcodenum)
+  const fe = this.chunks[this.chunks.length - 1].opcodenum === Opcode.OP_CHECKMULTISIG
+  return (this.chunks.length > 3 && f1 && fm && f2 && fe)
 };
 
 

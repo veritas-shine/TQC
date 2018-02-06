@@ -23,10 +23,8 @@ function MultiSigScriptHashInput(input, pubkeys, threshold, signatures) {
   signatures = signatures || input.signatures;
   this.publicKeys = _.sortBy(pubkeys, (publicKey) => { return publicKey.toString('hex'); });
   this.redeemScript = Script.buildMultisigOut(this.publicKeys, threshold);
-  $.checkState(
-    Script.buildScriptHashOut(this.redeemScript).equals(this.output.script),
-    'Provided public keys don\'t hash to the provided output'
-  );
+  const res = Script.buildScriptHashOut(this.redeemScript)
+  $.checkState(res.equals(this.output.script), 'Provided public keys don\'t hash to the provided output');
   this.publicKeyIndex = {};
   _.each(this.publicKeys, (publicKey, index) => {
     self.publicKeyIndex[publicKey.toString()] = index;

@@ -441,7 +441,7 @@ export default class Address {
    * @returns {Buffer} Bitcoin address buffer
    */
   toBuffer() {
-    const version = new Buffer([this.network[this.type]])
+    const version = Buffer.from([this.network[this.type]])
     const buf = Buffer.concat([version, this.hashBuffer])
     return buf
   }
