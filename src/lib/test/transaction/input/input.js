@@ -44,7 +44,7 @@ describe('Transaction.Input', () => {
       '33 0x0223078d2942df62c45621d209fab84ea9a7a23346201b7727b9b45a29c4e76f5e',
     output: {
       'glv': 100000,
-      'script': 'OP_DUP OP_HASH160 20 0x88d9931ea73d60eaf7e5671efc0552b912911f2a ' +
+      'script': 'OP_DUP OP_HASH160 20 0xdfb046745e95abf6d4cb7a1710f6d65bd2b9cbe1 ' +
         'OP_EQUALVERIFY OP_CHECKSIG'
     }
   });
