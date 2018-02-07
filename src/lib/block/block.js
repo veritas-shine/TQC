@@ -20,8 +20,28 @@ export default class Block {
   static MAX_BLOCK_SIZE = 4 * 1000000
 
   constructor(arg) {
+    const idProperty = {
+      configurable: false,
+      enumerable: true,
+      /**
+       * @returns {string} - The big endian hash buffer of the header
+       */
+      get: () => {
+        if (!this._id) {
+          this._id = this.header.id
+        }
+        return this._id
+      },
+      set: _.noop
+    }
+
+    Object.defineProperty(this, 'id', idProperty)
+    Object.defineProperty(this, 'hash', idProperty)
+
     if (BufferUtil.isBuffer(arg)) {
       this._initByBufferReader(BufferReader(arg))
+    } else if (arg instanceof BufferReader) {
+      this._initByBufferReader(arg)
     } else if (_.isObject(arg)) {
       this._initByObject(arg)
     } else {
@@ -55,9 +75,7 @@ export default class Block {
    * @private
    */
   static fromObject(data) {
-    const info = new Block()
-    info._initByObject(data)
-    return info
+    return new Block(data)
   }
 
 
@@ -67,9 +85,11 @@ export default class Block {
    * @private
    */
   static fromBufferReader(br) {
-    const info = new Block()
-    info._initByBuffer(br)
-    return info
+    return new Block(br)
+  }
+
+  static fromBuffer(buffer) {
+    return this.fromBufferReader(BufferReader(buffer))
   }
 
   /**
@@ -77,8 +97,8 @@ export default class Block {
    * @returns {Block} - A hex encoded string of the block
    */
   static fromString(str) {
-    const buf = new Buffer(str, 'hex')
-    return Block.fromBuffer(buf)
+    const buf = Buffer.from(str, 'hex')
+    return this.fromBuffer(buf)
   }
 
   /**
@@ -87,11 +107,11 @@ export default class Block {
    */
   static fromRawBlock(data) {
     if (!BufferUtil.isBuffer(data)) {
-      data = new Buffer(data, 'binary')
+      data = Buffer.from(data, 'binary')
     }
     const br = BufferReader(data)
     br.pos = Block.Values.START_OF_BLOCK
-    const info = Block._fromBufferReader(br)
+    const info = Block.fromBufferReader(br)
     return new Block(info)
   }
 
@@ -105,6 +125,8 @@ export default class Block {
       transactions: this.transactions.map(tx => tx.toObject())
     }
   }
+
+  toJSON = this.toObject
 
   /**
    * @returns {Buffer} - A buffer of the block
@@ -210,24 +232,6 @@ export default class Block {
 
   static Values = {
     START_OF_BLOCK: 8, // Start of block in raw block data
-    NULL_HASH: new Buffer('0000000000000000000000000000000000000000000000000000000000000000', 'hex')
+    NULL_HASH: Buffer.from('0000000000000000000000000000000000000000000000000000000000000000', 'hex')
   }
 }
-
-const idProperty = {
-  configurable: false,
-  enumerable: true,
-  /**
-   * @returns {string} - The big endian hash buffer of the header
-   */
-  get: function() {
-    if (!this._id) {
-      this._id = this.header.id
-    }
-    return this._id
-  },
-  set: _.noop
-}
-
-Object.defineProperty(Block.prototype, 'id', idProperty)
-Object.defineProperty(Block.prototype, 'hash', idProperty)

@@ -158,7 +158,7 @@ describe('Block', () => {
           prevHash: '000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f',
           merkleRoot: '0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098',
           time: 1231469665,
-          bits: 486604799,
+          qbits: 486604799,
           nonce: 2573394689
         },
         transactions: [{
