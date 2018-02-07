@@ -17,19 +17,38 @@ import $ from '../util/preconditions'
  * @constructor
  */
 export default class Block {
-
   static MAX_BLOCK_SIZE = 4 * 1000000
 
-  static init(arg) {
+  constructor(arg) {
     if (BufferUtil.isBuffer(arg)) {
-      return this.fromBufferReader(BufferReader(arg))
+      this._initByBufferReader(BufferReader(arg))
     } else if (_.isObject(arg)) {
-      return this.fromObject(arg)
+      this._initByObject(arg)
     } else {
       throw new TypeError('Unrecognized argument for Block')
     }
   }
 
+  _initByBufferReader(br) {
+    $.checkState(!br.finished(), 'No block data received')
+    this.header = BlockHeader.fromBufferReader(br)
+    const transactions = br.readVarintNum()
+    this.transactions = []
+    for (let i = 0; i < transactions; i++) {
+      this.transactions.push(Transaction().fromBufferReader(br))
+    }
+  }
+
+  _initByObject(data) {
+    this.header = BlockHeader.fromObject(data.header)
+    this.transactions = data.transactions.map(tx => {
+      if (tx instanceof Transaction) {
+        return tx
+      } else {
+        return Transaction().fromObject(tx)
+      }
+    })
+  }
   /**
    * @param {Object} - A plain JavaScript object
    * @returns {Object} - An object representing block data
@@ -37,14 +56,7 @@ export default class Block {
    */
   static fromObject(data) {
     const info = new Block()
-    info.header = BlockHeader.fromObject(data.header)
-    info.transactions = data.transactions.map(tx => {
-      if (tx instanceof Transaction) {
-        return tx
-      } else {
-        return Transaction().fromObject(tx)
-      }
-    })
+    info._initByObject(data)
     return info
   }
 
@@ -56,13 +68,7 @@ export default class Block {
    */
   static fromBufferReader(br) {
     const info = new Block()
-    $.checkState(!br.finished(), 'No block data received')
-    info.header = BlockHeader.fromBufferReader(br)
-    const transactions = br.readVarintNum()
-    info.transactions = []
-    for (let i = 0; i < transactions; i++) {
-      info.transactions.push(Transaction().fromBufferReader(br))
-    }
+    info._initByBuffer(br)
     return info
   }
 

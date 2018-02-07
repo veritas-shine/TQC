@@ -3,7 +3,7 @@
 module.exports = {
   version: 2,
   time: 1371410638,
-  bits: 473956288,
+  qbits: 473956288,
   nonce: 3594009557,
   prevblockidhex: '4baaa9507c3b27908397ea7bc177a998e9f4fe38b9d5130be7b5353c00000000',
   merkleroothex: '97fc4c97868288e984ff9f246f2c38510f5c37a3d5b41aae7004b01e2dd5e658',

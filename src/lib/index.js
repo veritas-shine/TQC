@@ -1,3 +1,4 @@
+export BlockHeader from './block/blockheader'
 export crypto from './crypto'
 export errors from './errors'
 export Opcode from './opcode'

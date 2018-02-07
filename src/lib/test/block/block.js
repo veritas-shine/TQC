@@ -1,8 +1,9 @@
-const BN = require('../../crypto/bn');
+import path from 'path'
+const BN = require('../../crypto/bn')
 const BufferReader = require('../../encoding/bufferreader')
-const BufferWriter = require('../../encoding/bufferwriter')
-const BlockHeader = require('../../block/blockheader')
-const Block = require('../../block/block')
+import BufferWriter from '../../encoding/bufferwriter'
+import BlockHeader from '../../block/blockheader'
+import Block from '../../block/block'
 const chai = require('chai');
 const fs = require('fs');
 
@@ -10,16 +11,16 @@ const should = chai.should();
 const Transaction = require('../../transaction')
 
 // https://test-insight.bitpay.com/block/000000000b99b16390660d79fcc138d2ad0c89a0d044c4201a02bdf1f61ffa11
-const dataRawBlockBuffer = fs.readFileSync('data/blk86756-testnet.dat');
-const dataRawBlockBinary = fs.readFileSync('data/blk86756-testnet.dat', 'binary');
-const dataJson = fs.readFileSync('data/blk86756-testnet.json').toString();
-const data = require('data/blk86756-testnet');
-const dataBlocks = require('data/pqcoind/blocks');
+const dataRawBlockBuffer = fs.readFileSync(path.join(__dirname, '../data/blk86756-testnet.dat'));
+const dataRawBlockBinary = fs.readFileSync(path.join(__dirname, '../data/blk86756-testnet.dat'), 'binary');
+const dataJson = fs.readFileSync(path.join(__dirname, '../data/blk86756-testnet.json')).toString();
+const data = require('../data/blk86756-testnet');
+const dataBlocks = require('../data/pqcoind/blocks');
 
 describe('Block', () => {
   const blockhex = data.blockhex;
-  const blockbuf = new Buffer(blockhex, 'hex');
-  const bh = BlockHeader.fromBuffer(new Buffer(data.blockheaderhex, 'hex'));
+  const blockbuf = Buffer.from(blockhex, 'hex');
+  const bh = BlockHeader.fromBuffer(Buffer.from(data.blockheaderhex, 'hex'));
   const txs = [];
   JSON.parse(dataJson).transactions.forEach((tx) => {
     txs.push(new Transaction().fromObject(tx));
@@ -27,14 +28,14 @@ describe('Block', () => {
   const json = dataJson;
 
   const genesishex = '0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a29ab5f49ffff001d1dac2b7c0101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff4d04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73ffffffff0100f2052a01000000434104678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5fac00000000';
-  const genesisbuf = new Buffer(genesishex, 'hex');
+  const genesisbuf = Buffer.from(genesishex, 'hex');
   const genesisidhex = '000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f';
   const blockOneHex = '010000006fe28c0ab6f1b372c1a6a246ae63f74f931e8365e15a089c68d6190000000000982051fd1e4ba744bbbe680e1fee14677ba1a3c3540bf7b1cdb606e857233e0e61bc6649ffff001d01e362990101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0704ffff001d0104ffffffff0100f2052a0100000043410496b538e853519c726a2c91e61ec11600ae1390813a627c66fb8be7947be63c52da7589379515d4e0a604f8141781e62294721166bf621e73a82cbf2342c858eeac00000000';
-  const blockOneBuf = new Buffer(blockOneHex, 'hex');
+  const blockOneBuf = Buffer.from(blockOneHex, 'hex');
   const blockOneId = '00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048';
 
   it('should make a new block', () => {
-    const b = Block(blockbuf);
+    const b = new Block(blockbuf);
     b.toBuffer().toString('hex').should.equal(blockhex);
   });
 
@@ -56,7 +57,7 @@ describe('Block', () => {
 
     it('should properly deserialize blocks', () => {
       dataBlocks.forEach((block) => {
-        const b = Block.fromBuffer(new Buffer(block.data, 'hex'));
+        const b = Block.fromBuffer(Buffer.from(block.data, 'hex'));
         b.transactions.length.should.equal(block.transactions);
       });
     });
@@ -190,7 +191,7 @@ describe('Block', () => {
   describe('#_getHash', () => {
     it('should return the correct hash of the genesis block', () => {
       const block = Block.fromBuffer(genesisbuf);
-      const blockhash = new Buffer(Array.apply([], new Buffer(genesisidhex, 'hex')).reverse());
+      const blockhash = Buffer.from(Array.apply([], Buffer.from(genesisidhex, 'hex')).reverse());
       block._getHash().toString('hex').should.equal(blockhash.toString('hex'));
     });
   });

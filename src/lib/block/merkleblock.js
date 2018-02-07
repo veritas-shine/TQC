@@ -17,13 +17,13 @@ import Transaction from '../transaction'
  * @constructor
  */
 export default class MerkleBlock {
-  static create() {
-    var info = {};
+  constructor(arg) {
+    let info = {};
     if (BufferUtil.isBuffer(arg)) {
       info = MerkleBlock._fromBufferReader(BufferReader(arg));
     } else if (_.isObject(arg)) {
-      var header;
-      if(arg.header instanceof BlockHeader) {
+      let header;
+      if (arg.header instanceof BlockHeader) {
         header = arg.header;
       } else {
         header = BlockHeader.fromObject(arg.header);
@@ -33,7 +33,7 @@ export default class MerkleBlock {
          * @name MerkleBlock#header
          * @type {BlockHeader}
          */
-        header: header,
+        header,
         /**
          * @name MerkleBlock#numTransactions
          * @type {Number}
@@ -53,7 +53,7 @@ export default class MerkleBlock {
     } else {
       throw new TypeError('Unrecognized argument for MerkleBlock');
     }
-    _.extend(this,info);
+    _.extend(this, info);
     this._flagBitsUsed = 0;
     this._hashesUsed = 0;
   }
@@ -65,7 +65,7 @@ export default class MerkleBlock {
    */
   static fromBuffer(buf) {
     return MerkleBlock.fromBufferReader(BufferReader(buf));
-  };
+  }
 
   /**
    * @param {BufferReader} - MerkleBlock data in a BufferReader object
@@ -73,14 +73,14 @@ export default class MerkleBlock {
    */
   static fromBufferReader(br) {
     return new MerkleBlock(MerkleBlock._fromBufferReader(br));
-  };
+  }
 
   /**
    * @returns {Buffer} - A buffer of the block
    */
   toBuffer() {
     return this.toBufferWriter().concat();
-  };
+  }
 
   /**
    * @param {BufferWriter} - An existing instance of BufferWriter
@@ -101,7 +101,7 @@ export default class MerkleBlock {
       bw.writeUInt8(this.flags[i]);
     }
     return bw;
-  };
+  }
 
   /**
    * @returns {Object} - A plain object with the MerkleBlock properties
@@ -113,7 +113,7 @@ export default class MerkleBlock {
       hashes: this.hashes,
       flags: this.flags
     };
-  };
+  }
 
   /**
    * Verify that the MerkleBlock is valid
@@ -124,23 +124,23 @@ export default class MerkleBlock {
     $.checkState(_.isArray(this.hashes), 'MerkleBlock hashes is not an array');
 
     // Can't have more hashes than numTransactions
-    if(this.hashes.length > this.numTransactions) {
+    if (this.hashes.length > this.numTransactions) {
       return false;
     }
 
     // Can't have more flag bits than num hashes
-    if(this.flags.length * 8 < this.hashes.length) {
+    if (this.flags.length * 8 < this.hashes.length) {
       return false;
     }
 
-    var height = this._calcTreeHeight();
-    var opts = { hashesUsed: 0, flagBitsUsed: 0 };
-    var root = this._traverseMerkleTree(height, 0, opts);
-    if(opts.hashesUsed !== this.hashes.length) {
+    const height = this._calcTreeHeight();
+    const opts = { hashesUsed: 0, flagBitsUsed: 0 };
+    const root = this._traverseMerkleTree(height, 0, opts);
+    if (opts.hashesUsed !== this.hashes.length) {
       return false;
     }
     return BufferUtil.equals(root, this.header.merkleRoot);
-  };
+  }
 
   /**
    * Traverse a the tree in this MerkleBlock, validating it along the way
@@ -155,7 +155,7 @@ export default class MerkleBlock {
    * @private
    */
   traverseMerkleTree(depth, pos, opts) {
-    /* jshint maxcomplexity:  12*/
+    /* jshint maxcomplexity:  12 */
     /* jshint maxstatements: 20 */
 
     opts = opts || {};
@@ -163,28 +163,28 @@ export default class MerkleBlock {
     opts.flagBitsUsed = opts.flagBitsUsed || 0;
     opts.hashesUsed = opts.hashesUsed || 0;
 
-    if(opts.flagBitsUsed > this.flags.length * 8) {
+    if (opts.flagBitsUsed > this.flags.length * 8) {
       return null;
     }
-    var isParentOfMatch = (this.flags[opts.flagBitsUsed >> 3] >>> (opts.flagBitsUsed++ & 7)) & 1;
-    if(depth === 0 || !isParentOfMatch) {
-      if(opts.hashesUsed >= this.hashes.length) {
+    const isParentOfMatch = (this.flags[opts.flagBitsUsed >> 3] >>> (opts.flagBitsUsed++ & 7)) & 1;
+    if (depth === 0 || !isParentOfMatch) {
+      if (opts.hashesUsed >= this.hashes.length) {
         return null;
       }
-      var hash = this.hashes[opts.hashesUsed++];
-      if(depth === 0 && isParentOfMatch) {
+      const hash = this.hashes[opts.hashesUsed++];
+      if (depth === 0 && isParentOfMatch) {
         opts.txs.push(hash);
       }
       return new Buffer(hash, 'hex');
     } else {
-      var left = this._traverseMerkleTree(depth-1, pos*2, opts);
-      var right = left;
-      if(pos*2+1 < this._calcTreeWidth(depth-1)) {
-        right = this._traverseMerkleTree(depth-1, pos*2+1, opts);
+      const left = this._traverseMerkleTree(depth - 1, pos * 2, opts);
+      let right = left;
+      if (pos * 2 + 1 < this._calcTreeWidth(depth - 1)) {
+        right = this._traverseMerkleTree(depth - 1, pos * 2 + 1, opts);
       }
       return Hash.sha256sha256(new Buffer.concat([left, right]));
     }
-  };
+  }
 
   /** Calculates the width of a merkle tree at a given height.
    *  Modeled after pqcoin Core merkleblock.h CalcTreeWidth()
@@ -194,7 +194,7 @@ export default class MerkleBlock {
    */
   calcTreeWidth(height) {
     return (this.numTransactions + (1 << height) - 1) >> height;
-  };
+  }
 
   /** Calculates the height of the merkle tree in this MerkleBlock
    * @param {Number} - Height at which we want the tree width
@@ -202,12 +202,12 @@ export default class MerkleBlock {
    * @private
    */
   calcTreeHeight() {
-    var height = 0;
+    let height = 0;
     while (this._calcTreeWidth(height) > 1) {
       height++;
     }
     return height;
-  };
+  }
 
   /**
    * @param {Transaction|String} - Transaction or Transaction ID Hash
@@ -216,20 +216,22 @@ export default class MerkleBlock {
    */
   hasTransaction(tx) {
     $.checkArgument(!_.isUndefined(tx), 'tx cannot be undefined');
-    $.checkArgument(tx instanceof Transaction || typeof tx === 'string',
-        'Invalid tx given, tx must be a "string" or "Transaction"');
+    $.checkArgument(
+      tx instanceof Transaction || typeof tx === 'string',
+      'Invalid tx given, tx must be a "string" or "Transaction"'
+    );
 
-    var hash = tx;
-    if(tx instanceof Transaction) {
+    let hash = tx;
+    if (tx instanceof Transaction) {
       // We need to reverse the id hash for the lookup
       hash = BufferUtil.reverse(new Buffer(tx.id, 'hex')).toString('hex');
     }
 
-    var txs = [];
-    var height = this._calcTreeHeight();
-    this._traverseMerkleTree(height, 0, { txs: txs });
+    const txs = [];
+    const height = this._calcTreeHeight();
+    this._traverseMerkleTree(height, 0, { txs });
     return txs.indexOf(hash) !== -1;
-  };
+  }
 
   /**
    * @param {Buffer} - MerkleBlock data
@@ -238,21 +240,21 @@ export default class MerkleBlock {
    */
   _fromBufferReader(br) {
     $.checkState(!br.finished(), 'No merkleblock data received');
-    var info = {};
+    const info = {};
     info.header = BlockHeader.fromBufferReader(br);
     info.numTransactions = br.readUInt32LE();
-    var numHashes = br.readVarintNum();
+    const numHashes = br.readVarintNum();
     info.hashes = [];
     for (var i = 0; i < numHashes; i++) {
       info.hashes.push(br.read(32).toString('hex'));
     }
-    var numFlags = br.readVarintNum();
+    const numFlags = br.readVarintNum();
     info.flags = [];
     for (i = 0; i < numFlags; i++) {
       info.flags.push(br.readUInt8());
     }
     return info;
-  };
+  }
 
   /**
    * @param {Object} - A plain JavaScript object
@@ -260,5 +262,5 @@ export default class MerkleBlock {
    */
   static fromObject(obj) {
     return new MerkleBlock(obj);
-  };
+  }
 }
