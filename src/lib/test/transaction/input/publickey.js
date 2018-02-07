@@ -8,8 +8,8 @@ describe('PublicKeyInput', () => {
   const utxo = {
     txid: '7f3b688cb224ed83e12d9454145c26ac913687086a0a62f2ae0bc10934a4030f',
     vout: 0,
-    address: 'GSn1S1616tfDk3DzaWe5NJvtkPj4DKt7dN',
-    scriptPubKey: '76a91461fba7935d468f52ae5545d6e0a308030d20d25688ac',
+    address: 'GfJ7sr9k9razCx2C1TVm99GhWcjEkoQvKx',
+    scriptPubKey: '76a914eb4f05fc792f4da7e631d29326e6b62e52a2316688ac',
     amount: 50,
     confirmations: 104,
     spendable: true
@@ -19,7 +19,7 @@ describe('PublicKeyInput', () => {
   utxo.address.should.equal(address.toString());
 
   const destKey = new PrivateKey();
-  const fromAddress = new Address('GSn1S1616tfDk3DzaWe5NJvtkPj4DKt7dN')
+  const fromAddress = new Address('GfJ7sr9k9razCx2C1TVm99GhWcjEkoQvKx')
   const scriptPubkey = Script.buildPublicKeyHashOut(fromAddress)
   console.log(26, scriptPubkey.toHex())
 
@@ -49,7 +49,7 @@ describe('PublicKeyInput', () => {
     tx.from(utxo);
     tx.to(destKey.toAddress(), 10000);
     const input = tx.inputs[0];
-    input._estimateSize().should.equal(73);
+    input._estimateSize().should.equal(107);
   });
 
   it('it\'s signature can be removed', function() {
