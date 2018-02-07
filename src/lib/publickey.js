@@ -112,7 +112,7 @@ export default class PublicKey {
     $.checkArgument(PublicKey._isPrivateKey(privkey), 'Must be an instance of PrivateKey')
 
     const publicKey = privkey.keypair.public
-    const signKey = privkey.signKeypair.public
+    const signKey = BufferUtil.vectorToBuffer(privkey.signKeypair.getPK())
     const info = {}
     info.buffer = publicKey
     info.signKey = signKey

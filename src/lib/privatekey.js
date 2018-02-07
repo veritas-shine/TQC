@@ -2,6 +2,7 @@ import _ from 'lodash'
 import nacl from 'tweetnacl'
 import ntru from 'ntrujs'
 import xmss from 'xmss'
+import BufferUtil from './util/buffer'
 import JSUtil from './util/js'
 import Networks from './networks'
 import PublicKey from './publickey'
@@ -312,10 +313,11 @@ export default class PrivateKey {
   }
 
   getSignKeypair() {
-    if (!this._signKeypair) {
-      this._signKeypair = xmss.createKeypair(this.bn)
+    if (!this._xmss) {
+      const seed = BufferUtil.bufferToVector(this.bn.slice(0, 48))
+      this._xmss = new xmss.Xmss(seed, 4)
     }
-    return this._signKeypair
+    return this._xmss
   }
   /**
    * Will return an address for the private key

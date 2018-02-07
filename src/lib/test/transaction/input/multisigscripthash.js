@@ -20,10 +20,10 @@ describe('MultiSigScriptHashInput', () => {
   const public1 = privateKey1.publicKey;
   const public2 = privateKey2.publicKey;
   const public3 = privateKey3.publicKey;
-  const address = new Address('BM2RGJPwgFrUy2cFXQvxcdb4bLPofpjf3w');
+  const address = new Address('B4oLsYX5n4urZfMtkYxMjPgjpzpsg9G9yG');
 
   const output = {
-    address: 'BM2RGJPwgFrUy2cFXQvxcdb4bLPofpjf3w',
+    address: 'B4oLsYX5n4urZfMtkYxMjPgjpzpsg9G9yG',
     txId: '66e64ef8a3b384164b78453fa8c8194de9a473ba14f89485a0e433699daec140',
     outputIndex: 0,
     script: new Script(address),

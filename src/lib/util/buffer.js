@@ -1,6 +1,7 @@
 import assert from 'assert'
 const js = require('./js')
 import $ from './preconditions'
+import XMSS from 'xmss'
 
 function equals(a, b) {
   if (a.length !== b.length) {
@@ -25,7 +26,28 @@ function fill(buffer, value) {
   return buffer;
 }
 
+function bufferToVector(buffer) {
+  const ret = new XMSS.VectorUChar()
+  for (let i = 0; i < buffer.length; i++) {
+    // Put some data
+    ret.push_back(buffer[i])
+  }
+  return ret
+}
+
+function vectorToBuffer(vector) {
+  const size = vector.size()
+  const buffer = Buffer.alloc(size)
+  for (let i = 0; i < size; i++) {
+    // Put some data
+    buffer[i] = vector.get(i)
+  }
+  return buffer
+}
+
 export default {
+  bufferToVector,
+  vectorToBuffer,
   /**
    * Fill a buffer with a value.
    *

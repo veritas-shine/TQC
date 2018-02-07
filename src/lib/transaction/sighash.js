@@ -1,13 +1,14 @@
 import _ from 'lodash'
-import xmss from 'xmss'
 import BN from '../crypto/bn'
 import Hash from '../crypto/hash'
 import $ from '../util/preconditions'
+import BufferUtil from '../util/buffer'
 import Signature from '../crypto/signature'
 import Script from '../script'
 import Output from './output'
 import BufferReader from '../encoding/bufferreader'
 import BufferWriter from '../encoding/bufferwriter'
+import XMSS from 'xmss'
 
 const SIGHASH_SINGLE_BUG = '0000000000000000000000000000000000000000000000000000000000000001';
 const BITS_64_ON = 'ffffffffffffffff';
@@ -57,7 +58,7 @@ function sighash(transaction, sighashType, inputNumber, subscript) {
     // The SIGHASH_SINGLE bug.
     // https://pqcointalk.org/index.php?topic=260595.0
     if (inputNumber >= txcopy.outputs.length) {
-      return new Buffer(SIGHASH_SINGLE_BUG, 'hex');
+      return Buffer.from(SIGHASH_SINGLE_BUG, 'hex');
     }
 
     txcopy.outputs.length = inputNumber + 1;
@@ -96,10 +97,11 @@ function sighash(transaction, sighashType, inputNumber, subscript) {
  */
 function sign(transaction, privateKey, sighashType, inputIndex, subscript) {
   const hashbuf = sighash(transaction, sighashType, inputIndex, subscript)
-  const privateSignKey = privateKey.signKeypair.private
-  const data = xmss.sign(hashbuf, privateSignKey)
+  const xmss = privateKey.signKeypair
+  const msg = BufferUtil.bufferToVector(hashbuf)
+  const data = xmss.sign(msg)
   const sig = new Signature()
-  sig.buffer = data
+  sig.buffer = BufferUtil.vectorToBuffer(data)
   return sig
 }
 
@@ -115,11 +117,13 @@ function sign(transaction, privateKey, sighashType, inputIndex, subscript) {
  * @return {boolean}
  */
 function verify(transaction, signature, publicKey, inputIndex, subscript) {
-  $.checkArgument(!_.isUndefined(transaction));
-  $.checkArgument(!_.isUndefined(signature) && !_.isUndefined(signature.nhashtype));
-  const hashbuf = sighash(transaction, signature.nhashtype, inputIndex, subscript);
-  const signPublicKey = publicKey.signKey
-  return xmss.verify(signature.buffer, hashbuf, signPublicKey);
+  $.checkArgument(!_.isUndefined(transaction))
+  $.checkArgument(!_.isUndefined(signature) && !_.isUndefined(signature.nhashtype))
+  const hashbuf = sighash(transaction, signature.nhashtype, inputIndex, subscript)
+  const signPublicKey = BufferUtil.bufferToVector(publicKey.signKey)
+  const msg = BufferUtil.bufferToVector(hashbuf)
+  const sig = BufferUtil.bufferToVector(signature.buffer)
+  return XMSS.Xmss.verify(msg, sig, signPublicKey);
 }
 
 /**

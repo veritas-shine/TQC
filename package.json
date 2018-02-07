@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "better-npm-run dev",
     "test": "NODE_PATH=./src mocha --require babel-core/register --require babel-polyfill --reporter spec src/*/test.js",
-    "test-transaction": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/transaction/input/multisig.js",
+    "test-transaction": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/transaction/input/multisigscripthash.js",
     "test-block": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/block/*.js",
     "test-script": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/lib/test/script/interpreter.js",
     "test-base": "npm run test-other && npm run test-crypto && npm run test-encoding && npm run test-util",
@@ -56,10 +56,9 @@
     "mkdirp": "^0.5.1",
     "node-bitarray": "^0.1.0",
     "ntrujs": "https://github.com/veritas-shine/ntrujs/tarball/dist",
-    "sinon": "^4.2.2",
     "tweetnacl": "^1.0.0",
     "winston": "^2.4.0",
-    "xmss": "0.0.4"
+    "xmss": "0.0.11"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -74,6 +73,7 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.6.1",
     "mocha": "^5.0.0",
-    "piping": "^1.0.0-rc.4"
+    "piping": "^1.0.0-rc.4",
+    "sinon": "^4.2.2"
   }
 }
