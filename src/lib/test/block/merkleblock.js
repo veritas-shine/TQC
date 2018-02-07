@@ -12,23 +12,24 @@ const transactionVector = require('../data/tx_creation');
 
 describe('MerkleBlock', () => {
   const blockhex = data.HEX[0];
-  const blockbuf = new Buffer(blockhex, 'hex');
+  const blockbuf = Buffer.from(blockhex, 'hex');
   const blockJSON = JSON.stringify(data.JSON[0]);
   const blockObject = JSON.parse(JSON.stringify(data.JSON[0]));
 
   describe('#constructor', () => {
     it('should make a new merkleblock from buffer', () => {
-      const b = MerkleBlock(blockbuf);
+      const b = new MerkleBlock(blockbuf);
       b.toBuffer().toString('hex').should.equal(blockhex);
     });
 
     it('should make a new merkleblock from object', () => {
-      const b = MerkleBlock(blockObject);
+      const b = new MerkleBlock(blockObject);
+
       b.toObject().should.deep.equal(blockObject);
     });
 
     it('should make a new merkleblock from JSON', () => {
-      const b = MerkleBlock(JSON.parse(blockJSON));
+      const b = new MerkleBlock(JSON.parse(blockJSON));
       JSON.stringify(b).should.equal(blockJSON);
     });
 
@@ -49,7 +50,7 @@ describe('MerkleBlock', () => {
     });
 
     it('should set these known values', () => {
-      const block = MerkleBlock(JSON.parse(blockJSON));
+      const block = new MerkleBlock(JSON.parse(blockJSON));
       should.exist(block.header);
       should.exist(block.numTransactions);
       should.exist(block.hashes);
@@ -57,8 +58,8 @@ describe('MerkleBlock', () => {
     });
 
     it('accepts an object as argument', () => {
-      const block = MerkleBlock(blockbuf);
-      MerkleBlock.fromObject(block.toObject()).should.exist();
+      const block = new MerkleBlock(blockbuf);
+      should.exist(MerkleBlock.fromObject(block.toObject()))
     });
   });
 
@@ -115,13 +116,13 @@ describe('MerkleBlock', () => {
   describe('#validMerkleTree', () => {
     it('should validate good merkleblocks', () => {
       data.JSON.forEach((data) => {
-        const b = MerkleBlock(data);
+        const b = new MerkleBlock(data);
         b.validMerkleTree().should.equal(true);
       });
     });
 
     it('should not validate merkleblocks with too many hashes', () => {
-      const b = MerkleBlock(data.JSON[0]);
+      const b = new MerkleBlock(data.JSON[0]);
       // Add too many hashes
       let i = 0;
       while (i <= b.numTransactions) {
@@ -131,7 +132,7 @@ describe('MerkleBlock', () => {
     });
 
     it('should not validate merkleblocks with too few bit flags', () => {
-      const b = MerkleBlock(JSON.parse(blockJSON));
+      const b = new MerkleBlock(JSON.parse(blockJSON));
       b.flags.pop();
       b.validMerkleTree().should.equal(false);
     });
@@ -140,30 +141,30 @@ describe('MerkleBlock', () => {
   describe('#hasTransaction', () => {
     it('should find transactions via hash string', () => {
       const jsonData = data.JSON[0];
-      const txId = new Buffer(jsonData.hashes[1], 'hex').toString('hex');
-      const b = MerkleBlock(jsonData);
+      const txId = Buffer.from(jsonData.hashes[1], 'hex').toString('hex');
+      const b = new MerkleBlock(jsonData);
       b.hasTransaction(txId).should.equal(true);
       b.hasTransaction(`${txId}abcd`).should.equal(false);
     });
 
     it('should find transactions via Transaction object', () => {
       const jsonData = data.JSON[0];
-      const txBuf = new Buffer(data.TXHEX[0][0], 'hex');
+      const txBuf = Buffer.from(data.TXHEX[0][0], 'hex');
       const tx = new Transaction().fromBuffer(txBuf);
-      const b = MerkleBlock(jsonData);
+      const b = new MerkleBlock(jsonData);
       b.hasTransaction(tx).should.equal(true);
     });
 
     it('should not find non-existant Transaction object', () => {
       // Reuse another transaction already in data/ dir
       const serialized = transactionVector[0][7];
-      const tx = new Transaction().fromBuffer(new Buffer(serialized, 'hex'));
-      const b = MerkleBlock(data.JSON[0]);
+      const tx = new Transaction().fromBuffer(Buffer.from(serialized, 'hex'));
+      const b = new MerkleBlock(data.JSON[0]);
       b.hasTransaction(tx).should.equal(false);
     });
 
     it('should not match with merkle nodes', () => {
-      const b = MerkleBlock(data.JSON[0]);
+      const b = new MerkleBlock(data.JSON[0]);
 
       const hashData = [
         ['3612262624047ee87660be1a707519a443b1c1ce3d248cbfc6c15870f6c5daa2', false],

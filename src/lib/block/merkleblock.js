@@ -53,11 +53,8 @@ export default class MerkleBlock {
     } else {
       throw new TypeError('Unrecognized argument for MerkleBlock');
     }
-    _.extend(this, info);
-    this._flagBitsUsed = 0;
-    this._hashesUsed = 0;
+    Object.assign(this, info)
   }
-
 
   /**
    * @param {Buffer} - MerkleBlock data in a Buffer object
@@ -72,7 +69,7 @@ export default class MerkleBlock {
    * @returns {MerkleBlock} - A MerkleBlock object
    */
   static fromBufferReader(br) {
-    return new MerkleBlock(MerkleBlock._fromBufferReader(br));
+    return new MerkleBlock(this._fromBufferReader(br));
   }
 
   /**
@@ -94,7 +91,7 @@ export default class MerkleBlock {
     bw.writeUInt32LE(this.numTransactions);
     bw.writeVarintNum(this.hashes.length);
     for (var i = 0; i < this.hashes.length; i++) {
-      bw.write(new Buffer(this.hashes[i], 'hex'));
+      bw.write(Buffer.from(this.hashes[i], 'hex'));
     }
     bw.writeVarintNum(this.flags.length);
     for (i = 0; i < this.flags.length; i++) {
@@ -133,9 +130,9 @@ export default class MerkleBlock {
       return false;
     }
 
-    const height = this._calcTreeHeight();
+    const height = this.calcTreeHeight();
     const opts = { hashesUsed: 0, flagBitsUsed: 0 };
-    const root = this._traverseMerkleTree(height, 0, opts);
+    const root = this.traverseMerkleTree(height, 0, opts);
     if (opts.hashesUsed !== this.hashes.length) {
       return false;
     }
@@ -175,14 +172,14 @@ export default class MerkleBlock {
       if (depth === 0 && isParentOfMatch) {
         opts.txs.push(hash);
       }
-      return new Buffer(hash, 'hex');
+      return Buffer.from(hash, 'hex');
     } else {
-      const left = this._traverseMerkleTree(depth - 1, pos * 2, opts);
+      const left = this.traverseMerkleTree(depth - 1, pos * 2, opts);
       let right = left;
-      if (pos * 2 + 1 < this._calcTreeWidth(depth - 1)) {
-        right = this._traverseMerkleTree(depth - 1, pos * 2 + 1, opts);
+      if (pos * 2 + 1 < this.calcTreeWidth(depth - 1)) {
+        right = this.traverseMerkleTree(depth - 1, pos * 2 + 1, opts);
       }
-      return Hash.sha256sha256(new Buffer.concat([left, right]));
+      return Hash.sha256sha256(Buffer.concat([left, right]));
     }
   }
 
@@ -203,7 +200,7 @@ export default class MerkleBlock {
    */
   calcTreeHeight() {
     let height = 0;
-    while (this._calcTreeWidth(height) > 1) {
+    while (this.calcTreeWidth(height) > 1) {
       height++;
     }
     return height;
@@ -224,12 +221,12 @@ export default class MerkleBlock {
     let hash = tx;
     if (tx instanceof Transaction) {
       // We need to reverse the id hash for the lookup
-      hash = BufferUtil.reverse(new Buffer(tx.id, 'hex')).toString('hex');
+      hash = BufferUtil.reverse(Buffer.from(tx.id, 'hex')).toString('hex');
     }
 
     const txs = [];
-    const height = this._calcTreeHeight();
-    this._traverseMerkleTree(height, 0, { txs });
+    const height = this.calcTreeHeight();
+    this.traverseMerkleTree(height, 0, { txs });
     return txs.indexOf(hash) !== -1;
   }
 
@@ -238,19 +235,19 @@ export default class MerkleBlock {
    * @returns {Object} - An Object representing merkleblock data
    * @private
    */
-  _fromBufferReader(br) {
+  static _fromBufferReader(br) {
     $.checkState(!br.finished(), 'No merkleblock data received');
     const info = {};
     info.header = BlockHeader.fromBufferReader(br);
     info.numTransactions = br.readUInt32LE();
     const numHashes = br.readVarintNum();
     info.hashes = [];
-    for (var i = 0; i < numHashes; i++) {
+    for (let i = 0; i < numHashes; i++) {
       info.hashes.push(br.read(32).toString('hex'));
     }
     const numFlags = br.readVarintNum();
     info.flags = [];
-    for (i = 0; i < numFlags; i++) {
+    for (let i = 0; i < numFlags; i++) {
       info.flags.push(br.readUInt8());
     }
     return info;
@@ -258,7 +255,7 @@ export default class MerkleBlock {
 
   /**
    * @param {Object} - A plain JavaScript object
-   * @returns {Block} - An instance of block
+   * @returns {MerkleBlock} - An instance of block
    */
   static fromObject(obj) {
     return new MerkleBlock(obj);

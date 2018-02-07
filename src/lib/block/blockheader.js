@@ -18,14 +18,6 @@ const GENESIS_BITS = 0x1d00ffff
  */
 export default class BlockHeader {
   constructor(arg) {
-    if (BufferUtil.isBuffer(arg)) {
-      this._initByBufferReader(BufferReader(arg));
-    } else if (_.isObject(arg)) {
-      this._initByObject(arg);
-    } else {
-      throw new TypeError('Unrecognized argument for BlockHeader');
-    }
-
     const idProperty = {
       configurable: false,
       enumerable: true,
@@ -37,6 +29,14 @@ export default class BlockHeader {
     };
     Object.defineProperty(this, 'id', idProperty);
     Object.defineProperty(this, 'hash', idProperty);
+
+    if (BufferUtil.isBuffer(arg)) {
+      this._initByBufferReader(BufferReader(arg));
+    } else if (_.isObject(arg)) {
+      this._initByObject(arg);
+    } else {
+      throw new TypeError('Unrecognized argument for BlockHeader');
+    }
   }
 
   _initByBufferReader(br) {
@@ -53,6 +53,7 @@ export default class BlockHeader {
     this.qbits = info.qbits;
     this.nonce = info.nonce;
     if (info.hash) {
+      console.log(this.hash, info.hash)
       $.checkState(this.hash === info.hash, 'Argument object hash property does not match block hash.')
     }
   }

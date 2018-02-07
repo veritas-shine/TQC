@@ -32,7 +32,7 @@ module.exports = {
         prevHash: "0000000000016780c81d42b7eff86974c36f5ae026e8662a4393a7f39c86bb82",
         merkleRoot: "8772d9d0fdf8c1303c7b1167e3c73b095fd970e33c799c6563d98b2e96c5167f",
         time: 1293629558,
-        bits: 453281356,
+        qbits: 453281356,
         nonce: 696601429
       },
       numTransactions: 7,
@@ -52,7 +52,7 @@ module.exports = {
         merkleRoot: "67313e7a73b62faffe9380578a1a96727c1f0af62e61eb8aa050064007a008d0",
         time: 1240800408,
         nonce: 2506812214,
-        bits: 486604799,
+        qbits: 486604799,
       },
       numTransactions: 1,
       hashes: [
@@ -451,7 +451,7 @@ module.exports = {
         time : 1389715824,
         version : 2,
         nonce : 322045839,
-        bits : 419587686,
+        qbits : 419587686,
       }
     }
   ]
