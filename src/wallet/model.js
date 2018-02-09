@@ -1,28 +1,21 @@
 import fs from 'fs'
-import Base58 from 'lib/encoding/base58'
-import config from '../config'
-import NTRU from 'ntrujs'
 import Storage from 'storage'
-import { packBuffer, wordArrayToBuffer } from '../lib/polyfill'
-
-function generateAddressByPublicKey(publicKey) {
-  const hash = packBuffer(publicKey)
-  const {length, prefix, suffix} = config.address
-  const b58 = Base58.encode(wordArrayToBuffer(hash)).slice(0, length)
-  return `${prefix}${b58}${suffix}`
-}
+import pqccore from 'pqc-core'
+import bip39 from 'bip39'
+const {PrivateKey, Address, PublicKey} = pqccore
+import config from '../config'
 
 function loadFromFile(filePath) {
-  const io = new IO()
   const content = fs.readFileSync(filePath)
   if (content) {
     const obj = JSON.parse(content)
     if (obj) {
-      const {address, publicKey, privateKey} = obj
+      const {address, privateKey} = obj
+      const pk = PrivateKey.fromString(privateKey)
       return {
-        address,
-        publicKey: io.extract_der_pub_key(publicKey),
-        privateKey: io.extract_der_priv_key(privateKey)
+        address: Address.fromString(address),
+        publicKey: pk.toPublicKey(),
+        privateKey: pk
       }
     }
   }
@@ -39,22 +32,22 @@ export default class Wallet {
       this.publicKey = publicKey
     } else {
       // generate keypair && address
-      const keypair = NTRU.createKey()
-      this.address = generateAddressByPublicKey(keypair.public)
-      this.privateKey = keypair.private
-      this.publicKey = keypair.public
+      const mnemonic = bip39.generateMnemonic()
+      const seed = bip39.mnemonicToSeed(mnemonic)
+      this.privateKey = new PrivateKey({
+        bn: seed,
+        network: 'livenet'
+      }, 'livenet')
+      this.publicKey = this.privateKey.toPublicKey()
+      this.address = this.publicKey.toAddress()
+      console.log(this.privateKey, this.publicKey, this.address)
     }
   }
 
   saveToFile(filename) {
-    const io = new IO()
-    const privateKeyString = io.get_der_priv_key(this.privateKey)
-    const address = this.address
-    const publicKeyString = io.get_der_pub_key(this.publicKey)
     const data = {
-      address,
-      publicKey: publicKeyString,
-      privateKey: privateKeyString
+      address: this.address.toString(),
+      privateKey: this.privateKey.toString()
     }
     if (Storage.createWalletFile(filename, JSON.stringify(data))) {
       console.log('save wallet ok!')

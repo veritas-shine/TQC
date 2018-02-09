@@ -4,10 +4,5 @@ export default {
   name: 'PQC',
   wallet: {
     fileExtension: '.pqc'
-  },
-  address: {
-    length: 32,
-    prefix: 'G',
-    suffix: 'L'
-  },
+  }
 }

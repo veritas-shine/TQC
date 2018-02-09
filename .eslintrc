@@ -16,6 +16,7 @@
     "arrow-body-style": 0,
     "quote-props": 0,
     "import/default": 0,
+    "import/extensions": 0,
     "import/no-duplicates": 0,
     "import/named": 0,
     "import/namespace": 0,
