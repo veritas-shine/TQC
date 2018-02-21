@@ -2,7 +2,7 @@ import fs from 'fs'
 import Storage from 'storage'
 import pqccore from 'pqc-core'
 import bip39 from 'bip39'
-const {PrivateKey, Address, PublicKey} = pqccore
+const {PrivateKey, Address} = pqccore
 import config from '../config'
 
 function loadFromFile(filePath) {
@@ -36,8 +36,8 @@ export default class Wallet {
       const seed = bip39.mnemonicToSeed(mnemonic)
       this.privateKey = new PrivateKey({
         bn: seed,
-        network: 'livenet'
-      }, 'livenet')
+        network: config.network
+      }, config.network)
       this.publicKey = this.privateKey.toPublicKey()
       this.address = this.publicKey.toAddress()
       console.log(this.privateKey, this.publicKey, this.address)

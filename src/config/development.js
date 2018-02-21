@@ -4,5 +4,6 @@ export default {
   name: 'PQC',
   wallet: {
     fileExtension: '.pqc'
-  }
+  },
+  network: 'testnet'
 }

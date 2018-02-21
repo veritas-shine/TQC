@@ -220,14 +220,6 @@ ascli@~1:
     colour "~0.7.1"
     optjs "~3.2.2"
 
-asn1.js@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/asn1.js/-/asn1.js-5.0.0.tgz#2b0abbc7fa66dc0aadd06a4683c73608c32b0696"
-  dependencies:
-    bn.js "^4.0.0"
-    inherits "^2.0.1"
-    minimalistic-assert "^1.0.0"
-
 asn1@~0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/asn1/-/asn1-0.2.3.tgz#dac8787713c9966849fc8180777ebe9c1ddf3b86"
@@ -981,7 +973,7 @@ block-stream@*:
   dependencies:
     inherits "~2.0.0"
 
-bn.js@^4.0.0, bn.js@^4.11.8:
+bn.js@^4.11.8:
   version "4.11.8"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
 
@@ -1300,6 +1292,10 @@ cryptiles@2.x.x:
 crypto-js@^3.1.9-1:
   version "3.1.9-1"
   resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-3.1.9-1.tgz#fda19e761fc077e01ffbfdc6e9fdfc59e8806cd8"
+
+cubehash@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/cubehash/-/cubehash-1.1.0.tgz#a732ce1228bb7e61840f39037566e8774b33eeb3"
 
 cycle@1.0.x:
   version "1.0.3"
@@ -2591,10 +2587,6 @@ mimic-fn@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/mimic-fn/-/mimic-fn-1.1.0.tgz#e667783d92e89dbd342818b5230b9d62a672ad18"
 
-minimalistic-assert@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/minimalistic-assert/-/minimalistic-assert-1.0.0.tgz#702be2dda6b37f4836bcb3f5db56641b64a1d3d3"
-
 minimatch@^3.0.0, minimatch@^3.0.2, minimatch@^3.0.3, minimatch@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.0.4.tgz#5166e286457f03306064be5497e8dbb0c3d32083"
@@ -2951,6 +2943,18 @@ pkg-dir@^1.0.0:
 pluralize@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/pluralize/-/pluralize-7.0.0.tgz#298b89df8b93b0221dbf421ad2b1b1ea23fc6777"
+
+pqc-core@0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/pqc-core/-/pqc-core-0.0.3.tgz#086a73761e6fddb63bf6a41594bf29f557052bf6"
+  dependencies:
+    base-x "^3.0.4"
+    bn.js "^4.11.8"
+    cubehash "^1.0.0"
+    lodash "^4.17.4"
+    ntrujs "https://github.com/veritas-shine/ntrujs/tarball/dist"
+    tweetnacl "^1.0.0"
+    xmss "0.0.11"
 
 prebuild-install@^2.1.0:
   version "2.4.1"
@@ -3768,9 +3772,9 @@ write@^0.2.1:
   dependencies:
     mkdirp "^0.5.1"
 
-xmss@0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/xmss/-/xmss-0.0.8.tgz#2e3b4fd31d14ee338c8b221372fbdb1ea1c66d66"
+xmss@0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/xmss/-/xmss-0.0.11.tgz#79435fc6adf060570af4cf0a572c1700fc01f0dd"
 
 xtend@4.0.1, xtend@^4.0.0, xtend@~4.0.0:
   version "4.0.1"
