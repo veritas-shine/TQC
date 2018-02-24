@@ -3,6 +3,7 @@ import winston from 'winston'
 import expressWinston from 'express-winston'
 import config from './config'
 import routes from './routes'
+import p2p from './p2p'
 
 const app = new Express()
 
@@ -44,6 +45,8 @@ app.listen(config.port, error => {
     console.log(`PQC node started, listen on port: ${config.port}`)
   }
 })
+
+p2p()
 
 process.on('uncaughtException', err => {
   // handle the error safely

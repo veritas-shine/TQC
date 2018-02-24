@@ -52,7 +52,6 @@
 wallet // 模块名
 ├── api.js // 包含导出在express中的接口
 ├── index.js // 模块出口
-├── model.js // 数据对象封装
 └── test.js  // 单元测试
 ```
 

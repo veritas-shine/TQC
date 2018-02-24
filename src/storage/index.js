@@ -8,17 +8,23 @@ function getDataFolder() {
   return process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/PQC' : '/var/local')
 }
 
+function getDBPath() {
+  let folder = getDataFolder()
+  folder = path.join(folder, '/data')
+  if (!fs.existsSync(folder)) {
+    if (!mkdirp.sync(folder)) {
+      console.log('fail to make folder', folder)
+    }
+  }
+  return folder
+}
+
 function getWalletPath() {
   let folder = getDataFolder()
   folder = path.join(folder, '/wallet')
-  switch (os.platform()) {
-    case 'darwin': {
-      if (!fs.existsSync(folder)) {
-        if(!mkdirp.sync(folder)) {
-          console.log('fail to make folder', folder)
-        }
-      }
-      return folder
+  if (!fs.existsSync(folder)) {
+    if (!mkdirp.sync(folder)) {
+      console.log('fail to make folder', folder)
     }
   }
   return folder
@@ -49,6 +55,7 @@ function createWalletFile(name, data) {
 }
 
 export default {
+  getDBPath,
   getWalletPath,
   getWalletFiles,
   createWalletFile

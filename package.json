@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "better-npm-run dev",
     "test-wallet": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/wallet/test.js",
-    "test-mine": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/mine/test.js"
+    "test-mine": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/mine/test.js",
+    "test-p2p": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/p2p/test.js",
+    "test-db": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/database/test.js"
   },
   "betterScripts": {
     "dev": {
@@ -37,14 +39,14 @@
     "crypto-js": "^3.1.9-1",
     "express": "^4.16.2",
     "express-winston": "^2.4.0",
-    "grpcc": "^1.1.1",
+    "grpc": "^1.9.1",
     "leveldown": "^2.1.1",
     "levelup": "^2.0.1",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
+    "pqc-core": "0.0.3",
     "tweetnacl": "^1.0.0",
-    "winston": "^2.4.0",
-    "pqc-core": "0.0.3"
+    "winston": "^2.4.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
