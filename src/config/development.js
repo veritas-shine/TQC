@@ -1,3 +1,4 @@
+import ip from 'ip'
 
 export default {
   port: 7770,
@@ -6,9 +7,9 @@ export default {
     fileExtension: '.pqc'
   },
   network: 'testnet',
-  ip: '127.0.0.1',
+  ip: ip.address(),
   peer: {
-    ip: '0.0.0.0',
+    ip: ip.address(),
     port: 50051
   }
 }

@@ -1,11 +1,9 @@
 import {expect} from 'chai'
 import assert from 'assert'
 import {openDB, getPeerList, addPeerToDB, removeNodeByIP} from './index'
-import storage from '../storage'
 
 describe('db test', () => {
   before(() => {
-    const p = storage.getDBPath()
     openDB()
   })
 

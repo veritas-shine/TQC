@@ -40,6 +40,7 @@
     "express": "^4.16.2",
     "express-winston": "^2.4.0",
     "grpc": "^1.9.1",
+    "ip": "^1.1.5",
     "leveldown": "^2.1.1",
     "levelup": "^2.0.1",
     "lodash": "^4.17.4",

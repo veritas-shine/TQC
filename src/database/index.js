@@ -1,13 +1,16 @@
 import levelup from 'levelup'
 import leveldown from 'leveldown'
+import pqccore from 'pqc-core'
 import storage from '../storage'
 
+const {Block} = pqccore
 const {NotFoundError} = levelup.errors
+
 let kDB = null
 
-export async function getPeerList() {
+function queryObject(key) {
   return new Promise((resolve, reject) => {
-    kDB.get('peers', (error, value) => {
+    kDB.get(key, (error, value) => {
       if (error) {
         if (error instanceof NotFoundError) {
           resolve({})
@@ -20,6 +23,16 @@ export async function getPeerList() {
       }
     })
   })
+}
+
+function putObject(key, value) {
+  if (key && value) {
+    kDB.put(key, value)
+  }
+}
+
+export async function getPeerList() {
+  return queryObject('peers')
 }
 
 export async function addPeerToDB(node) {
@@ -47,6 +60,28 @@ export async function removeNodeByIP(ip, port) {
     }
   }
   return null;
+}
+
+export async function queryBlock(blockHash) {
+  const json = await queryObject(blockHash)
+  if (json) {
+    return new Block(json)
+  } else {
+    return null
+  }
+}
+
+export async function putBlock(block) {
+  if (block instanceof Block) {
+    const savedBlock = await queryBlock(block.header.hash)
+    if (savedBlock) {
+      throw new Error('block already in db')
+    } else {
+      return putObject(block.header.hash, JSON.stringify(block.toJSON()))
+    }
+  } else {
+    throw new Error('invalid argument type')
+  }
 }
 
 export function openDB() {
