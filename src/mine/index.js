@@ -5,7 +5,7 @@ function _hash(buf) {
   // Bitcoin hash
   // return crypto.createHash('sha256').update(crypto.createHash('sha256').update(buf).digest()).digest()
   //
-  return Buffer.from(crypto.createHash('sha256').update(CubeHash(256, buf)).digest())
+  return crypto.createHash('sha256').update(CubeHash(256, buf)).digest()
 }
 
 /**
