@@ -4,6 +4,9 @@ import expressWinston from 'express-winston'
 import config from './config'
 import routes from './routes'
 import p2p from './p2p'
+import ip from 'ip'
+
+console.log(ip.address())
 
 const app = new Express()
 

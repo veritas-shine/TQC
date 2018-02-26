@@ -4,7 +4,7 @@ import {queryNodeList, registerNode} from '../database'
 const {Block} = pqccore
 
 function connect(call, callback) {
-  console.log(4, call)
+  console.log(4, call.request)
   callback(null, {message: 'hello'})
 }
 
