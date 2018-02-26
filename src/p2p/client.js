@@ -10,7 +10,7 @@ const kClients = {}
 
 export function isConnectedToPeer(ip, port) {
   const address = `${ip}:${port}`
-  return kClients[address]
+  return !!kClients[address]
 }
 
 // remove a peer (i.e. when con't connect to the peer
@@ -24,27 +24,34 @@ export function removePeer(ip, port) {
 }
 
 // add a peer by ip & port
-export function connectPeer(ip, port) {
-  const address = `${ip}:${port}`
-  let client = kClients[address]
-  if (!client) {
-    // not added yet, so create the client and connect to server
-    client = new peerProto.BlockChain(address, grpc.credentials.createInsecure())
-    client.connect({ ip: peer.ip, port: peer.port, network }, (error, response) => {
-      if (error) {
-        console.error(error)
-        client.close()
-      } else {
-        console.log(response)
-        kClients[address] = client
-      }
-    })
-  }
+export async function connectPeer(ip, port) {
+  return new Promise((resolve, reject) => {
+    const address = `${ip}:${port}`
+    console.log('will connect to peer: ', address)
+    let client = kClients[address]
+    if (!client) {
+      // not added yet, so create the client and connect to server
+      client = new peerProto.BlockChain(address, grpc.credentials.createInsecure())
+      client.connect({ ip: peer.ip, port: peer.port, network }, (error, response) => {
+        if (error) {
+          console.error(error)
+          client.close()
+          reject(error)
+        } else {
+          console.log(response)
+          kClients[address] = client
+          resolve(client)
+        }
+      })
+    } else {
+      resolve(client)
+    }
+  })
 }
 
 export async function addPeer(node) {
   await addPeerToDB(node)
-  connectPeer(node.ip, node.port)
+  await connectPeer(node.ip, node.port)
 }
 
 // when mine a block, broadcast to tell all other node to update

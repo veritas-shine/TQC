@@ -8,7 +8,17 @@ const {NotFoundError} = levelup.errors
 
 let kDB = null
 
+export function openDB() {
+  if (!kDB) {
+    const p = storage.getDBPath()
+    kDB = levelup(leveldown(p))
+  }
+  return kDB
+}
+
 function queryObject(key) {
+  openDB()
+
   return new Promise((resolve, reject) => {
     kDB.get(key, (error, value) => {
       if (error) {
@@ -26,6 +36,7 @@ function queryObject(key) {
 }
 
 function putObject(key, value) {
+  openDB()
   if (key && value) {
     kDB.put(key, value)
   }
@@ -82,12 +93,4 @@ export async function putBlock(block) {
   } else {
     throw new Error('invalid argument type')
   }
-}
-
-export function openDB() {
-  if (!kDB) {
-    const p = storage.getDBPath()
-    kDB = levelup(leveldown(p))
-  }
-  return kDB
 }

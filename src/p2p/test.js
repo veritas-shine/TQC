@@ -5,13 +5,15 @@ import config from '../config'
 
 const {peer} = config
 
-describe('p2p test', () => {
+const targetPeer = {
+  ip: '192.168.199.162',
+  port: 50051,
+  network: 'testnet'
+}
+
+describe('p2p server test', () => {
   let server = null
-  const testpeer = {
-    ip: '192.168.199.162',
-    port: 50051,
-    network: 'testnet'
-  }
+
   function shutdown() {
     server.tryShutdown((error) => {
       if (error) {
@@ -23,19 +25,24 @@ describe('p2p test', () => {
   }
   it('should create server', () => {
     server = createServer(peer.ip, peer.port)
+    shutdown()
   })
+})
 
-  it('should connect to server', () => {
-    connectPeer(testpeer.ip, testpeer.port)
-    expect(isConnectedToPeer(testpeer.ip, testpeer.port)).to.be.true
+describe('p2p client test', () => {
+
+  it('should connect to server', async () => {
+    const client = await connectPeer(targetPeer.ip, targetPeer.port)
+    expect(isConnectedToPeer(targetPeer.ip, targetPeer.port)).to.be.true
+    client.close()
   })
 
   it('should disconnect from peer', () => {
-    removePeer(peer.ip, peer.port)
-    expect(isConnectedToPeer(testpeer.ip, testpeer.port)).to.be.false
+    removePeer(targetPeer.ip, targetPeer.port)
+    expect(isConnectedToPeer(targetPeer.ip, targetPeer.port)).to.be.false
   })
 
   it('should add peer to db', async () => {
-    await addPeer(testpeer)
+    await addPeer(targetPeer)
   })
 })
