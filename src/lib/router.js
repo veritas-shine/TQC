@@ -1,3 +1,8 @@
+import EIP from 'express-ipfilter'
+
+const { IpFilter } = EIP
+const localFilter = IpFilter(['::ffff', '127.0.0.1','::1'], { mode: 'allow' })
+
 const kSupportedMethods = ['get', 'post', 'put', 'delete']
 
 export default function (routers, app) {
@@ -5,8 +10,7 @@ export default function (routers, app) {
     const func = routers[key]
     const [method, url] = key.split(' ')
     if (kSupportedMethods.indexOf(method) !== -1) {
-      app[method](url, (req, res) => {
-        console.log(9, req.body, req.query)
+      app[method](url, localFilter, (req, res) => {
         try {
           func(req).then(result => res.send(result))
               .catch(error => {
