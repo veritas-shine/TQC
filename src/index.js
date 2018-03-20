@@ -1,8 +1,11 @@
 import Domain from 'domain'
 import async from 'async'
+
 import server from './server'
 import p2p from './p2p'
 import database from './database'
+import wallet from './wallet'
+import mine from './mine'
 
 const d = Domain.create()
 d.run(() => {
@@ -10,6 +13,8 @@ d.run(() => {
     database,
     server,
     p2p,
+    wallet: ['server', wallet],
+    mine: ['server', mine],
     ready: ['database', 'server', 'p2p', (scope, callback) => callback()]
   }, (error, scope) => {
     if (error) {
