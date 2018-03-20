@@ -7,15 +7,15 @@ const validator = new ZSchema()
 export default {
   'post /mine/try': async req => {
     const {block, nonce} = req.body
-    let error = validator.validate(block, schemas.block)
-    if (!error) {
-      error = validator.validate(nonce, schemas.nonce)
-      if (!error) {
+    let ok = validator.validate(block, schemas.block)
+    if (ok) {
+      ok = validator.validate(nonce, schemas.nonce)
+      if (ok) {
         return Miner.run(block, nonce)
       }
     }
-    if (error) {
-      throw new Error(error)
+    if (!ok) {
+      throw new Error('Invalid argument')
     } else {
       // will never go here
       return {}

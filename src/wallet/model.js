@@ -45,8 +45,8 @@ export default class Wallet {
       bn: seed,
       network: config.network
     }, config.network)
-    const publicKey = this.currentWallet.privateKey.toPublicKey()
-    const address = this.currentWallet.publicKey.toAddress()
+    const publicKey = privateKey.toPublicKey()
+    const address = publicKey.toAddress()
     const wallet = {address, publicKey, privateKey}
     this.currentWallet = {...wallet}
     return wallet
@@ -59,6 +59,19 @@ export default class Wallet {
     }
     if (Storage.createWalletFile(filename, JSON.stringify(data))) {
       console.log('save wallet ok!')
+    }
+  }
+
+  static toJSON(wallet) {
+    wallet = wallet || this.currentWallet
+    if (Object.keys(wallet).length > 0) {
+      return {
+        address: wallet.address.toString(),
+        publicKey: wallet.publicKey.toString(),
+        privateKey: wallet.privateKey.toString()
+      }
+    } else {
+      return {}
     }
   }
 }

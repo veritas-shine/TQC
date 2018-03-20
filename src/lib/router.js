@@ -6,8 +6,12 @@ export default function (routers, app) {
     const [method, url] = key.split(' ')
     if (kSupportedMethods.indexOf(method) !== -1) {
       app[method](url, (req, res) => {
+        console.log(9, req.body, req.query)
         try {
           func(req).then(result => res.send(result))
+              .catch(error => {
+                res.status(400).send({ message: error.message })
+              })
         } catch (e) {
           res.status(400).send({ message: e.message })
         }
