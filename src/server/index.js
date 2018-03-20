@@ -1,7 +1,6 @@
 import Express from 'express'
 import expressWinston from 'express-winston'
 import winston from 'winston'
-import routes from '../routes'
 import config from '../config'
 
 export default (callback) => {
@@ -31,12 +30,6 @@ export default (callback) => {
     colorize: false, // Color the text and status code, using the Express/morgan color palette (text: gray, status: default green, 3XX cyan, 4XX yellow, 5XX red).
     ignoreRoute: () => false
   }))
-
-  const ctx = {
-    express: app
-  }
-
-  routes(ctx)
 
   app.listen(config.port, error => {
     if (error) {

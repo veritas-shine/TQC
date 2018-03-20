@@ -2,8 +2,9 @@ import fs from 'fs'
 import Storage from 'storage'
 import pqccore from 'pqc-core'
 import bip39 from 'bip39'
-const {PrivateKey, Address} = pqccore
 import config from '../config'
+
+const {PrivateKey, Address} = pqccore
 
 function loadFromFile(filePath) {
   const content = fs.readFileSync(filePath)
@@ -23,31 +24,34 @@ function loadFromFile(filePath) {
 }
 
 export default class Wallet {
-  constructor(filePath) {
+  static currentWallet = {}
+  static load(filePath) {
     if (filePath) {
       // load account from file
       const {address, publicKey, privateKey} = loadFromFile(filePath)
-      this.address = address
-      this.privateKey = privateKey
-      this.publicKey = publicKey
+      const wallet = {address, publicKey, privateKey}
+      this.currentWallet = {...wallet}
+      return wallet
     } else {
       // generate keypair && address
       const mnemonic = bip39.generateMnemonic()
       const seed = bip39.mnemonicToSeed(mnemonic)
-      this.privateKey = new PrivateKey({
+      const privateKey = new PrivateKey({
         bn: seed,
         network: config.network
       }, config.network)
-      this.publicKey = this.privateKey.toPublicKey()
-      this.address = this.publicKey.toAddress()
-      console.log(this.privateKey, this.publicKey, this.address)
+      const publicKey = this.currentWallet.privateKey.toPublicKey()
+      const address = this.currentWallet.publicKey.toAddress()
+      const wallet = {address, publicKey, privateKey}
+      this.currentWallet = {...wallet}
+      return wallet
     }
   }
 
-  saveToFile(filename) {
+  static saveToFile(wallet, filename) {
     const data = {
-      address: this.address.toString(),
-      privateKey: this.privateKey.toString()
+      address: wallet.address.toString(),
+      privateKey: wallet.privateKey.toString()
     }
     if (Storage.createWalletFile(filename, JSON.stringify(data))) {
       console.log('save wallet ok!')

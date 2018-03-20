@@ -18,7 +18,7 @@ d.run(() => {
       console.log('Modules ready')
 
       process.once('cleanup', () => {
-        scope.logger.info('Cleaning up...')
+        console.error('Cleaning up...')
         // TODO
       })
     }
