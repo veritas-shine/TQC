@@ -48,7 +48,8 @@
     "mkdirp": "^0.5.1",
     "pqc-core": "0.0.5",
     "tweetnacl": "^1.0.0",
-    "winston": "^2.4.0"
+    "winston": "^2.4.0",
+    "z-schema": "^3.19.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

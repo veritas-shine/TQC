@@ -35,17 +35,21 @@ export default class Wallet {
     } else {
       // generate keypair && address
       const mnemonic = bip39.generateMnemonic()
-      const seed = bip39.mnemonicToSeed(mnemonic)
-      const privateKey = new PrivateKey({
-        bn: seed,
-        network: config.network
-      }, config.network)
-      const publicKey = this.currentWallet.privateKey.toPublicKey()
-      const address = this.currentWallet.publicKey.toAddress()
-      const wallet = {address, publicKey, privateKey}
-      this.currentWallet = {...wallet}
-      return wallet
+      return this.create(mnemonic)
     }
+  }
+
+  static create(mnemonic) {
+    const seed = bip39.mnemonicToSeed(mnemonic)
+    const privateKey = new PrivateKey({
+      bn: seed,
+      network: config.network
+    }, config.network)
+    const publicKey = this.currentWallet.privateKey.toPublicKey()
+    const address = this.currentWallet.publicKey.toAddress()
+    const wallet = {address, publicKey, privateKey}
+    this.currentWallet = {...wallet}
+    return wallet
   }
 
   static saveToFile(wallet, filename) {

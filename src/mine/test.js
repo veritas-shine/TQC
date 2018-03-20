@@ -1,11 +1,11 @@
 import assert from 'assert'
-import Miner from './index'
+import Miner from './model'
 
 describe('Mine', () => {
   // 00000000a141216a896c54f211301c436e557a8d55900637bbdce14c6c7bddef
   const block = {
     version: 1,
-    previousblockhash: '0000000000000000000000000000000000000000000000000000000000000000',
+    prev_hash: '0000000000000000000000000000000000000000000000000000000000000000',
     merkleroot: '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b',
     time: 1518511836,
     bits: '1f00ff00'
