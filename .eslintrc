@@ -5,6 +5,7 @@
   },
   "parser": "babel-eslint",
   "rules": {
+    "arrow-parens": 0,
     "semi": 0,
     "no-bitwise": 0,
     "no-else-return": 0,

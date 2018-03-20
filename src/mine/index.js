@@ -30,7 +30,7 @@ export default class Miner {
     const prevBlockHash = Buffer.from(block.previousblockhash, 'hex');
     const mrklRoot = Buffer.from(block.merkleroot, 'hex');
     const ver = block.version;
-    const time = block.time;
+    const { time } = block
 
     // Calculate target based on block's "bits",
     // The "bits" variable is a packed representation of the Difficulty in 8 bytes, to unpack it:
@@ -41,7 +41,6 @@ export default class Miner {
     const mantissa = bits & 0xFFFFFF;
     const target = (mantissa * (2 ** (8 * (exponent - 3)))).toString('16');
 
-    console.log(42, target)
     // Make target a Buffer object
     this.targetBuffer = Buffer.from('0'.repeat(64 - target.length) + target, 'hex');
 
@@ -56,13 +55,7 @@ export default class Miner {
     // Buffer with time (4 Bytes), bits (4 Bytes) and nonce (4 Bytes) (later added and updated on each hash)
     this.timeBitsNonceBuffer = Buffer.alloc(12);
     this.timeBitsNonceBuffer.writeInt32LE(time, 0);
-    this.timeBitsNonceBuffer.writeInt32LE(bits, 4);
-
-    console.log(this.targetBuffer.toString('hex'));
-    console.log(this.versionBuffer.toString('hex'));
-    console.log(this.reversedPrevBlockHash.toString('hex'));
-    console.log(this.reversedMrklRoot.toString('hex'));
-    console.log(this.timeBitsNonceBuffer.toString('hex'));
+    this.timeBitsNonceBuffer.writeInt32LE(bits, 4)
   }
 
   getHash(nonce) {
@@ -85,8 +78,6 @@ export default class Miner {
 
     const header = version + prevhash + merkleroot + ntime + nbits + nonce;
     const hash = reverseString(_hash(Buffer.from(header, 'hex')));
-    console.log('Target: ', this.getTarget().toString('hex'));
-    console.log('Hash:   ', hash.toString('hex'));
 
     const isvalid = this.getTarget().toString('hex') > hash;
     const result = isvalid ? 'valid' : 'not a valid';
@@ -117,13 +108,12 @@ export default class Miner {
       if (nonce % 100000 === 0) {
         console.log(`${nonce} ${hash.toString('hex')}`)
       }
-      found = miner.checkHash(hash);
+      found = miner.checkHash(hash)
       if (found) {
         console.log(`found: ${nonce} ${hash.toString('hex')}`)
-        miner.verifyNonce(block, nonce);
+        miner.verifyNonce(block, nonce)
       }
       nonce++;
-      break;
     }
   }
 }

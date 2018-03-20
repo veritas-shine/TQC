@@ -3,24 +3,13 @@ import leveldown from 'leveldown'
 import pqccore from 'pqc-core'
 import storage from '../storage'
 
-const {Block} = pqccore
-const {NotFoundError} = levelup.errors
+const { Block } = pqccore
+const { NotFoundError } = levelup.errors
 
-let kDB = null
-
-export function openDB() {
-  if (!kDB) {
-    const p = storage.getDBPath()
-    kDB = levelup(leveldown(p))
-  }
-  return kDB
-}
-
-function queryObject(key) {
-  openDB()
-
+function queryObject(ctx, key) {
+  const { database } = ctx
   return new Promise((resolve, reject) => {
-    kDB.get(key, (error, value) => {
+    database.get(key, (error, value) => {
       if (error) {
         if (error instanceof NotFoundError) {
           resolve({})
@@ -35,10 +24,10 @@ function queryObject(key) {
   })
 }
 
-function putObject(key, value) {
-  openDB()
+function putObject(ctx, key, value) {
+  const { database } = ctx
   if (key && value) {
-    kDB.put(key, value)
+    database.put(key, value)
   }
 }
 
@@ -46,7 +35,8 @@ export async function getPeerList() {
   return queryObject('peers')
 }
 
-export async function addPeerToDB(node) {
+export async function addPeerToDB(ctx, node) {
+  const { database } = ctx
   let peers = await getPeerList()
   if (!peers) {
     peers = {}
@@ -55,19 +45,20 @@ export async function addPeerToDB(node) {
   const peer = peers[address]
   if (!peer) {
     peers[address] = node
-    return kDB.put('peers', JSON.stringify(peers))
+    return database.put('peers', JSON.stringify(peers))
   }
   return null;
 }
 
-export async function removeNodeByIP(ip, port) {
+export async function removeNodeByIP(ctx, ip, port) {
+  const { database } = ctx
   const peers = await getPeerList()
   if (peers) {
     const address = `${ip}:${port}`
     const peer = peers[address]
     if (peer) {
       delete peers[address]
-      return kDB.put('peers', JSON.stringify(peers))
+      return database.put('peers', JSON.stringify(peers))
     }
   }
   return null;
@@ -93,4 +84,10 @@ export async function putBlock(block) {
   } else {
     throw new Error('invalid argument type')
   }
+}
+
+export default (callback) => {
+  const p = storage.getDBPath()
+  const db = levelup(leveldown(p))
+  callback(null, db)
 }
