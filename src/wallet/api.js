@@ -1,12 +1,10 @@
-import ZSchema from 'z-schema'
 import Wallet from './model'
 import schemas from './schemas'
 import code from '../config/code'
 
-const validator = new ZSchema()
-
 export default {
-  'post /wallet/create': async (req) => {
+  'post /wallet/create': async (req, ctx) => {
+    const {validator} = ctx
     const { secret } = req.body
     const ok = validator.validate(secret, schemas.secret)
     if (ok) {
@@ -19,7 +17,11 @@ export default {
       throw new Error('Invalid argument `secret`')
     }
   },
-  'get /wallet/detail': async (req) => {
-    return {}
+  'get /wallet/detail': async () => {
+    const wallet = Wallet.currentWallet
+    return {
+      code: code.ok,
+      data: Wallet.toJSON(wallet)
+    }
   }
 }

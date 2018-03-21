@@ -25,17 +25,19 @@ function loadFromFile(filePath) {
 
 export default class Wallet {
   static currentWallet = {}
-  static load(filePath) {
+  static load(filePath, shouldCreate) {
     if (filePath) {
       // load account from file
       const {address, publicKey, privateKey} = loadFromFile(filePath)
       const wallet = {address, publicKey, privateKey}
       this.currentWallet = {...wallet}
       return wallet
-    } else {
+    } else if (shouldCreate) {
       // generate keypair && address
       const mnemonic = bip39.generateMnemonic()
       return this.create(mnemonic)
+    } else {
+      return this.currentWallet
     }
   }
 

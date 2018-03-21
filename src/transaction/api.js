@@ -1,10 +1,17 @@
 import Transaction from './model'
+import schemas from './schemas'
 
 export default {
-  'post /transaction/create': (req, res, next) => {
-    res.send(200)
+  'post /transaction/create': async (req, ctx) => {
+    const {validator} = ctx
+    const ok = validator.validate(req.body, schemas.tx)
+    if (ok) {
+
+    } else {
+      throw new Error('Invalid argument')
+    }
   },
-  'get /transaction/detail': (req, res) => {
+  'get /transaction/detail': async (req) => {
     res.send('detail')
   }
 }

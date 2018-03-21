@@ -1,6 +1,7 @@
 import Domain from 'domain'
 import async from 'async'
 
+import validator from './lib/validator'
 import server from './server'
 import p2p from './p2p'
 import database from './database'
@@ -10,12 +11,13 @@ import mine from './mine'
 const d = Domain.create()
 d.run(() => {
   async.auto({
+    validator,
     database,
     server,
     p2p,
     wallet: ['server', wallet],
     mine: ['server', mine],
-    ready: ['database', 'server', 'p2p', (scope, callback) => callback()]
+    ready: ['validator', 'database', 'server', 'p2p', 'wallet', 'mine', (scope, callback) => callback()]
   }, (error, scope) => {
     if (error) {
       console.error(error)
