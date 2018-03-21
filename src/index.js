@@ -22,7 +22,7 @@ d.run(() => {
     p2p: ['config', p2p],
     wallet: ['server', wallet],
     block: ['database', block],
-    // mine: ['block', 'server', mine],
+    mine: ['block', 'server', mine],
     ready: ['validator', 'database', 'server', 'p2p', 'wallet', (scope, callback) => callback()]
   }, (error, scope) => {
     if (error) {

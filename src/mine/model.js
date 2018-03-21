@@ -133,38 +133,44 @@ export default class Miner {
     return nonce
   }
 
-  static schedule() {
+  static schedule(scope) {
+    console.log('start mine schedule')
     const d = Domain.create()
     d.run(() => {
       const files = Storage.getWalletFiles()
       const wallet = Wallet.load(files[0])
+      const blockService = scope.block
 
       NodeSchedule.scheduleJob('*/1 * * * *', () => {
-        const tx = Transaction.createCoinbase(wallet.address.toString(), 50 * 1e8)
-        const merkleroot = Transaction.getMerkleRoot([tx]).toString('hex')
-        console.log(merkleroot)
-        const time = Math.floor(Date.now() / 1000)
-        const blockheader = {
-          version: 1,
-          prev_hash: '0000000000000000000000000000000000000000000000000000000000000000',
-          merkleroot,
-          time,
-          bits: 0x1f00ff00
-        }
-        const nonce = Miner.run(blockheader)
-        blockheader.nonce = nonce
-        // create
-        const obj = {
-          version: blockheader.version,
-          prevHash: blockheader.prev_hash,
-          merkleRoot: merkleroot,
-          time: blockheader.time,
-          qbits: 0x1f00ff00,
-          nonce
-        }
-        const newBlock = new Block({
-          header: obj,
-          transactions: [tx]
+        blockService.lastBlock().then(lastBlock => {
+          const tx = Transaction.createCoinbase(wallet.address.toString(), 50 * 1e8)
+          const merkleroot = Transaction.getMerkleRoot([tx]).toString('hex')
+          console.log(merkleroot)
+
+          const time = Math.floor(Date.now() / 1000)
+          const blockheader = {
+            version: 1,
+            prev_hash: lastBlock.hash,
+            merkleroot,
+            time,
+            bits: 0x1f00ff00
+          }
+          const nonce = Miner.run(blockheader)
+          blockheader.nonce = nonce
+          // create
+          const obj = {
+            version: blockheader.version,
+            prevHash: blockheader.prev_hash,
+            merkleRoot: merkleroot,
+            time: blockheader.time,
+            qbits: 0x1f00ff00,
+            nonce
+          }
+          const newBlock = new Block({
+            header: obj,
+            transactions: [tx]
+          })
+          blockService.addMineBlock(newBlock)
         })
       })
     })
