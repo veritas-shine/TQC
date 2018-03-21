@@ -1,5 +1,7 @@
 import crypto from 'crypto'
 import CubeHash from 'cubehash'
+import NodeSchedule from 'node-schedule'
+import Domain from 'domain'
 
 function _hash(buf) {
   // Bitcoin hash
@@ -116,5 +118,23 @@ export default class Miner {
       nonce++;
     }
     return nonce
+  }
+
+  static schedule() {
+    const d = Domain.create()
+    d.run(() => {
+      NodeSchedule.scheduleJob('*/1 * * * *', () => {
+        console.log('start mining at', new Date())
+        const block = {
+          version: 1,
+          prev_hash: '0000000000000000000000000000000000000000000000000000000000000000',
+          merkleroot: '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b',
+          time: 1518511836,
+          bits: '1f00ff00'
+        }
+        const nonce = Miner.run(block)
+        // post block
+      })
+    })
   }
 }

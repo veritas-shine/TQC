@@ -6,9 +6,9 @@ describe('wallet test', function () {
   let files = Storage.getWalletFiles()
   Wallet.load(files[0])
   const wallet = Wallet.currentWallet
-
+  console.log(9, wallet.publicKey)
   it('should save wallet to file', function (done) {
-    Wallet.saveToFile(wallet, files[0])
+    Wallet.saveToFile(wallet)
     done()
   })
 

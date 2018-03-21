@@ -47,9 +47,7 @@ function createWalletFile(name, data) {
     name = `wallet_${name}${config.wallet.fileExtension}`
     const folder = getWalletPath()
     const filePath = path.join(folder, name)
-    if (!fs.existsSync(filePath)) {
-      return fs.writeFileSync(filePath, data)
-    }
+    return fs.writeFileSync(filePath, data)
   }
   return false
 }

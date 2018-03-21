@@ -6,4 +6,8 @@ export default (scope, callback) => {
   const { server } = scope
   router(api, server)
   callback(null, Miner)
+  const {config} = scope
+  if (config.mine.enable) {
+    Miner.schedule()
+  }
 }

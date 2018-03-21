@@ -55,10 +55,13 @@ export default class Wallet {
   }
 
   static saveToFile(wallet, filename) {
+    const address = wallet.address.toString()
+    filename = filename || address
     const data = {
-      address: wallet.address.toString(),
+      address,
       privateKey: wallet.privateKey.toString()
     }
+    console.log(64, data)
     if (Storage.createWalletFile(filename, JSON.stringify(data))) {
       console.log('save wallet ok!')
     }

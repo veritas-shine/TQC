@@ -1,5 +1,6 @@
 import assert from 'assert'
 import Miner from './model'
+import Transaction from '../transaction/model'
 
 describe('Mine', () => {
   // 00000000a141216a896c54f211301c436e557a8d55900637bbdce14c6c7bddef
@@ -20,5 +21,16 @@ describe('Mine', () => {
   });
   it('should mine a block', function () {
     Miner.run(block, 1614136539)
-  });
+  })
+
+  it('should create a genesis block', function () {
+    const transaction = Transaction.createCoinbase()
+    const block = {
+      version: 1,
+      prev_hash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleroot: '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b',
+      time: Math.floor(Date.now() / 1000),
+      bits: '1f00ff00'
+    }
+  })
 })
