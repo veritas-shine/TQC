@@ -1,5 +1,4 @@
 import pqccore from 'pqc-core'
-import {queryNodeList, registerNode} from '../database'
 
 const {Block} = pqccore
 

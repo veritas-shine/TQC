@@ -1,13 +1,21 @@
 import crypto from 'crypto'
 import CubeHash from 'cubehash'
 import NodeSchedule from 'node-schedule'
+import pqccore from 'pqc-core'
 import Domain from 'domain'
+import Transaction from '../transaction/model'
+import Wallet from '../wallet/model'
+import Storage from '../storage'
+
+const {Block} = pqccore
 
 function _hash(buf) {
   // Bitcoin hash
   // return crypto.createHash('sha256').update(crypto.createHash('sha256').update(buf).digest()).digest()
   //
-  return crypto.createHash('sha256').update(CubeHash(256, buf)).digest()
+  return crypto.createHash('sha256')
+    .update(CubeHash(256, buf))
+    .digest()
 }
 
 /**
@@ -19,7 +27,9 @@ function reverseString(str) {
   if (str.length < 8) { // Make sure the HEX value from the integers fill 4 bytes when converted to buffer, so that they are reversed correctly
     str = '0'.repeat(8 - str.length) + str;
   }
-  return Buffer.from(str, 'hex').reverse().toString('hex')
+  return Buffer.from(str, 'hex')
+    .reverse()
+    .toString('hex')
 }
 
 export default class Miner {
@@ -32,7 +42,7 @@ export default class Miner {
     const prevBlockHash = Buffer.from(block.prev_hash, 'hex');
     const mrklRoot = Buffer.from(block.merkleroot, 'hex');
     const ver = block.version;
-    const { time } = block
+    const {time} = block
 
     // Calculate target based on block's "bits",
     // The "bits" variable is a packed representation of the Difficulty in 8 bytes, to unpack it:
@@ -65,7 +75,8 @@ export default class Miner {
     this.timeBitsNonceBuffer.writeInt32LE(nonce, 8);
     // Double sha256 hash the header
     const b = Buffer.concat([this.versionBuffer, this.reversedPrevBlockHash, this.reversedMrklRoot, this.timeBitsNonceBuffer]);
-    return _hash(b).reverse();
+    return _hash(b)
+      .reverse();
   }
 
   verifyNonce(block, checknonce) {
@@ -81,7 +92,8 @@ export default class Miner {
     const header = version + prevhash + merkleroot + ntime + nbits + nonce;
     const hash = reverseString(_hash(Buffer.from(header, 'hex')));
 
-    const isvalid = this.getTarget().toString('hex') > hash;
+    const isvalid = this.getTarget()
+      .toString('hex') > hash;
     const result = isvalid ? 'valid' : 'not a valid';
     console.log('Result: ', `${checknonce} is a ${result} nonce`);
     return isvalid;
@@ -124,17 +136,36 @@ export default class Miner {
   static schedule() {
     const d = Domain.create()
     d.run(() => {
+      const files = Storage.getWalletFiles()
+      const wallet = Wallet.load(files[0])
+
       NodeSchedule.scheduleJob('*/1 * * * *', () => {
-        console.log('start mining at', new Date())
-        const block = {
+        const tx = Transaction.createCoinbase(wallet.address.toString(), 50 * 1e8)
+        const merkleroot = Transaction.getMerkleRoot([tx]).toString('hex')
+        console.log(merkleroot)
+        const time = Math.floor(Date.now() / 1000)
+        const blockheader = {
           version: 1,
           prev_hash: '0000000000000000000000000000000000000000000000000000000000000000',
-          merkleroot: '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b',
-          time: 1518511836,
-          bits: 0x1d0000ff
+          merkleroot,
+          time,
+          bits: 0x1f00ff00
         }
-        const nonce = Miner.run(block)
-        // post block
+        const nonce = Miner.run(blockheader)
+        blockheader.nonce = nonce
+        // create
+        const obj = {
+          version: blockheader.version,
+          prevHash: blockheader.prev_hash,
+          merkleRoot: merkleroot,
+          time: blockheader.time,
+          qbits: 0x1f00ff00,
+          nonce
+        }
+        const newBlock = new Block({
+          header: obj,
+          transactions: [tx]
+        })
       })
     })
   }

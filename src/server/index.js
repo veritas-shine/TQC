@@ -23,7 +23,7 @@ export default (scope, callback) => {
   app.use(expressWinston.logger({
     transports: [
       new winston.transports.Console({
-        json: true,
+        json: false,
         colorize: true
       })
     ],
