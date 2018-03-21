@@ -38,7 +38,7 @@ export default class Miner {
     // The "bits" variable is a packed representation of the Difficulty in 8 bytes, to unpack it:
     // First two bytes make the "exponent", and the following 4 bytes make the "mantissa":
     // https://en.bitcoin.it/wiki/Difficulty#What_is_the_formula_for_difficulty
-    const bits = parseInt(`0x${block.bits}`, 16);
+    const {bits} = block
     const exponent = bits >>> 24;
     const mantissa = bits & 0xFFFFFF;
     const target = (mantissa * (2 ** (8 * (exponent - 3)))).toString('16');
@@ -74,7 +74,7 @@ export default class Miner {
     const version = reverseString(block.version.toString(16));
     const prevhash = reverseString(block.prev_hash);
     const merkleroot = reverseString(block.merkleroot);
-    const nbits = reverseString(block.bits);
+    const nbits = reverseString(block.bits.toString(16));
     const ntime = reverseString(block.time.toString(16));
     const nonce = reverseString(checknonce.toString(16));
 
@@ -114,6 +114,7 @@ export default class Miner {
       if (found) {
         console.log(`found: ${nonce} ${hash.toString('hex')}`)
         miner.verifyNonce(block, nonce)
+        return nonce
       }
       nonce++;
     }
@@ -130,7 +131,7 @@ export default class Miner {
           prev_hash: '0000000000000000000000000000000000000000000000000000000000000000',
           merkleroot: '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b',
           time: 1518511836,
-          bits: '1f00ff00'
+          bits: 0x1d0000ff
         }
         const nonce = Miner.run(block)
         // post block
