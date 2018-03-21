@@ -80,6 +80,36 @@ export default class Database {
     }
   }
 
+  async listBlocks() {
+    return new Promise(((resolve, reject) => {
+      const options = {
+        keys: true,
+        values: true,
+        revers: false,
+        limit: 20,
+        fillCache: true
+      }
+      options.start = 'b'
+      options.end = 'b1'
+      const result = []
+      this.db.createReadStream(options)
+        .on('data', (data) => {
+          const block = new Block(Buffer.from(data.value, 'hex'))
+          result.push(block)
+        })
+        .on('error', error => {
+          console.error(error)
+          reject(error)
+        })
+        .on('close', () => {
+
+        })
+        .on('end', () => {
+          resolve(result)
+        })
+    }))
+  }
+
   close() {
     console.log(69, 'db close')
     this.db.close(console.log)

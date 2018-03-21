@@ -1,11 +1,12 @@
-
 import code from '../config/code'
 
 export default {
   'get /block/list': async (req, ctx) => {
-    // TODO
+    const {database} = ctx
+    const data = await database.listBlocks()
     return {
-      code: code.ok
+      code: code.ok,
+      data: data.map(l => l.toJSON())
     }
   },
   'get /block/one': async (req, ctx) => {
@@ -13,7 +14,6 @@ export default {
     const {id} = req.query
     let obj = null
     if (id) {
-      // TODO
       obj = await database.queryBlock(id)
     } else {
       obj = block.genesisblock
