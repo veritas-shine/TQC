@@ -86,7 +86,7 @@ export async function putBlock(block) {
   }
 }
 
-export default (callback) => {
+export default (scope, callback) => {
   const p = storage.getDBPath()
   const db = levelup(leveldown(p))
   callback(null, db)

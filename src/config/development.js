@@ -3,6 +3,9 @@ import ip from 'ip'
 export default {
   port: 7770,
   name: 'PQC',
+  mine: {
+    enable: true,
+  },
   wallet: {
     fileExtension: '.pqc'
   },

@@ -49,6 +49,7 @@
     "levelup": "^2.0.1",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
+    "node-schedule": "^1.3.0",
     "pqc-core": "0.0.5",
     "tweetnacl": "^1.0.0",
     "winston": "^2.4.0",

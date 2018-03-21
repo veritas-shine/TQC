@@ -2,9 +2,9 @@ import Express from 'express'
 import expressWinston from 'express-winston'
 import winston from 'winston'
 import bodyParser from 'body-parser'
-import config from '../config'
 
-export default (callback) => {
+export default (scope, callback) => {
+  const {config} = scope
   const app = new Express()
 
   app.all('*', (req, res, next) => {
