@@ -11,20 +11,16 @@ export default class BlockService {
     this.scope = scope
     const {database} = scope
     database.queryBlock('genesis').then(block => {
-      console.log(14, block)
       if (!block) {
         // no any block
         this.genesisblock = new Block(Buffer.from(genesisJSON.hex, 'hex'))
         database.putBlock(this.genesisblock)
-        database.putObject('bgenesis', this.genesisblock)
+        database.putBlock(this.genesisblock, 'genesis')
         database.putObject(kLastBlockIDKey, this.genesisblock.hash)
       } else {
         this.genesisblock = block
       }
-      console.log(23, this.genesisblock, genesisJSON)
       // assert.equal(this.genesisblock.hash, genesisJSON.header.hash)
-    }).catch(e => {
-      console.log(26, e)
     })
     callback(null, this)
   }

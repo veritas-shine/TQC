@@ -20,7 +20,7 @@ export default {
     }
     return {
       code: code.ok,
-      data: obj
+      data: obj.toJSON()
     }
   }
 }

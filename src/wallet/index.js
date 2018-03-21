@@ -4,8 +4,7 @@ import api from './api'
 import Wallet from './model'
 
 export default (scope, callback) => {
-  const {server} = scope
-  router(api, server)
+  router(api, scope)
 
   const files = Storage.getWalletFiles()
   Wallet.load(files[0])

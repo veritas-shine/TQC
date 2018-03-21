@@ -3,8 +3,7 @@ import Miner from './model'
 import api from './api'
 
 export default (scope, callback) => {
-  const { server } = scope
-  router(api, server)
+  router(api, scope)
   callback(null, Miner)
   // const {config} = scope
   // if (config.mine.enable) {

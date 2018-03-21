@@ -1,5 +1,6 @@
 import levelup from 'levelup'
 import leveldown from 'leveldown'
+import encode from 'encoding-down'
 import pqccore from 'pqc-core'
 import storage from '../storage'
 
@@ -9,7 +10,7 @@ const {NotFoundError} = levelup.errors
 export default class Database {
   constructor(scope, callback) {
     const p = storage.getDBPath()
-    const db = levelup(leveldown(p))
+    const db = levelup(encode(leveldown(p), {valueEncoding: 'hex'}))
     this.db = db
     callback(null, this)
   }
@@ -30,33 +31,57 @@ export default class Database {
     })
   }
 
-  putObject(key, value) {
-    if (key && value) {
-      this.db.put(key, value)
-    }
+  putObject(key, value, options) {
+    return new Promise((resolve, reject) => {
+      if (key && value) {
+        console.log(35, key, value)
+        this.db.put(key, value, options, error => {
+          if (error) {
+            console.error(39, error)
+            reject(error)
+          } else {
+            resolve()
+          }
+        })
+      }
+    })
   }
 
   async queryBlock(blockHash) {
     const id = `b${blockHash}`
     const str = await this.queryObject(id)
     if (str) {
-      return new Block(str)
+      return new Block(Buffer.from(str, 'hex'))
     } else {
       return null
     }
   }
 
-  async putBlock(block) {
+  async putBlock(block, id) {
     if (block instanceof Block) {
-      const id = `b${block.hash}`
-      const savedBlock = await this.queryBlock(id)
+      let rid = id
+      if (id) {
+        rid = `b${id}`
+      } else {
+        rid = `b${block.hash}`
+      }
+      const savedBlock = await this.queryBlock(rid)
       if (savedBlock) {
         throw new Error('block already in db')
       } else {
-        return this.putObject(id, block.toString())
+        return this.putObject(rid, block.toString(), {
+          sync: true,
+          keyEncoding: 'utf8',
+          valueEncoding: 'hex'
+        })
       }
     } else {
       throw new Error('invalid argument type')
     }
+  }
+
+  close() {
+    console.log(69, 'db close')
+    this.db.close(console.log)
   }
 }

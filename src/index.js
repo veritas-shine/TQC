@@ -33,6 +33,8 @@ d.run(() => {
       process.once('cleanup', () => {
         console.error('Cleaning up...')
         // TODO
+        const {database} = scope
+        database.close()
       })
     }
   })

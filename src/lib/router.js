@@ -5,15 +5,16 @@ const localFilter = IpFilter(['::ffff', '127.0.0.1', '::1'], {mode: 'allow'})
 
 const kSupportedMethods = ['get', 'post', 'put', 'delete']
 
-export default function (routers, app) {
+export default function (routers, ctx) {
+  const {server} = ctx
   Object.keys(routers)
     .forEach(key => {
       const func = routers[key]
       const [method, url] = key.split(' ')
       if (kSupportedMethods.indexOf(method) !== -1) {
-        app[method](url, /*localFilter,*/ (req, res) => {
+        server[method](url, /*localFilter,*/ (req, res) => {
           try {
-            func(req)
+            func(req, ctx)
               .then(result => res.send(result))
               .catch(error => {
                 res.status(400)

@@ -3,7 +3,6 @@ import BlockService from './model'
 import api from './api';
 
 export default (scope, callback) => {
-  const {server} = scope
-  router(api, server)
+  router(api, scope)
   new BlockService(scope, callback)
 }
