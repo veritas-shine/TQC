@@ -6,6 +6,7 @@ import validator from './lib/validator'
 import server from './server'
 import p2p from './p2p'
 import database from './database'
+import transaction from './transaction'
 import wallet from './wallet'
 import mine from './mine'
 import block from './block'
@@ -22,7 +23,8 @@ d.run(() => {
     p2p: ['config', p2p],
     wallet: ['server', wallet],
     block: ['database', block],
-    mine: ['block', 'server', mine],
+    transaction: ['config', transaction],
+    mine: ['block', 'transaction', 'server', mine],
     ready: ['validator', 'database', 'server', 'p2p', 'wallet', (scope, callback) => callback()]
   }, (error, scope) => {
     if (error) {

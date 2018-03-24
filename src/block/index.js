@@ -4,5 +4,6 @@ import api from './api';
 
 export default (scope, callback) => {
   router(api, scope)
-  new BlockService(scope, callback)
+  const block = new BlockService(scope)
+  callback(null, block)
 }

@@ -7,7 +7,7 @@ const {Block} = pqccore
 const kLastBlockIDKey = 'iblast'
 
 export default class BlockService {
-  constructor(scope, callback) {
+  constructor(scope) {
     this.scope = scope
     const {database} = scope
     database.queryBlock('genesis')
@@ -23,7 +23,6 @@ export default class BlockService {
         }
         // assert.equal(this.genesisblock.hash, genesisJSON.header.hash)
       })
-    callback(null, this)
   }
 
   async lastBlock() {

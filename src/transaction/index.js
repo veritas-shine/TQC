@@ -4,6 +4,6 @@ import Transaction from './model'
 
 export default (scope, callback) => {
   router(api, scope)
-
-  callback(null, Transaction)
+  const tx = new Transaction(scope)
+  callback(null, tx)
 }
