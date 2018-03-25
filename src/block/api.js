@@ -6,7 +6,7 @@ export default {
     const data = await database.listBlocks()
     return {
       code: code.ok,
-      data: data.map(l => l.toString())
+      data: data.map(l => l.toJSON())
     }
   },
   'get /block/one': async (req, ctx) => {
@@ -20,7 +20,7 @@ export default {
     }
     return {
       code: code.ok,
-      data: obj.toString()
+      data: obj.toJSON()
     }
   }
 }

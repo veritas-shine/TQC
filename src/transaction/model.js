@@ -15,11 +15,11 @@ export default class TransactionService {
    */
   addTransaction(tx) {
     const idx = this.pendingTXs.findIndex(looper => looper.txid === tx.txid)
-    if (idx !== -1) {
+    if (idx === -1) {
       this.pendingTXs.push(tx)
       // stop current mine event, because pending transactions change caused merkle root changed
       const {mine} = this.scope
-      mine.stop()
+      mine.stopCurrentMine()
     }
   }
 

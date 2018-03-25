@@ -12,7 +12,6 @@ export default class BlockService {
     const {database} = scope
     database.queryBlock('genesis')
       .then(block => {
-        console.log(15, block)
         if (!block) {
           console.debug('no genesis block, so save it into db from JSON file ')
           // no any block
@@ -21,6 +20,7 @@ export default class BlockService {
           database.putBlock(this.genesisblock, 'genesis')
           database.putObject(kLastBlockIDKey, this.genesisblock.id)
         } else {
+          console.debug('load genesis from database')
           this.genesisblock = block
         }
       })

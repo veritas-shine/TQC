@@ -7,7 +7,7 @@ const {Block, Transaction, Consensus} = pqccore
 export default class MinerService {
   constructor(scope) {
     this.scope = scope
-    this.stop = false
+    this.stop = true
   }
 
   stopCurrentMine() {
@@ -37,8 +37,7 @@ export default class MinerService {
     const {maxNonce} = Consensus.Block
     while (startNonce < maxNonce && !this.stop) {
       blocktemplate.nonce = startNonce
-      const hash = Block.hashFunction(Block.concatBuffer(blocktemplate))
-        .reverse()
+      const hash = Block.hashFunction(Block.concatBuffer(blocktemplate)).reverse()
       if (Buffer.compare(targetBuffer, hash) > 0) {
         // found one
         console.log('found:', startNonce, hash.toString('hex'))
@@ -72,25 +71,33 @@ export default class MinerService {
       const txSerivce = this.scope.transaction
 
       NodeSchedule.scheduleJob('*/1 * * * *', () => {
-        blockService.lastBlock()
-          .then(lastBlock => {
-            console.log('lastblock', lastBlock.id)
-            const coinbase = Buffer.from('veritas', 'utf8')
-            const tx = Transaction.createCoinbaseTransaction(wallet.keypair, coinbase, 50 * 1e8)
-            txSerivce.addTransaction(tx)
-            const merkleroot = txSerivce.merkleRoot()
-            this.stop = false
-            console.log(merkleroot)
+        if (this.stop) {
+          blockService.lastBlock()
+            .then(lastBlock => {
+              console.log('lastblock', lastBlock.id, lastBlock.height)
 
-            const template = this.mine(lastBlock.id, merkleroot)
-            if (template) {
-              const newBlock = new Block({
-                ...template,
-                transactions: [tx]
-              })
-              blockService.addMineBlock(newBlock)
-            }
-          })
+              const coinbase = Buffer.from('veritas', 'utf8')
+              try {
+                const tx = Transaction.createCoinbaseTransaction(wallet.keypair, coinbase, 50 * 1e8)
+                txSerivce.addTransaction(tx)
+                const merkleroot = txSerivce.merkleRoot()
+                this.stop = false
+                console.log(85, merkleroot)
+
+                const template = this.mine(lastBlock.id, merkleroot)
+                if (template) {
+                  template.height = lastBlock.height + 1
+                  const newBlock = new Block({
+                    ...template,
+                    transactions: [tx]
+                  })
+                  blockService.addMineBlock(newBlock)
+                }
+              } catch (e) {
+                console.error(e)
+              }
+            })
+        }
       })
     })
   }

@@ -4,10 +4,14 @@ import Wallet from './model'
 import Storage from '../storage'
 
 export default (scope, callback) => {
-  router(api, scope)
+  try {
+    router(api, scope)
 
-  const wallet = new Wallet(scope)
-  const files = Storage.getWalletFiles()
-  wallet.load(files[0])
-  callback(null, wallet)
+    const wallet = new Wallet(scope)
+    const files = Storage.getWalletFiles()
+    wallet.load(files[0])
+    callback(null, wallet)
+  } catch (e) {
+    console.error(e)
+  }
 }
