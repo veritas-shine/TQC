@@ -4,8 +4,12 @@ const {Block, Transaction} = pqccore
 
 function connect(scope) {
   return (call, callback) => {
-    // TODO
-    console.log(4, call.request)
+    const {ip, network} = call.request
+    const {p2p} = scope
+    p2p.addPeer({
+      ip: ip.trim(),
+      network: network.trim()
+    })
     callback(null, {message: 'hello'})
   }
 }

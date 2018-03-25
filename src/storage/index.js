@@ -13,14 +13,37 @@ function getPeersPath() {
   return path.join(filePath, '/peers.json')
 }
 
+function getPeersBlacklist() {
+  const filePath = getDataFolder()
+  const f = path.join(filePath, '/blacklist.json')
+  try {
+    const content = fs.readFileSync(f)
+    return JSON.stringify(content)
+  } catch (e) {
+    console.log(e)
+  }
+  return []
+}
+
+function saveBlacklistPeers(peers) {
+  const filePath = getDataFolder()
+  const f = path.join(filePath, '/blacklist.json')
+  return fs.writeFileSync(f, peers)
+}
+
 /**
  * read peers from file
  * @return {Array}
  */
 function readPeers() {
   const file = getPeersPath()
-  const content = fs.readFileSync(file)
-  return JSON.parse(content)
+  try {
+    const content = fs.readFileSync(file)
+    return JSON.parse(content)
+  } catch (e) {
+    console.log(e)
+  }
+  return []
 }
 
 /**
@@ -57,12 +80,13 @@ function getWalletPath() {
 function getWalletFiles() {
   const folder = getWalletPath()
   const result = []
-  fs.readdirSync(folder).forEach(name => {
-    if (path.extname(name) === config.wallet.fileExtension) {
-      const filePath = path.join(folder, name)
-      result.push(filePath)
-    }
-  })
+  fs.readdirSync(folder)
+    .forEach(name => {
+      if (path.extname(name) === config.wallet.fileExtension) {
+        const filePath = path.join(folder, name)
+        result.push(filePath)
+      }
+    })
   return result
 }
 
@@ -82,6 +106,7 @@ export default {
   getPeersPath,
   readPeers,
   savePeers,
+  saveBlacklistPeers,
   getWalletFiles,
   createWalletFile
 }

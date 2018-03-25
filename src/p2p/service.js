@@ -36,6 +36,7 @@ export default class PeerService {
       array = p2
     }
 
+    this.peers = array.slice(0)
     const {config} = this.scope
     const {peer: {port}} = config
 
@@ -43,6 +44,31 @@ export default class PeerService {
       const client = new Client(ip, port, this)
       this.connections[ip] = client
     })
+    Storage.savePeers(array)
+  }
+
+  /**
+   *
+   * @param info {{ip: String, network: String}}
+   */
+  addPeer(info) {
+    const {config} = this.scope
+    const {peer: {port}, network} = config
+    const {ip} = info
+    // same network type
+    if (info.network === network) {
+      // ignore already connected peer
+      if (!this.connections[ip]) {
+        const client = new Client(ip, port, this)
+        this.connections[ip] = client
+
+        // save peers list
+        if (!this.peers.include(ip)) {
+          this.peers.push(ip)
+          Storage.savePeers(this.peers)
+        }
+      }
+    }
   }
 
   /**
@@ -53,6 +79,12 @@ export default class PeerService {
   clientWillClose(client, ctx) {
     const {ip} = ctx
     delete this.connections[ip]
+    const idx = this.peers.indexOf(ip)
+    // remove disconnected peers
+    if (idx !== -1) {
+      this.peers.splice(idx, 1)
+      Storage.savePeers(this.peers)
+    }
   }
 
   /**
