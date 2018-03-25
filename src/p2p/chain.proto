@@ -4,11 +4,11 @@ package peer;
 
 service BlockChain {
 
-    rpc Connect(ConnectRequest) returns (ConnectReply) {}
+    rpc Connect(ConnectRequest) returns (GeneralReply) {}
 
-    rpc GetLatestBlock(LatestBlockRequest) returns (LatestBlockReply) {}
+    rpc SendTransaction(TransactionRequest) returns (GeneralReply) {}
 
-    rpc UpdateBlockChain(UpdateBlockRequest) returns (UpdateBlockReply) {}
+    rpc SendBlock(BlockRequest) returns (GeneralReply) {}
 }
 
 // connect to peer
@@ -18,54 +18,14 @@ message ConnectRequest {
     string network = 3;
 }
 
-message ConnectReply {
+message GeneralReply {
     string message = 1;
 }
 
-// query latest block
-message LatestBlockRequest {
-
+message BlockRequest {
+    bytes data = 1;
 }
 
-message LatestBlockReply {
-
-}
-
-// update block
-message UpdateBlockRequest {
-    message Header {
-        int32 version = 1;
-        int32 time = 2;
-        int32 qbits = 3;
-        uint32 nonce = 4;
-        string prevHash = 5;
-        string merkleRoot = 6;
-    }
-
-    message Input {
-        string prevTxId = 1;
-        uint32 outputIndex = 2;
-        uint32 sequenceNumber = 3;
-        string script = 4;
-    }
-
-    message Output {
-        uint32 glv = 1;
-        string script = 2;
-    }
-
-    message Transaction {
-        string hash = 1;
-        int32 version = 2;
-        repeated Input inputs = 3;
-        repeated Output outputs = 4;
-        int32 nLockTime = 5;
-    }
-
-    Header header = 1;
-    repeated Transaction transactions = 2;
-}
-
-message UpdateBlockReply {
-
+message TransactionRequest {
+    bytes data = 1;
 }

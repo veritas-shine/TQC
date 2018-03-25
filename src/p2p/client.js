@@ -5,49 +5,57 @@ import config from '../config'
 const {peer, network} = config
 const protoPath = path.resolve(__dirname, './chain.proto')
 const peerProto = grpc.load(protoPath).peer
-const kClients = {}
 
-export function isConnectedToPeer(ip, port) {
-  const address = `${ip}:${port}`
-  return !!kClients[address]
-}
+export default class Client {
+  constructor(ip, port, delegate) {
+    this.ip = ip
+    this.port = port
+    this.delegate = delegate
 
-// remove a peer (i.e. when con't connect to the peer
-export function removePeer(ip, port) {
-  const address = `${ip}:${port}`
-  const client = kClients[address]
-  if (client) {
-    client.close()
-    delete kClients[address]
-  }
-}
-
-// add a peer by ip & port
-export async function connectPeer(ip, port) {
-  return new Promise((resolve, reject) => {
     const address = `${ip}:${port}`
-    console.log('will connect to peer: ', address)
-    let client = kClients[address]
-    if (!client) {
-      // not added yet, so create the client and connect to server
-      client = new peerProto.BlockChain(address, grpc.credentials.createInsecure())
-      client.connect({ ip: peer.ip, port: peer.port, network }, (error, response) => {
-        if (error) {
-          console.error(error)
-          client.close()
-          reject(error)
-        } else {
-          console.log(response)
-          kClients[address] = client
-          resolve(client)
-        }
-      })
-    } else {
-      resolve(client)
-    }
-  })
-}
+    console.log('will connect to peer:', address)
 
-export async function addPeer(node) {
-  await connectPeer(node.ip, node.port)
+    const client = new peerProto.BlockChain(address, grpc.credentials.createInsecure())
+    this.client = client
+    // payload will be sent to target peer
+    const payload = {
+      ip: peer.ip,
+      network
+    }
+
+    client.connect(payload, (error, response) => {
+      if (error) {
+        console.error(error)
+        if (delegate && delegate.clientWillClose) {
+          delegate.clientWillClose(this, {ip})
+        }
+        client.close()
+      } else {
+        console.log(response)
+      }
+    })
+  }
+
+  disconnect() {
+    this.client.close()
+  }
+
+  /**
+   *
+   * @param tx {Transaction}
+   */
+  sendTransaction(tx) {
+    this.client.sendTransaction({
+      data: tx.toBuffer()
+    })
+  }
+
+  /**
+   * @param block {Block}
+   */
+  sendBlock(block) {
+    this.client.sendBlock({
+      data: block.toBuffer()
+    })
+  }
 }

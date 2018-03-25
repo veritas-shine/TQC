@@ -23,7 +23,7 @@ export default {
       const tx = await database.queryTransaction(id)
       return {
         code: code.ok,
-        data: tx
+        data: tx.toJSON()
       }
     } else {
       throw new Error('Invalid argument')

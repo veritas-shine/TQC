@@ -26,6 +26,10 @@ export default class BlockService {
       })
   }
 
+  /**
+   * query latest block from database
+   * @return {Promise<Block>}
+   */
   async lastBlock() {
     const {database} = this.scope
     const id = await database.queryObject(kLastBlockIDKey)
@@ -33,6 +37,11 @@ export default class BlockService {
     return block
   }
 
+  /**
+   * save block to database
+   * @param block {Block}
+   * @return {Promise<void>}
+   */
   async addMineBlock(block) {
     const {database, transaction} = this.scope
     await database.putBlock(block)
@@ -40,5 +49,13 @@ export default class BlockService {
     const txids = block.transactions.filter(looper => looper.txid)
     transaction.prunePendingTransactions(txids)
     console.log('did add mined block', block)
+  }
+
+  /**
+   * did receive block from p2p network
+   * @param block {Block}
+   */
+  receiveBlock(block) {
+    // TODO
   }
 }

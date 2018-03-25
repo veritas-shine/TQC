@@ -8,6 +8,30 @@ function getDataFolder() {
   return process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/PQC' : '/var/local')
 }
 
+function getPeersPath() {
+  const filePath = getDataFolder()
+  return path.join(filePath, '/peers.json')
+}
+
+/**
+ * read peers from file
+ * @return {Array}
+ */
+function readPeers() {
+  const file = getPeersPath()
+  const content = fs.readFileSync(file)
+  return JSON.parse(content)
+}
+
+/**
+ * save peers into file (JSON format)
+ * @param peers {Array}
+ */
+function savePeers(peers) {
+  const file = getPeersPath()
+  fs.writeFileSync(file, peers)
+}
+
 function getDBPath() {
   let folder = getDataFolder()
   folder = path.join(folder, '/data')
@@ -55,6 +79,9 @@ function createWalletFile(name, data) {
 export default {
   getDBPath,
   getWalletPath,
+  getPeersPath,
+  readPeers,
+  savePeers,
   getWalletFiles,
   createWalletFile
 }

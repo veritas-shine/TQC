@@ -14,5 +14,6 @@ export default {
   peer: {
     ip: ip.address(),
     port: 50051
-  }
+  },
+  peers: []
 }
