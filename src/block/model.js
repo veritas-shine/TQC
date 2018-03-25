@@ -14,14 +14,13 @@ export default class BlockService {
       .then(block => {
         if (!block) {
           // no any block
-          this.genesisblock = new Block(Buffer.from(genesisJSON.hex, 'hex'))
+          this.genesisblock = Block.fromBuffer(Buffer.from(genesisJSON.hex, 'hex'))
           database.putBlock(this.genesisblock)
           database.putBlock(this.genesisblock, 'genesis')
-          database.putObject(kLastBlockIDKey, this.genesisblock.hash)
+          database.putObject(kLastBlockIDKey, this.genesisblock.id)
         } else {
           this.genesisblock = block
         }
-        // assert.equal(this.genesisblock.hash, genesisJSON.header.hash)
       })
   }
 
@@ -33,9 +32,11 @@ export default class BlockService {
   }
 
   async addMineBlock(block) {
-    const {database} = this.scope
+    const {database, transaction} = this.scope
     await database.putBlock(block)
-    await database.putObject(kLastBlockIDKey, block.hash)
+    await database.putObject(kLastBlockIDKey, block.id)
+    const txids = block.transactions.filter(looper => looper.txid)
+    transaction.prunePendingTransactions(txids)
     console.log('did add mined block', block)
   }
 }

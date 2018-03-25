@@ -1,59 +1,95 @@
 import NodeSchedule from 'node-schedule'
 import pqccore from 'pqc-core'
 import Domain from 'domain'
-import Transaction from '../transaction/model'
-import Wallet from '../wallet/model'
-import Storage from '../storage'
 
-const {Block} = pqccore
+const {Block, Transaction, Consensus} = pqccore
 
 export default class MinerService {
-  /**
-   * 根据区块参数初始化
-   * @param scope {Object}
-   */
   constructor(scope) {
     this.scope = scope
+    this.stop = false
   }
 
-  static mine(prevHash, merkleRoot, startNonce = 0) {
+  stopCurrentMine() {
+    this.stop = true
+  }
+
+  /**
+   *
+   * @param prevHash {Buffer}
+   * @param merkleRoot {Buffer}
+   * @param startNonce {Number}
+   * @return {Object}
+   */
+  mine(prevHash, merkleRoot, startNonce = 0) {
     const time = Math.floor(Date.now() / 1000)
+    const qbits = 0x1f00ffff
     const blocktemplate = {
       version: 1,
       prevHash,
-      qbits: 0x1f00ffff,
+      qbits,
       time,
       merkleRoot,
     }
-    const nonce = Block.mine(blocktemplate, startNonce)
-    blocktemplate.nonce = nonce
-    return blocktemplate
+
+    const targetBuffer = Block.bitsToTargetBuffer(qbits)
+    console.log('target:', targetBuffer.toString('hex'))
+    const {maxNonce} = Consensus.Block
+    while (startNonce < maxNonce && !this.stop) {
+      blocktemplate.nonce = startNonce
+      const hash = Block.hashFunction(Block.concatBuffer(blocktemplate))
+        .reverse()
+      if (Buffer.compare(targetBuffer, hash) > 0) {
+        // found one
+        console.log('found:', startNonce, hash.toString('hex'))
+        break
+      }
+      ++startNonce
+    }
+
+    if (this.stop) {
+      return null
+    }
+    // recheck the hash
+    const hash = Block.hashFunction(Block.concatBuffer(blocktemplate))
+      .reverse()
+    if (Buffer.compare(targetBuffer, hash) > 0) {
+      blocktemplate.hash = hash
+      return blocktemplate
+    } else {
+      // not found a valid hash
+    }
+    return null
   }
 
   schedule() {
     console.log('start mine schedule')
     const d = Domain.create()
     d.run(() => {
-      const files = Storage.getWalletFiles()
-      const wallet = Wallet.load(files[0])
+      const walletService = this.scope.wallet
+      const wallet = walletService.current
       const blockService = this.scope.block
       const txSerivce = this.scope.transaction
 
       NodeSchedule.scheduleJob('*/1 * * * *', () => {
         blockService.lastBlock()
           .then(lastBlock => {
+            console.log('lastblock', lastBlock.id)
             const coinbase = Buffer.from('veritas', 'utf8')
             const tx = Transaction.createCoinbaseTransaction(wallet.keypair, coinbase, 50 * 1e8)
             txSerivce.addTransaction(tx)
             const merkleroot = txSerivce.merkleRoot()
+            this.stop = false
             console.log(merkleroot)
 
-            const template = MinerService.mine(lastBlock.id, merkleroot)
-            const newBlock = new Block({
-              header: template,
-              transactions: [tx]
-            })
-            blockService.addMineBlock(newBlock)
+            const template = this.mine(lastBlock.id, merkleroot)
+            if (template) {
+              const newBlock = new Block({
+                ...template,
+                transactions: [tx]
+              })
+              blockService.addMineBlock(newBlock)
+            }
           })
       })
     })

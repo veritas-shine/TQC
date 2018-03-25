@@ -9,55 +9,86 @@ const {Keypair} = pqccore
 function loadFromFile(filePath) {
   const content = fs.readFileSync(filePath)
   if (content) {
-    const obj = JSON.parse(content)
-    if (obj) {
-      const {secret} = obj
-      const keypair = new Keypair({secret})
-      return {
-        address: keypair.toAddress(),
-        keypair,
-        secret
+    try {
+      const obj = JSON.parse(content)
+      if (obj) {
+        const {secret} = obj
+        const keypair = new Keypair({secret})
+        return {
+          address: keypair.toAddress(),
+          keypair,
+          secret
+        }
       }
+    } catch (e) {
+      console.error(e)
     }
   }
   return {}
 }
 
-export default class Wallet {
-  static currentWallet = {}
-  static load(filePath, shouldCreate) {
+export default class WalletService {
+  constructor(scope) {
+    this.scope = scope
+    this.current = {}
+  }
+
+  /**
+   * load wallet from file
+   * @param filePath {String}
+   * @param shouldCreate {Boolean}
+   * @return {{secret: String, address: String, keypair: Keypair}}
+   */
+  load(filePath, shouldCreate = false) {
     if (filePath) {
       // load account from file
       const {secret, keypair, address} = loadFromFile(filePath)
-      const wallet = {address, keypair, secret}
-      this.currentWallet = {...wallet}
+      const wallet = {
+        address,
+        keypair,
+        secret
+      }
+      this.current = {...wallet}
       return wallet
     } else if (shouldCreate) {
       // generate keypair && address
       const mnemonic = bip39.generateMnemonic()
       return this.create(mnemonic)
     } else {
-      return this.currentWallet
+      return this.current
     }
   }
 
-  static create(mnemonic) {
+  /**
+   * create wallet from mnemonic string
+   * @param mnemonic {String}
+   * @return {{secret: String, address: String, keypair: Keypair}}
+   */
+  create(mnemonic) {
     const seed = bip39.mnemonicToSeed(mnemonic)
     const keypair = new Keypair({
       secret: seed,
       network: config.network
     })
     const address = keypair.toAddress()
-    const wallet = {secret: seed, address, keypair}
-    this.currentWallet = {...wallet}
+    const wallet = {
+      secret: seed,
+      address,
+      keypair
+    }
+    this.current = {...wallet}
     return wallet
   }
 
-  static saveToFile(wallet, filename) {
-    const address = wallet.address.toString()
+  /**
+   * save wallet to file, JSON format
+   * @param filename {String}
+   */
+  saveToFile(filename) {
+    const address = this.current.address.toString()
     filename = filename || address
     const data = {
-      secret: wallet.secret
+      secret: this.current.secret
     }
     console.log(64, data)
     if (Storage.createWalletFile(filename, JSON.stringify(data))) {
@@ -65,8 +96,12 @@ export default class Wallet {
     }
   }
 
-  static toJSON(wallet) {
-    wallet = wallet || this.currentWallet
+  /**
+   * convert wallet to JSON format
+   * @return {Object}
+   */
+  toJSON() {
+    const wallet = this.current
     if (Object.keys(wallet).length > 0) {
       return {
         secret: wallet.secret
@@ -76,4 +111,3 @@ export default class Wallet {
     }
   }
 }
-

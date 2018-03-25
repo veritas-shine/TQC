@@ -1,11 +1,12 @@
 {
-  "name": "pqc",
+  "name": "tqc",
   "version": "0.0.1",
-  "description": "Post Quantum Coin",
+  "description": "Truly Quantum Coin",
   "main": "bin/index.js",
   "scripts": {
     "dev": "better-npm-run dev",
     "test-wallet": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/wallet/test.js",
+    "test-block": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/block/test.js",
     "test-mine": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/mine/test.js",
     "test-p2p": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/p2p/test.js",
     "test-db": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/database/test.js",
@@ -27,7 +28,7 @@
   "keywords": [
     "Post-Quantum",
     "CryptoCurrency",
-    "Cion"
+    "Coin"
   ],
   "author": "tearsofphoenix@icloud.com",
   "license": "ISC",
@@ -52,7 +53,7 @@
     "merkle-lib": "^2.0.10",
     "mkdirp": "^0.5.1",
     "node-schedule": "^1.3.0",
-    "pqc-core": "0.1.1",
+    "pqc-core": "0.1.5",
     "tweetnacl": "^1.0.0",
     "winston": "^2.4.0",
     "z-schema": "^3.19.1"

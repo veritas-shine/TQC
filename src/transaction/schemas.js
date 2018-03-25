@@ -2,9 +2,6 @@ export default {
   tx: {
     type: 'object',
     properties: {
-      from: {
-        type: 'string'
-      },
       to: {
         type: 'string'
       },
@@ -12,6 +9,9 @@ export default {
         type: 'integer'
       }
     },
-    required: ['from', 'to', 'amount']
+    required: ['to', 'amount']
+  },
+  id: {
+    type: 'string'
   }
 }

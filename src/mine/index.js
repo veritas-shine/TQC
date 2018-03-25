@@ -1,13 +1,14 @@
 import router from 'lib/router'
-import Miner from './model'
+import MineService from './model'
 import api from './api'
 
 export default (scope, callback) => {
   router(api, scope)
-  callback(null, Miner)
+  const mine = new MineService(scope)
+  callback(null, mine)
 
   const {config} = scope
   if (config.mine.enable) {
-    Miner.schedule(scope)
+    mine.schedule()
   }
 }

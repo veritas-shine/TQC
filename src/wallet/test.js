@@ -1,21 +1,22 @@
 import assert from 'assert'
-import Wallet from './model'
 import Storage from 'storage'
+import Wallet from './model'
 
 describe('wallet test', function () {
   let files = Storage.getWalletFiles()
-  Wallet.load(files[0])
-  const wallet = Wallet.currentWallet
-  console.log(9, wallet.publicKey)
+  const walletService = new Wallet({})
+  walletService.load(files[0], true)
+
   it('should save wallet to file', function (done) {
-    Wallet.saveToFile(wallet)
+    walletService.saveToFile(files[0])
     done()
   })
 
   it('should load ', function (done) {
     files = Storage.getWalletFiles()
-    const oldWallet = Wallet.load(files[0])
-    assert.equal(oldWallet.address.toString(), wallet.address.toString())
+    const newService = new Wallet({})
+    newService.load(files[0])
+    assert.equal(walletService.current.adress, newService.current.address)
     done()
   })
 })

@@ -4,15 +4,15 @@ import encode from 'encoding-down'
 import pqccore from 'pqc-core'
 import storage from '../storage'
 
-const {Block} = pqccore
+const {Block, Transaction} = pqccore
 const {NotFoundError} = levelup.errors
 
 export default class Database {
-  constructor(scope, callback) {
+  constructor(scope) {
+    this.scope = scope
     const p = storage.getDBPath()
     const db = levelup(encode(leveldown(p), {valueEncoding: 'hex'}))
     this.db = db
-    callback(null, this)
   }
 
   queryObject(key) {
@@ -47,39 +47,61 @@ export default class Database {
     })
   }
 
+  /**
+   * query a block by block's hash
+   * @param blockHash
+   * @return {Promise<Block> | Promise<null>}
+   */
   async queryBlock(blockHash) {
     const id = `b${blockHash}`
     const str = await this.queryObject(id)
     if (str) {
-      return new Block(Buffer.from(str, 'hex'))
+      return Block.fromBuffer(Buffer.from(str, 'hex'))
     } else {
       return null
     }
   }
 
+  /**
+   * save block into db, default key is block's hash
+   * if argument `id` provided, will use `id` as key
+   * @param block {Block}
+   * @param id {String}
+   * @return {Promise}
+   */
   async putBlock(block, id) {
     if (block instanceof Block) {
       let rid = id
       if (id) {
         rid = `b${id}`
       } else {
-        rid = `b${block.hash}`
+        rid = `b${block.id}`
       }
       const savedBlock = await this.queryBlock(rid)
       if (savedBlock) {
         throw new Error('block already in db')
       } else {
-        return this.putObject(rid, block.toString(), {
-          sync: true,
-          keyEncoding: 'utf8',
-          valueEncoding: 'hex'
+        const queries = block.transactions.map(t => ({
+          type: 'put',
+          key: `t${t.txid}`,
+          value: t.toString()
+        }))
+        queries.push({
+          type: 'put',
+          key: rid,
+          value: block.toString()
         })
+        return this.db.batch(queries)
       }
     } else {
       throw new Error('invalid argument type')
     }
   }
 
+  /**
+   * list blocks in db
+   * @return {Promise<Array>}
+   */
   async listBlocks() {
     return new Promise(((resolve, reject) => {
       const options = {
@@ -94,7 +116,7 @@ export default class Database {
       const result = []
       this.db.createReadStream(options)
         .on('data', (data) => {
-          const block = new Block(Buffer.from(data.value, 'hex'))
+          const block = Block.fromBuffer(Buffer.from(data.value, 'hex'))
           result.push(block)
         })
         .on('error', error => {
@@ -110,6 +132,24 @@ export default class Database {
     }))
   }
 
+  /**
+   * query transaction by txid
+   * @param txid {String}
+   * @return {Promise<Transaction>}
+   */
+  async queryTransaction(txid) {
+    const id = `t${txid}`
+    const str = await this.queryObject(id)
+    if (str) {
+      return Transaction.fromBuffer(Buffer.from(str, 'hex'))
+    } else {
+      return null
+    }
+  }
+
+  /**
+   * close db
+   */
   close() {
     console.log(69, 'db close')
     this.db.close(console.log)
