@@ -17,8 +17,10 @@ function getPeersBlacklist() {
   const filePath = getDataFolder()
   const f = path.join(filePath, '/blacklist.json')
   try {
-    const content = fs.readFileSync(f)
-    return JSON.stringify(content)
+    if (fs.existsSync(f)) {
+      const content = fs.readFileSync(f)
+      return JSON.stringify(content)
+    }
   } catch (e) {
     console.log(e)
   }
@@ -38,8 +40,10 @@ function saveBlacklistPeers(peers) {
 function readPeers() {
   const file = getPeersPath()
   try {
-    const content = fs.readFileSync(file)
-    return JSON.parse(content)
+    if (fs.existsSync(file)) {
+      const content = fs.readFileSync(file)
+      return JSON.parse(content)
+    }
   } catch (e) {
     console.log(e)
   }

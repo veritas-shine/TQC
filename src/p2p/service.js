@@ -79,14 +79,23 @@ export default class PeerService {
   clientWillClose(client, ctx) {
     const {ip} = ctx
     delete this.connections[ip]
-    const idx = this.peers.indexOf(ip)
+    // const idx = this.peers.indexOf(ip)
     // remove disconnected peers
-    if (idx !== -1) {
-      this.peers.splice(idx, 1)
-      Storage.savePeers(this.peers)
-    }
+    // if (idx !== -1) {
+    //   this.peers.splice(idx, 1)
+    //   Storage.savePeers(this.peers)
+    // }
   }
 
+  /**
+   * did receive block from `getLastBlock`
+   * @param client {Client}
+   * @param block {Block}
+   */
+  clientDidGetLastBlock(client, block) {
+    const blockService = this.scope.block
+    blockService.syncBlock(block).then()
+  }
   /**
    * broadcast transaction to all other peer
    * @param tx {Transaction}

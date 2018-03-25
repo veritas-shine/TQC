@@ -6,6 +6,8 @@ service BlockChain {
 
     rpc Connect(ConnectRequest) returns (GeneralReply) {}
 
+    rpc GetLastBlock(LastBlockRequest) returns (LastBlockReply) {}
+
     rpc SendTransaction(TransactionRequest) returns (GeneralReply) {}
 
     rpc SendBlock(BlockRequest) returns (GeneralReply) {}
@@ -16,6 +18,13 @@ message ConnectRequest {
     string ip = 1;
     int32  port = 2;
     string network = 3;
+}
+
+message LastBlockRequest {
+}
+
+message LastBlockReply {
+    bytes data = 1;
 }
 
 message GeneralReply {

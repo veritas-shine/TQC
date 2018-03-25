@@ -52,11 +52,24 @@ export default class BlockService {
     console.log('did add mined block', block)
   }
 
+  async syncBlock(block) {
+    const {database} = this.scope
+    const obj = await database.queryBlock(block.id)
+    // make sure not have the block in database
+    if (!obj) {
+      await database.putBlock(block)
+    }
+  }
   /**
    * did receive block from p2p network
    * @param block {Block}
    */
-  receiveBlock(block) {
-    // TODO
+  async receiveBlock(block) {
+    const {database} = this.scope
+    const obj = await database.queryBlock(block.id)
+    // make sure not have the block in database
+    if (!obj) {
+      await database.putBlock(block)
+    }
   }
 }

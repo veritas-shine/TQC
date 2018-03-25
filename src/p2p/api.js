@@ -32,14 +32,29 @@ function sendBlock(scope) {
     const rb = Block.fromBuffer(data)
     const {block} = scope
     block.receiveBlock(rb)
-    callback(null, {
-      message: 'ok'
-    })
+      .then(() => {
+        callback(null, {
+          message: 'ok'
+        })
+      })
+  }
+}
+
+function getLastBlock(scope) {
+  return (call, callback) => {
+    const blockService = scope.block
+    blockService.lastBlock()
+      .then(block => {
+        callback(null, {
+          data: block.toBuffer()
+        })
+      })
   }
 }
 
 export default scope => ({
   connect: connect(scope),
   sendTransaction: sendTransaction(scope),
-  sendBlock: sendBlock(scope)
+  sendBlock: sendBlock(scope),
+  getLastBlock: getLastBlock(scope)
 })

@@ -1,6 +1,9 @@
 import grpc from 'grpc'
 import path from 'path'
+import pqccore from 'pqc-core'
 import config from '../config'
+
+const {Block} = pqccore
 
 const {peer, network} = config
 const protoPath = path.resolve(__dirname, './chain.proto')
@@ -32,6 +35,7 @@ export default class Client {
         client.close()
       } else {
         console.log(response)
+        this.getLastBlock()
       }
     })
   }
@@ -40,13 +44,35 @@ export default class Client {
     this.client.close()
   }
 
+  getLastBlock() {
+    this.client.getLastBlock({}, (error, response) => {
+      if (error) {
+        console.error(error)
+      } else {
+        const {data} = response
+        const b = Block.fromBuffer(data)
+        if (this.delegate && this.delegate.clientDidGetLastBlock) {
+          this.delegate.clientDidGetLastBlock(this, b)
+        }
+      }
+      console.log(response)
+    })
+  }
+
   /**
    *
    * @param tx {Transaction}
    */
   sendTransaction(tx) {
-    this.client.sendTransaction({
+    const payload = {
       data: tx.toBuffer()
+    }
+    this.client.sendTransaction(payload, (error, response) => {
+      if (error) {
+        console.error(error)
+      } else {
+        console.log(response)
+      }
     })
   }
 
@@ -54,8 +80,15 @@ export default class Client {
    * @param block {Block}
    */
   sendBlock(block) {
-    this.client.sendBlock({
+    const payload = {
       data: block.toBuffer()
+    }
+    this.client.sendBlock(payload, (error, response) => {
+      if (error) {
+        console.error(error)
+      } else {
+        console.log(response)
+      }
     })
   }
 }
