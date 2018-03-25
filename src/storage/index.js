@@ -30,7 +30,7 @@ function getPeersBlacklist() {
 function saveBlacklistPeers(peers) {
   const filePath = getDataFolder()
   const f = path.join(filePath, '/blacklist.json')
-  return fs.writeFileSync(f, peers)
+  return fs.writeFileSync(f, JSON.stringify(peers))
 }
 
 /**
@@ -56,7 +56,7 @@ function readPeers() {
  */
 function savePeers(peers) {
   const file = getPeersPath()
-  fs.writeFileSync(file, peers)
+  fs.writeFileSync(file, JSON.stringify(peers))
 }
 
 function getDBPath() {

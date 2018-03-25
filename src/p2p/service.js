@@ -44,7 +44,7 @@ export default class PeerService {
       const client = new Client(ip, port, this)
       this.connections[ip] = client
     })
-    Storage.savePeers(array)
+    Storage.savePeers(this.peers)
   }
 
   /**
