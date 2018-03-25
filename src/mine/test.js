@@ -1,8 +1,8 @@
 import fastRoot from 'merkle-lib/fastRoot'
 import pqccore from 'pqc-core'
-import bip39 from 'bip39'
 import WalletService from '../wallet/model'
 import MineService from './model'
+import Storage from '../storage'
 
 const {Transaction, Block, Hash} = pqccore
 
@@ -13,9 +13,10 @@ describe('Mine', () => {
     const coinbase = Buffer.from('veritas', 'utf8')
     const scope = {}
     const walletService = new WalletService(scope)
-    const mnemonic = bip39.generateMnemonic()
-    const wallet = walletService.create(mnemonic)
-    walletService.saveToFile()
+
+    const files = Storage.getWalletFiles()
+    walletService.load(files[0])
+    const wallet = walletService.current
 
     const mineService = new MineService(scope)
 

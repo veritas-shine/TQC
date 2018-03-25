@@ -4,7 +4,7 @@ export default {
   port: 7770,
   name: 'PQC',
   mine: {
-    enable: true,
+    enable: false,
   },
   wallet: {
     fileExtension: '.pqc'

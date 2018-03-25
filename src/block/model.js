@@ -12,7 +12,9 @@ export default class BlockService {
     const {database} = scope
     database.queryBlock('genesis')
       .then(block => {
+        console.log(15, block)
         if (!block) {
+          console.debug('no genesis block, so save it into db from JSON file ')
           // no any block
           this.genesisblock = Block.fromBuffer(Buffer.from(genesisJSON.hex, 'hex'))
           database.putBlock(this.genesisblock)
