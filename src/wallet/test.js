@@ -8,7 +8,7 @@ describe('wallet test', function () {
   walletService.load(files[0], true)
 
   it('should save wallet to file', function (done) {
-    walletService.saveToFile(files[0])
+    walletService.saveToFile()
     done()
   })
 
@@ -16,7 +16,7 @@ describe('wallet test', function () {
     files = Storage.getWalletFiles()
     const newService = new Wallet({})
     newService.load(files[0])
-    assert.equal(walletService.current.adress, newService.current.address)
+    assert.equal(walletService.current.address, newService.current.address)
     done()
   })
 })

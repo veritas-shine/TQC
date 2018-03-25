@@ -88,7 +88,7 @@ export default class WalletService {
     const address = this.current.address.toString()
     filename = filename || address
     const data = {
-      secret: this.current.secret
+      secret: this.current.secret.toString('hex')
     }
     console.log(64, data)
     if (Storage.createWalletFile(filename, JSON.stringify(data))) {
@@ -104,7 +104,7 @@ export default class WalletService {
     const wallet = this.current
     if (Object.keys(wallet).length > 0) {
       return {
-        secret: wallet.secret
+        secret: wallet.secret.toString('hex')
       }
     } else {
       return {}

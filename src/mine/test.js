@@ -8,6 +8,7 @@ const {Transaction, Block, Hash} = pqccore
 
 describe('Mine', () => {
   it('should create genesis block', function () {
+    this.timeout(200 * 1000)
     const prevHash = Hash.NULL
     const coinbase = Buffer.from('veritas', 'utf8')
     const scope = {}
@@ -20,15 +21,15 @@ describe('Mine', () => {
 
     const tx = Transaction.createCoinbaseTransaction(wallet.keypair, coinbase, 50 * 1e8)
     const merkleroot = fastRoot([tx.hash()], Hash.defaultHash)
-    console.log(merkleroot)
 
     const template = mineService.mine(prevHash, merkleroot)
     if (template) {
+      template.height = 0
       const newBlock = new Block({
         ...template,
         transactions: [tx]
       })
-      console.log(newBlock.toString())
+      console.log(newBlock, newBlock.toString())
     }
   });
 })
