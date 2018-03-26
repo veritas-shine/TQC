@@ -1,60 +1,38 @@
-import pqccore from 'pqc-core'
+import code from '../config/code'
+import schemas from './schemas'
 
-const {Block, Transaction} = pqccore
-
-function connect(scope) {
-  return (call, callback) => {
-    const {ip, network} = call.request
-    const {p2p} = scope
-    p2p.addPeer({
-      ip: ip.trim(),
-      network: network.trim()
-    })
-    callback(null, {message: 'hello'})
+export default {
+  'get /peer/list': async (req, ctx) => {
+    const {p2p} = ctx
+    return {
+      code: code.ok,
+      data: p2p.getPeers()
+    }
+  },
+  'post /peer/add': async (req, ctx) => {
+    const {p2p, validator} = ctx
+    const {peer} = req.body
+    const ok = validator.validate(peer, schemas.peer)
+    if (ok) {
+      p2p.addPeer(peer)
+      return {
+        code: code.ok
+      }
+    } else {
+      throw new Error('Invalid argument')
+    }
+  },
+  'post /peer/remove': async (req, ctx) => {
+    const {p2p, validator} = ctx
+    const {ip} = req.body
+    const ok = validator.validate(ip, schemas.ip)
+    if (ok) {
+      p2p.removePeer(ip)
+      return {
+        code: code.ok
+      }
+    } else {
+      throw new Error('Invalid argument')
+    }
   }
 }
-
-function sendTransaction(scope) {
-  return (call, callback) => {
-    const {data} = call.request
-    const tx = Transaction.fromBuffer(data)
-    const {transaction} = scope
-    transaction.receiveTransaction(tx)
-    callback(null, {
-      message: 'ok'
-    })
-  }
-}
-
-function sendBlock(scope) {
-  return (call, callback) => {
-    const {data} = call.request
-    const rb = Block.fromBuffer(data)
-    const {block} = scope
-    block.receiveBlock(rb)
-      .then(() => {
-        callback(null, {
-          message: 'ok'
-        })
-      })
-  }
-}
-
-function getLastBlock(scope) {
-  return (call, callback) => {
-    const blockService = scope.block
-    blockService.lastBlock()
-      .then(block => {
-        callback(null, {
-          data: block.toBuffer()
-        })
-      })
-  }
-}
-
-export default scope => ({
-  connect: connect(scope),
-  sendTransaction: sendTransaction(scope),
-  sendBlock: sendBlock(scope),
-  getLastBlock: getLastBlock(scope)
-})

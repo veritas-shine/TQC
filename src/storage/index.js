@@ -19,7 +19,9 @@ function getPeersBlacklist() {
   try {
     if (fs.existsSync(f)) {
       const content = fs.readFileSync(f)
-      return JSON.stringify(content)
+      if (content.length > 0) {
+        return JSON.stringify(content)
+      }
     }
   } catch (e) {
     console.log(e)
@@ -42,7 +44,9 @@ function readPeers() {
   try {
     if (fs.existsSync(file)) {
       const content = fs.readFileSync(file)
-      return JSON.parse(content)
+      if (content.length > 0) {
+        return JSON.parse(content)
+      }
     }
   } catch (e) {
     console.log(e)
