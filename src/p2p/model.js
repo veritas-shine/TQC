@@ -71,7 +71,7 @@ export default class PeerService {
         this.connections[ip] = client
 
         // save peers list
-        if (!this.peers.include(ip)) {
+        if (!this.peers.includes(ip)) {
           this.peers.push(ip)
           Storage.savePeers(this.peers)
         }
@@ -139,5 +139,15 @@ export default class PeerService {
    */
   broadcastBlock(block) {
     this.connections.forEach(client => client.sendBlock(block))
+  }
+
+  /**
+   * close p2p network connection
+   */
+  close() {
+    console.log('will close all p2p network connections')
+    Object.keys(this.connections).forEach(ip => {
+      this.connections[ip].close()
+    })
   }
 }

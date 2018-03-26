@@ -5,7 +5,8 @@ import mkdirp from 'mkdirp'
 import config from 'config'
 
 function getDataFolder() {
-  return process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/PQC' : '/var/local')
+  const {HOME, APPDATA} = process.env
+  return APPDATA || (process.platform === 'darwin' ? `${HOME}/Library/PQC` : `${HOME}/.TQC`)
 }
 
 function getPeersPath() {

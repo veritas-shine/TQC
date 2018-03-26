@@ -34,9 +34,13 @@ d.run(() => {
 
       process.once('cleanup', () => {
         console.error('Cleaning up...')
-        // TODO
-        const {database} = scope
-        database.close()
+        // try to close all services
+        Object.keys(scope).forEach(key => {
+          const service = scope[key]
+          if (service.close) {
+            service.close()
+          }
+        })
       })
     }
   })
