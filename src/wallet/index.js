@@ -12,6 +12,6 @@ export default (scope, callback) => {
     wallet.load(files[0])
     callback(null, wallet)
   } catch (e) {
-    console.error(e)
+    scope.logger.error(e)
   }
 }

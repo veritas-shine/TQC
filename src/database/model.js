@@ -32,12 +32,12 @@ export default class Database {
   }
 
   putObject(key, value, options) {
+    const {logger} = this.scope
     return new Promise((resolve, reject) => {
       if (key && value) {
-        console.log(35, key, value)
         this.db.put(key, value, options, error => {
           if (error) {
-            console.error(39, error)
+            logger.error(39, error)
             reject(error)
           } else {
             resolve()
@@ -139,6 +139,7 @@ export default class Database {
    * @return {Promise<Array>}
    */
   async listBlocks() {
+    const {logger} = this.scope
     return new Promise(((resolve, reject) => {
       const options = {
         keys: true,
@@ -156,7 +157,7 @@ export default class Database {
           result.push(block)
         })
         .on('error', error => {
-          console.error(error)
+          logger.error(error)
           reject(error)
         })
         .on('close', () => {
@@ -187,7 +188,8 @@ export default class Database {
    * close db
    */
   close() {
-    console.log(69, 'db close')
-    this.db.close(console.log)
+    const {logger} = this.scope
+    logger.log(69, 'db close')
+    this.db.close(logger.log)
   }
 }

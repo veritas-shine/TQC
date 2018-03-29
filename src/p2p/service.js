@@ -4,6 +4,7 @@ const {Block, Transaction} = pqccore
 
 function connect(scope) {
   return (call, callback) => {
+    console.log(call)
     const {ip, network} = call.request
     const {p2p} = scope
     p2p.addPeer({
@@ -45,6 +46,7 @@ function sendBlock(scope) {
 
 function getLastBlock(scope) {
   return (call, callback) => {
+    scope.logger.log(48, 'getLastBlock')
     const blockService = scope.block
     blockService.lastBlock()
       .then(block => {
@@ -55,9 +57,19 @@ function getLastBlock(scope) {
   }
 }
 
+function willClose(scope) {
+  const {logger, p2p} = scope
+  logger.log('p2p', 'did receive peer close message')
+  return (call, callback) => {
+    p2p.willPeerClose(call.request)
+    callback(null, {})
+  }
+}
+
 export default scope => ({
   connect: connect(scope),
   sendTransaction: sendTransaction(scope),
   sendBlock: sendBlock(scope),
-  getLastBlock: getLastBlock(scope)
+  getLastBlock: getLastBlock(scope),
+  willclose: willClose(scope)
 })

@@ -2,6 +2,7 @@ import Domain from 'domain'
 import async from 'async'
 
 import config from './config'
+import logger from './logger'
 import validator from './lib/validator'
 import server from './server'
 import p2p from './p2p'
@@ -17,52 +18,54 @@ d.run(() => {
     config(callback) {
       callback(null, config)
     },
+    logger,
     validator,
-    database: ['config', database],
-    server: ['config', server],
-    p2p: ['config', p2p],
+    database: ['config', 'logger', database],
+    server: ['config', 'logger', server],
+    p2p: ['config', 'logger', p2p],
     wallet: ['server', wallet],
     block: ['database', block],
-    transaction: ['config', transaction],
-    mine: ['block', 'transaction', 'server', mine],
-    ready: ['validator', 'database', 'server', 'p2p', 'wallet', (scope, callback) => callback()]
+    transaction: ['config', 'logger', transaction],
+    mine: ['block', 'transaction', 'server', mine]
   }, (error, scope) => {
+    const lo = scope.logger
     if (error) {
-      console.error(error)
+      lo.error(error)
     } else {
-      console.log('Modules ready')
+      lo.log('Modules ready')
+
+      process.on('uncaughtException', err => {
+        // handle the error safely
+        lo.error('system error', err)
+        process.emit('cleanup')
+      })
+
+      process.once('SIGTERM', (error) => {
+        lo.error(49, error)
+        process.emit('cleanup');
+      })
+
+      process.once('exit', (error) => {
+        lo.error(54, error)
+        process.emit('cleanup');
+      })
+
+      process.once('SIGINT', (error) => {
+        lo.error(59, error)
+        process.emit('cleanup');
+      })
 
       process.once('cleanup', () => {
-        console.error('Cleaning up...')
+        lo.error('Cleaning up...')
         // try to close all services
-        Object.keys(scope).forEach(key => {
-          const service = scope[key]
-          if (service && service.close) {
-            service.close()
-          }
-        })
+        Object.keys(scope)
+          .forEach(key => {
+            const service = scope[key]
+            if (service && service.close) {
+              service.close()
+            }
+          })
       })
     }
   })
-})
-
-process.on('uncaughtException', err => {
-  // handle the error safely
-  console.error('system error', err)
-  process.emit('cleanup')
-})
-
-process.once('SIGTERM', (error) => {
-  console.error(49, error)
-  process.emit('cleanup');
-})
-
-process.once('exit', (error) => {
-  console.error(54, error)
-  process.emit('cleanup');
-})
-
-process.once('SIGINT', (error) => {
-  console.error(59, error)
-  process.emit('cleanup');
 })

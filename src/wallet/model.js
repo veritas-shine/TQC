@@ -85,14 +85,14 @@ export default class WalletService {
    * @param filename {String}
    */
   saveToFile(filename) {
+    const {logger} = this.scope
     const address = this.current.address.toString()
     filename = filename || address
     const data = {
       secret: this.current.secret.toString('hex')
     }
-    console.log(64, data)
     if (Storage.createWalletFile(filename, JSON.stringify(data))) {
-      console.log('save wallet ok!')
+      logger.log('save wallet ok!')
     }
   }
 

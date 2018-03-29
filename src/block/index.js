@@ -8,6 +8,6 @@ export default (scope, callback) => {
     const block = new BlockService(scope)
     callback(null, block)
   } catch (e) {
-    console.error(e)
+    scope.logger.error(e)
   }
 }

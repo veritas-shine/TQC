@@ -6,7 +6,7 @@ const localFilter = IpFilter(['::ffff', '127.0.0.1', '::1'], {mode: 'allow'})
 const kSupportedMethods = ['get', 'post', 'put', 'delete']
 
 export default function (routers, ctx) {
-  const {server} = ctx
+  const {server, logger} = ctx
   Object.keys(routers)
     .forEach(key => {
       const func = routers[key]
@@ -27,7 +27,7 @@ export default function (routers, ctx) {
         })
       } else {
         // unsupported method!
-        console.warn('does not support method: ', key)
+        logger.warn('does not support method: ', key)
       }
     })
 }

@@ -11,6 +11,8 @@ service BlockChain {
     rpc SendTransaction(TransactionRequest) returns (GeneralReply) {}
 
     rpc SendBlock(BlockRequest) returns (GeneralReply) {}
+
+    rpc Willclose(CloseRequest) returns (GeneralReply) {}
 }
 
 // connect to peer
@@ -18,6 +20,9 @@ message ConnectRequest {
     string ip = 1;
     int32  port = 2;
     string network = 3;
+}
+
+message CloseRequest {
 }
 
 message LastBlockRequest {

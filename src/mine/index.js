@@ -13,6 +13,6 @@ export default (scope, callback) => {
       mine.schedule()
     }
   } catch (e) {
-    console.error(e)
+    scope.logger.error(e)
   }
 }

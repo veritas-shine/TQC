@@ -8,6 +8,6 @@ export default (scope, callback) => {
     const tx = new Transaction(scope)
     callback(null, tx)
   } catch (e) {
-    console.error(e)
+    scope.logger.error(e)
   }
 }

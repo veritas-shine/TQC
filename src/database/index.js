@@ -5,6 +5,6 @@ export default (scope, callback) => {
     const db = new Database(scope)
     callback(null, db)
   } catch (e) {
-    console.error(e)
+    scope.logger.error(e)
   }
 }

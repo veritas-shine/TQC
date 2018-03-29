@@ -9,6 +9,6 @@ export default (scope, callback) => {
     const service = new PeerService(scope)
     callback(null, service)
   } catch (e) {
-    console.error(e)
+    scope.logger.error(e)
   }
 }

@@ -36,9 +36,9 @@ export default (scope, callback) => {
 
   app.listen(config.port, error => {
     if (error) {
-      console.log(error)
+      scope.logger.log(error)
     } else {
-      console.log(`PQC node started, listen on port: ${config.port}`)
+      scope.logger.log(`PQC node started, listen on port: ${config.port}`)
     }
   })
 

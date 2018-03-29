@@ -10,13 +10,14 @@ const protoPath = path.resolve(__dirname, './chain.proto')
 const peerProto = grpc.load(protoPath).peer
 
 export default class Client {
-  constructor(ip, port, delegate) {
+  constructor(ip, port, delegate, scope) {
+    this.scope = scope
     this.ip = ip
     this.port = port
     this.delegate = delegate
-
+    const {logger} = scope
     const address = `${ip}:${port}`
-    console.log('will connect to peer:', address)
+    logger.log('will connect to peer:', address)
 
     const client = new peerProto.BlockChain(address, grpc.credentials.createInsecure())
     this.client = client
@@ -28,34 +29,44 @@ export default class Client {
 
     client.connect(payload, (error, response) => {
       if (error) {
-        console.error(error)
+        logger.error(error)
         if (delegate && delegate.clientWillClose) {
           delegate.clientWillClose(this, {ip})
         }
         client.close()
       } else {
-        console.log(response)
+        logger.log(response)
         this.getLastBlock()
       }
     })
   }
 
   disconnect() {
-    this.client.close()
+    const {logger} = this.scope
+    this.client.willclose({}, (error, response) => {
+      if (error) {
+        logger.error(error)
+      } else {
+        logger.log(response)
+        this.client.close()
+      }
+    })
   }
 
   getLastBlock() {
+    const {logger} = this.scope
     this.client.getLastBlock({}, (error, response) => {
       if (error) {
-        console.error(error)
+        logger.error(error)
       } else {
         const {data} = response
         const b = Block.fromBuffer(data)
+        logger.log(54, b)
         if (this.delegate && this.delegate.clientDidGetLastBlock) {
           this.delegate.clientDidGetLastBlock(this, b)
         }
       }
-      console.log(response)
+      logger.log(response)
     })
   }
 
@@ -64,14 +75,15 @@ export default class Client {
    * @param tx {Transaction}
    */
   sendTransaction(tx) {
+    const {logger} = this.scope
     const payload = {
       data: tx.toBuffer()
     }
     this.client.sendTransaction(payload, (error, response) => {
       if (error) {
-        console.error(error)
+        logger.error(error)
       } else {
-        console.log(response)
+        logger.log(response)
       }
     })
   }
@@ -80,14 +92,15 @@ export default class Client {
    * @param block {Block}
    */
   sendBlock(block) {
+    const {logger} = this.scope
     const payload = {
       data: block.toBuffer()
     }
     this.client.sendBlock(payload, (error, response) => {
       if (error) {
-        console.error(error)
+        logger.error(error)
       } else {
-        console.log(response)
+        logger.log(response)
       }
     })
   }

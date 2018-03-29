@@ -8,9 +8,9 @@ export default class PeerService {
   constructor(scope) {
     this.scope = scope
 
-    const {config} = scope
+    const {config, logger} = scope
     const {peer: {ip, port}, peers} = config
-    console.log(9, ip, port)
+    logger.log(9, ip, port)
 
     const protoPath = path.resolve(__dirname, './chain.proto')
     const peerProto = grpc.load(protoPath).peer
@@ -49,7 +49,7 @@ export default class PeerService {
     const {peer: {port}} = config
 
     array.forEach(ip => {
-      const client = new Client(ip, port, this)
+      const client = new Client(ip, port, this, this.scope)
       this.connections[ip] = client
     })
     Storage.savePeers(this.peers)
@@ -60,14 +60,14 @@ export default class PeerService {
    * @param info {{ip: String, network: String}}
    */
   addPeer(info) {
-    const {config} = this.scope
+    const {config, logger} = this.scope
     const {peer: {port}, network} = config
     const {ip} = info
     // same network type
     if (info.network === network) {
       // ignore already connected peer
       if (!this.connections[ip]) {
-        const client = new Client(ip, port, this)
+        const client = new Client(ip, port, this, scope)
         // request peer's last block when it connected to me
         client.getLastBlock()
         this.connections[ip] = client
@@ -78,10 +78,10 @@ export default class PeerService {
           Storage.savePeers(this.peers)
         }
       } else {
-        console.log('[p2p]', 'duplicate addPeer request')
+        logger.log('[p2p]', 'duplicate addPeer request')
       }
     } else {
-      console.log('[p2p]', `different network, mine: ${network} received: ${info.network}`)
+      logger.log('[p2p]', `different network, mine: ${network} received: ${info.network}`)
     }
   }
 
@@ -126,7 +126,7 @@ export default class PeerService {
    * @param block {Block}
    */
   clientDidGetLastBlock(client, block) {
-    console.log('clientDidGetLastBlock')
+    this.scope.logger.log('clientDidGetLastBlock')
     const blockService = this.scope.block
     blockService.syncBlock(block)
       .then()
@@ -148,11 +148,15 @@ export default class PeerService {
     this.connections.forEach(client => client.sendBlock(block))
   }
 
+  willPeerClose(obj) {
+    // TODO
+    console.log(obj)
+  }
   /**
    * close p2p network connection
    */
   close() {
-    console.log('will close all p2p network connections')
+    this.scope.logger.log('will close all p2p network connections')
     Object.keys(this.connections).forEach(ip => {
       this.connections[ip].disconnect()
     })

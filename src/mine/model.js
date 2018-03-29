@@ -22,6 +22,7 @@ export default class MinerService {
    * @return {Object}
    */
   mine(prevHash, merkleRoot, startNonce = 0) {
+    const {logger} = this.scope
     const time = Math.floor(Date.now() / 1000)
     const qbits = 0x1f00ffff
     const blocktemplate = {
@@ -33,14 +34,14 @@ export default class MinerService {
     }
 
     const targetBuffer = Block.bitsToTargetBuffer(qbits)
-    console.log('target:', targetBuffer.toString('hex'))
+    logger.log('target:', targetBuffer.toString('hex'))
     const {maxNonce} = Consensus.Block
     while (startNonce < maxNonce && !this.stop) {
       blocktemplate.nonce = startNonce
       const hash = Block.hashFunction(Block.concatBuffer(blocktemplate)).reverse()
       if (Buffer.compare(targetBuffer, hash) > 0) {
         // found one
-        console.log('found:', startNonce, hash.toString('hex'))
+        logger.log('found:', startNonce, hash.toString('hex'))
         break
       }
       ++startNonce
@@ -62,7 +63,8 @@ export default class MinerService {
   }
 
   schedule() {
-    console.log('start mine schedule')
+    const {logger} = this.scope
+    logger.log('start mine schedule')
     const d = Domain.create()
     d.run(() => {
       const walletService = this.scope.wallet
@@ -74,7 +76,7 @@ export default class MinerService {
         if (this.stop) {
           blockService.lastBlock()
             .then(lastBlock => {
-              console.log('lastblock', lastBlock.id, lastBlock.height)
+              logger.log('lastblock', lastBlock.id, lastBlock.height)
 
               const coinbase = Buffer.from('veritas', 'utf8')
               try {
@@ -82,7 +84,7 @@ export default class MinerService {
                 txSerivce.addTransaction(tx).then(() => {
                   const merkleroot = txSerivce.merkleRoot()
                   this.stop = false
-                  console.log(85, merkleroot)
+                  logger.log(85, merkleroot)
 
                   const template = this.mine(lastBlock.id, merkleroot)
                   if (template) {
@@ -94,10 +96,10 @@ export default class MinerService {
                     blockService.addMineBlock(newBlock)
                   }
                 }).catch(e => {
-                  console.error(e)
+                  logger.error(e)
                 })
               } catch (e) {
-                console.error(e)
+                logger.error(e)
               }
             })
         }
