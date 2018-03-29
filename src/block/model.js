@@ -58,6 +58,8 @@ export default class BlockService {
     // make sure not have the block in database
     if (!obj) {
       await database.putBlock(block)
+    } else {
+      console.log('block already in db')
     }
   }
   /**

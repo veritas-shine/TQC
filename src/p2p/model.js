@@ -68,6 +68,8 @@ export default class PeerService {
       // ignore already connected peer
       if (!this.connections[ip]) {
         const client = new Client(ip, port, this)
+        // request peer's last block when it connected to me
+        client.getLastBlock()
         this.connections[ip] = client
 
         // save peers list
@@ -75,7 +77,11 @@ export default class PeerService {
           this.peers.push(ip)
           Storage.savePeers(this.peers)
         }
+      } else {
+        console.log('[p2p]', 'duplicate addPeer request')
       }
+    } else {
+      console.log('[p2p]', `different network, mine: ${network} received: ${info.network}`)
     }
   }
 
@@ -120,6 +126,7 @@ export default class PeerService {
    * @param block {Block}
    */
   clientDidGetLastBlock(client, block) {
+    console.log('clientDidGetLastBlock')
     const blockService = this.scope.block
     blockService.syncBlock(block)
       .then()
@@ -147,7 +154,7 @@ export default class PeerService {
   close() {
     console.log('will close all p2p network connections')
     Object.keys(this.connections).forEach(ip => {
-      this.connections[ip].close()
+      this.connections[ip].disconnect()
     })
   }
 }

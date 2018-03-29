@@ -37,7 +37,7 @@ d.run(() => {
         // try to close all services
         Object.keys(scope).forEach(key => {
           const service = scope[key]
-          if (service.close) {
+          if (service && service.close) {
             service.close()
           }
         })
