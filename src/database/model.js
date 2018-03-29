@@ -4,7 +4,7 @@ import encode from 'encoding-down'
 import pqccore from 'pqc-core'
 import storage from '../storage'
 
-const {Block, Transaction} = pqccore
+const {Block, Transaction, Hash} = pqccore
 const {NotFoundError} = levelup.errors
 
 export default class Database {
@@ -81,11 +81,47 @@ export default class Database {
       if (savedBlock) {
         throw new Error('block already in db')
       } else {
-        const queries = block.transactions.map(t => ({
-          type: 'put',
-          key: `t${t.txid}`,
-          value: t.toString()
-        }))
+        // save transactions & block into database
+        const spent = []
+        const utxo = []
+        const queries = []
+        const {wallet} = this.scope
+        const publicKeyHash = Hash.defaultHash(wallet.current.publicKey)
+        block.transactions.forEach(t => {
+          const {inputs, outputs} = t
+          if (!Transaction.isCoinbase(t.txid)) {
+            inputs.forEach(ilooper => {
+              if (ilooper.verify(publicKeyHash)) {
+                // it's mine spent, so delete from utxo table
+                utxo.push({
+                  type: 'del',
+                  key: `u${ilooper.prevTxID}`
+                })
+                // save to spent table
+                spent.push({
+                  type: 'put',
+                  key: `s${ilooper.prevTxID}`,
+                  value: ilooper.outIndex.toString()
+                })
+              }
+            })
+            outputs.forEach((olooper, oidx) => {
+              if (olooper.publicKeyHash.equals(publicKeyHash)) {
+                // it's mine utxo
+                utxo.push({
+                  type: 'put',
+                  key: `u${t.txid}`,
+                  value: oidx.toString()
+                })
+              }
+            })
+          }
+          queries.push({
+            type: 'put',
+            key: `t${t.txid}`,
+            value: t.toString()
+          })
+        })
         queries.push({
           type: 'put',
           key: rid,

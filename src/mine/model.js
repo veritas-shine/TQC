@@ -79,20 +79,23 @@ export default class MinerService {
               const coinbase = Buffer.from('veritas', 'utf8')
               try {
                 const tx = Transaction.createCoinbaseTransaction(wallet.keypair, coinbase, 50 * 1e8)
-                txSerivce.addTransaction(tx)
-                const merkleroot = txSerivce.merkleRoot()
-                this.stop = false
-                console.log(85, merkleroot)
+                txSerivce.addTransaction(tx).then(() => {
+                  const merkleroot = txSerivce.merkleRoot()
+                  this.stop = false
+                  console.log(85, merkleroot)
 
-                const template = this.mine(lastBlock.id, merkleroot)
-                if (template) {
-                  template.height = lastBlock.height + 1
-                  const newBlock = new Block({
-                    ...template,
-                    transactions: [tx]
-                  })
-                  blockService.addMineBlock(newBlock)
-                }
+                  const template = this.mine(lastBlock.id, merkleroot)
+                  if (template) {
+                    template.height = lastBlock.height + 1
+                    const newBlock = new Block({
+                      ...template,
+                      transactions: [tx]
+                    })
+                    blockService.addMineBlock(newBlock)
+                  }
+                }).catch(e => {
+                  console.error(e)
+                })
               } catch (e) {
                 console.error(e)
               }

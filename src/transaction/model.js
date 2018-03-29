@@ -13,18 +13,22 @@ export default class TransactionService {
    *
    * @param tx {Transaction}
    */
-  addTransaction(tx) {
-    const {p2p} = this.scope
-    const idx = this.pendingTXs.findIndex(looper => looper.txid === tx.txid)
-    if (idx === -1) {
-      this.pendingTXs.push(tx)
-      // stop current mine event, because pending transactions change caused merkle root changed
-      const {mine} = this.scope
-      mine.stopCurrentMine()
+  async addTransaction(tx) {
+    const {p2p, database} = this.scope
+    const storedTX = await database.queryTransaction(tx.txid)
+    if (!storedTX) {
+      // tx should not already be in database
+      const idx = this.pendingTXs.findIndex(looper => looper.txid === tx.txid)
+      if (idx === -1) {
+        this.pendingTXs.push(tx)
+        // stop current mine event, because pending transactions change caused merkle root changed
+        const {mine} = this.scope
+        mine.stopCurrentMine()
 
-      // will broadcast normal transaction out
-      if (!Transaction.isCoinbase(tx.txid)) {
-        p2p.broadcastTransaction(tx)
+        // will broadcast normal transaction out
+        if (!Transaction.isCoinbase(tx.txid)) {
+          p2p.broadcastTransaction(tx)
+        }
       }
     }
   }
@@ -32,8 +36,11 @@ export default class TransactionService {
   /**
    * @param tx {Transaction}
    */
-  receiveTransaction(tx) {
-    // TODO
+  async receiveTransaction(tx) {
+    const error = this.validateTransaction(tx)
+    if (!error) {
+      await this.addTransaction(tx)
+    }
   }
 
   /**

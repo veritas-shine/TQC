@@ -19,9 +19,12 @@ function sendTransaction(scope) {
     const {data} = call.request
     const tx = Transaction.fromBuffer(data)
     const {transaction} = scope
-    transaction.receiveTransaction(tx)
-    callback(null, {
-      message: 'ok'
+    transaction.receiveTransaction(tx).then(() => {
+      callback(null, {
+        message: 'ok'
+      })
+    }).catch(e => {
+      callback(e)
     })
   }
 }
