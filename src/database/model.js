@@ -87,6 +87,7 @@ export default class Database {
         const queries = []
         const {wallet} = this.scope
         const publicKeyHash = Hash.defaultHash(wallet.current.publicKey)
+        const {address} = wallet.current
         block.transactions.forEach(t => {
           const {inputs, outputs} = t
           if (!Transaction.isCoinbase(t.txid)) {
@@ -95,12 +96,12 @@ export default class Database {
                 // it's mine spent, so delete from utxo table
                 utxo.push({
                   type: 'del',
-                  key: `u${ilooper.prevTxID}`
+                  key: `u${address}${ilooper.prevTxID}`
                 })
                 // save to spent table
                 spent.push({
                   type: 'put',
-                  key: `s${ilooper.prevTxID}`,
+                  key: `s${address}${ilooper.prevTxID}`,
                   value: ilooper.outIndex.toString()
                 })
               }
@@ -110,8 +111,8 @@ export default class Database {
                 // it's mine utxo
                 utxo.push({
                   type: 'put',
-                  key: `u${t.txid}`,
-                  value: oidx.toString()
+                  key: `u${address}${t.txid}`,
+                  value: `${oidx.toString()}${olooper.amount.toString()}`
                 })
               }
             })
@@ -184,6 +185,49 @@ export default class Database {
     }
   }
 
+  /**
+   * get balance of a account
+   * @param account {String}
+   */
+  async getAccountBalance(address) {
+    const {logger, wallet} = this.scope
+    address = address || wallet.current.address
+    const prefixLength = address.length + 1
+    return new Promise(((resolve, reject) => {
+      const options = {
+        keys: true,
+        values: true,
+        revers: false,
+        limit: 20,
+        fillCache: true
+      }
+      options.start = `u${address}`
+      options.end = `u${address}f`
+      const txs = []
+      let balance = 0
+      this.db.createReadStream(options)
+        .on('data', (data) => {
+          const {key, value} = data
+          const amount = parseInt(value.slice(1), 10)
+          balance += amount
+          txs.push({
+            txid: key.slice(prefixLength),
+            idx: parseInt(value.slice(0, 1), 10),
+            amount
+          })
+        })
+        .on('error', error => {
+          logger.error(error)
+          reject(error)
+        })
+        .on('close', () => {
+
+        })
+        .on('end', () => {
+          resolve({balance, txs})
+        })
+    }))
+  }
   /**
    * close db
    */

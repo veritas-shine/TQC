@@ -1,15 +1,18 @@
-import pqccore from 'pqc-core'
 import schemas from './schemas'
 import code from '../config/code'
 
-const {Transaction} = pqccore
-
 export default {
   'post /transaction/create': async (req, ctx) => {
-    const {validator} = ctx
+    const {validator, transaction} = ctx
     const ok = validator.validate(req.body, schemas.tx)
     if (ok) {
       const {to, amount} = req.body
+      const result = await transaction.createTXto(to, amount)
+      if (result) {
+        return {
+          code: code.ok
+        }
+      }
       // first, gather enough UTXOs
     } else {
       throw new Error('Invalid argument')

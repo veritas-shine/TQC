@@ -1,7 +1,62 @@
 import pqccore from 'pqc-core'
 import fastRoot from 'merkle-lib/fastRoot'
 
-const {Hash, Transaction} = pqccore
+const {Hash, Transaction, Keypair} = pqccore
+const {Input, Output} = Transaction
+
+/**
+ *
+ * @param txs {Array<{txid: String, idx: Number}>}
+ * @param amount {Number}
+ */
+function gatherTxsForAmount(txs, amount) {
+  const result = []
+  let total = 0
+  for (let i = 0; i < txs.length; ++i) {
+    total += txs[i].amount
+    result.push(txs[i])
+    if (total >= amount) {
+      break;
+    }
+  }
+  return result
+}
+
+/**
+ *
+ * @param result {Array<{txid: String, idx: Number, amount: Number}>}
+ * @param privateKey {Buffer}
+ * @param publicKey {Buffer}
+ * @param toAddress {String}
+ * @param amount {Number}
+ */
+function createNormalTransaction(from, result, privateKey, publicKey, toAddress, totalAmount) {
+  let change = totalAmount
+  const inputs = result.map(({txid, idx, amount}) => {
+    const message = Input.createMessageForSign(txid, idx)
+    const signature = Keypair.sign(message, privateKey)
+    change -= amount
+    return new Input({
+      prevTxID: txid,
+      outIndex: idx,
+      signature,
+      publicKey
+    })
+  })
+  const outputs = []
+  let publicKeyHash = Keypair.addressToPublicKeyHash(toAddress)
+  outputs.push(new Output(totalAmount, publicKeyHash))
+  publicKeyHash = Keypair.addressToPublicKeyHash(from)
+  outputs.push(new Output(change, publicKeyHash))
+  const info = {
+    version: 1,
+    inputs,
+    outputs,
+    locktime: 0
+  }
+  return new Transaction(info)
+}
+
 
 export default class TransactionService {
   constructor(scope) {
@@ -10,7 +65,36 @@ export default class TransactionService {
   }
 
   /**
+   * get balance of current wallet
+   * @return {Promise<Number>}
+   */
+  async getBalance() {
+    const {database, wallet} = this.scope
+    const {address} = wallet.current
+    return database.getBalance(address)
+  }
+
+  /**
    *
+   * @param toAddress {String}
+   * @param amount {Number}
+   */
+  async createTXto(toAddress, amount) {
+    const {wallet} = this.scope
+    const {privateKey, publicKey, address} = wallet.current
+    const {balance, txs} = await this.getBalance()
+    if (balance < amount) {
+      throw new Error('balance is small than amount')
+    } else {
+      // gather txs to create the transaction
+      const result = gatherTxsForAmount(txs, amount)
+      const tx = createNormalTransaction(address, result, privateKey, publicKey, toAddress, amount)
+      return this.addTransaction(tx)
+    }
+  }
+
+  /**
+   * add a transaction to memory
    * @param tx {Transaction}
    */
   async addTransaction(tx) {
@@ -29,7 +113,12 @@ export default class TransactionService {
         if (!Transaction.isCoinbase(tx.txid)) {
           p2p.broadcastTransaction(tx)
         }
+        return true
+      } else {
+        throw new Error('transaction already in memory!')
       }
+    } else {
+      throw new Error('transaction already in database!')
     }
   }
 
