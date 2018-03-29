@@ -148,9 +148,16 @@ export default class PeerService {
     this.connections.forEach(client => client.sendBlock(block))
   }
 
-  willPeerClose(obj) {
-    // TODO
-    console.log(obj)
+  /**
+   * did receive peer close message, so close the client
+   * @param ip {String}
+   */
+  willPeerClose(ip) {
+    const client = this.connections[ip]
+    if (client) {
+      client.disconnect(true)
+      delete this.connections[ip]
+    }
   }
   /**
    * close p2p network connection

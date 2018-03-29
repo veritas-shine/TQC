@@ -17,9 +17,7 @@ service BlockChain {
 
 // connect to peer
 message ConnectRequest {
-    string ip = 1;
-    int32  port = 2;
-    string network = 3;
+    string network = 1;
 }
 
 message CloseRequest {

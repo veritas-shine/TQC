@@ -41,16 +41,24 @@ export default class Client {
     })
   }
 
-  disconnect() {
+  /**
+   *
+   * @param silent {Boolean}
+   */
+  disconnect(silent = false) {
     const {logger} = this.scope
-    this.client.willclose({}, (error, response) => {
-      if (error) {
-        logger.error(error)
-      } else {
-        logger.log(response)
-        this.client.close()
-      }
-    })
+    if (silent) {
+      this.client.close()
+    } else {
+      this.client.willclose({}, (error, response) => {
+        if (error) {
+          logger.error(error)
+        } else {
+          logger.log(response)
+          this.client.close()
+        }
+      })
+    }
   }
 
   getLastBlock() {

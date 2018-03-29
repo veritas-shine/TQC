@@ -2,13 +2,25 @@ import pqccore from 'pqc-core'
 
 const {Block, Transaction} = pqccore
 
+/**
+ *
+ * @param peer {String}
+ * @return {{ip: String}}
+ */
+function parsePeer(peer) {
+  const array = peer.split(':')
+  return {
+    ip: array[1]
+  }
+}
+
 function connect(scope) {
   return (call, callback) => {
-    console.log(call)
-    const {ip, network} = call.request
+    const peer = call.getPeer()
+    const {network} = call.request
     const {p2p} = scope
     p2p.addPeer({
-      ip: ip.trim(),
+      ip: parsePeer(peer).ip,
       network: network.trim()
     })
     callback(null, {message: 'hello'})
@@ -46,6 +58,7 @@ function sendBlock(scope) {
 
 function getLastBlock(scope) {
   return (call, callback) => {
+    console.log(call.getPeer())
     scope.logger.log(48, 'getLastBlock')
     const blockService = scope.block
     blockService.lastBlock()
@@ -61,7 +74,8 @@ function willClose(scope) {
   const {logger, p2p} = scope
   logger.log('p2p', 'did receive peer close message')
   return (call, callback) => {
-    p2p.willPeerClose(call.request)
+    const ip = parsePeer(call.getPeer())
+    p2p.willPeerClose(ip)
     callback(null, {})
   }
 }
