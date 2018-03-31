@@ -86,43 +86,45 @@ export default class Database {
         const utxo = []
         const queries = []
         const {wallet} = this.scope
-        const publicKeyHash = Hash.defaultHash(wallet.current.publicKey)
-        const {address} = wallet.current
-        block.transactions.forEach(t => {
-          const {inputs, outputs} = t
-          if (!Transaction.isCoinbase(t.txid)) {
-            inputs.forEach(ilooper => {
-              if (ilooper.verify(publicKeyHash)) {
-                // it's mine spent, so delete from utxo table
-                utxo.push({
-                  type: 'del',
-                  key: `u${address}${ilooper.prevTxID}`
-                })
-                // save to spent table
-                spent.push({
-                  type: 'put',
-                  key: `s${address}${ilooper.prevTxID}`,
-                  value: ilooper.outIndex.toString()
-                })
-              }
+        if (wallet.current.publicKey) {
+          const publicKeyHash = Hash.defaultHash(wallet.current.publicKey)
+          const {address} = wallet.current
+          block.transactions.forEach(t => {
+            const {inputs, outputs} = t
+            if (!Transaction.isCoinbase(t.txid)) {
+              inputs.forEach(ilooper => {
+                if (ilooper.verify(publicKeyHash)) {
+                  // it's mine spent, so delete from utxo table
+                  utxo.push({
+                    type: 'del',
+                    key: `u${address}${ilooper.prevTxID}`
+                  })
+                  // save to spent table
+                  spent.push({
+                    type: 'put',
+                    key: `s${address}${ilooper.prevTxID}`,
+                    value: ilooper.outIndex.toString()
+                  })
+                }
+              })
+              outputs.forEach((olooper, oidx) => {
+                if (olooper.publicKeyHash.equals(publicKeyHash)) {
+                  // it's mine utxo
+                  utxo.push({
+                    type: 'put',
+                    key: `u${address}${t.txid}`,
+                    value: `${oidx.toString()}${olooper.amount.toString()}`
+                  })
+                }
+              })
+            }
+            queries.push({
+              type: 'put',
+              key: `t${t.txid}`,
+              value: t.toString()
             })
-            outputs.forEach((olooper, oidx) => {
-              if (olooper.publicKeyHash.equals(publicKeyHash)) {
-                // it's mine utxo
-                utxo.push({
-                  type: 'put',
-                  key: `u${address}${t.txid}`,
-                  value: `${oidx.toString()}${olooper.amount.toString()}`
-                })
-              }
-            })
-          }
-          queries.push({
-            type: 'put',
-            key: `t${t.txid}`,
-            value: t.toString()
           })
-        })
+        }
         queries.push({
           type: 'put',
           key: rid,
