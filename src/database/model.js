@@ -234,6 +234,6 @@ export default class Database {
   close() {
     const {logger} = this.scope
     logger.log(69, 'db close')
-    this.db.close(logger.log)
+    this.db.close()
   }
 }

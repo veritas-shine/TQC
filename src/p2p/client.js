@@ -23,7 +23,6 @@ export default class Client {
     this.client = client
     // payload will be sent to target peer
     const payload = {
-      ip: peer.ip,
       network
     }
 
