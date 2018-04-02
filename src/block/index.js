@@ -5,8 +5,7 @@ import api from './api';
 export default (scope, callback) => {
   try {
     router(api, scope)
-    const block = new BlockService(scope)
-    callback(null, block)
+    new BlockService(scope, callback)
   } catch (e) {
     scope.logger.error(e)
   }

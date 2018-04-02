@@ -10,48 +10,20 @@ const {Transaction, Block, Hash} = pqccore
 
 describe('Mine', () => {
   const scope = {}
-  // const db = new Database(scope)
-  // scope.database = db
-  // const blockService = new BlockService(scope)
-  // scope.block = blockService
+  scope.logger = console
 
-  // it('should create genesis block', function () {
-  //   this.timeout(200 * 1000)
-  //   return;
-  //   try {
-  //     const prevHash = Hash.NULL
-  //     const coinbase = Buffer.from('veritas', 'utf8')
-  //     const walletService = new WalletService(scope)
-  //
-  //     const files = Storage.getWalletFiles()
-  //     walletService.load(files[0])
-  //     const wallet = walletService.current
-  //
-  //     const mineService = new MineService(scope)
-  //
-  //     const tx = Transaction.createCoinbaseTransaction(wallet.keypair, coinbase, 50 * 1e8)
-  //     const merkleroot = fastRoot([tx.hash()], Hash.defaultHash)
-  //
-  //     const template = mineService.mine(prevHash, merkleroot)
-  //     if (template) {
-  //       template.height = 0
-  //       const newBlock = new Block({
-  //         ...template,
-  //         transactions: [tx]
-  //       })
-  //       console.log(newBlock, newBlock.toString())
-  //     }
-  //   } catch (e) {
-  //     console.log(e)
-  //   }
-  // })
+  const walletService = new WalletService(scope)
+  scope.wallet = walletService
+  const db = new Database(scope)
+  scope.database = db
+  const blockService = new BlockService(scope)
+  scope.block = blockService
 
-  it('should correct block', function () {
+  it('should create genesis block', function () {
     this.timeout(200 * 1000)
     try {
       const prevHash = Hash.NULL
-      const coinbase = Buffer.from('veritas', 'utf8')
-      const walletService = new WalletService(scope)
+      const coinbase = Buffer.from('veritas shine', 'utf8')
 
       const files = Storage.getWalletFiles()
       walletService.load(files[0])
@@ -59,8 +31,9 @@ describe('Mine', () => {
 
       const mineService = new MineService(scope)
       mineService.stop = false
+
       const tx = Transaction.createCoinbaseTransaction(wallet.keypair, coinbase, 50 * 1e8)
-      const merkleroot = Buffer.from('1875504aba7ae1ba2b17050ab2fcb378d08800fd9c39bbe258d86ec367670956', 'hex')
+      const merkleroot = fastRoot([tx.hash()], Hash.defaultHash)
 
       const template = mineService.mine(prevHash, merkleroot)
       if (template) {
@@ -75,6 +48,36 @@ describe('Mine', () => {
       console.log(e)
     }
   })
+
+  // it('should correct block', function () {
+  //   this.timeout(200 * 1000)
+  //   try {
+  //     const prevHash = Hash.NULL
+  //     const coinbase = Buffer.from('veritas', 'utf8')
+  //     const walletService = new WalletService(scope)
+  //
+  //     const files = Storage.getWalletFiles()
+  //     walletService.load(files[0])
+  //     const wallet = walletService.current
+  //
+  //     const mineService = new MineService(scope)
+  //     mineService.stop = false
+  //     const tx = Transaction.createCoinbaseTransaction(wallet.keypair, coinbase, 50 * 1e8)
+  //     const merkleroot = Buffer.from('1875504aba7ae1ba2b17050ab2fcb378d08800fd9c39bbe258d86ec367670956', 'hex')
+  //
+  //     const template = mineService.mine(prevHash, merkleroot)
+  //     if (template) {
+  //       template.height = 0
+  //       const newBlock = new Block({
+  //         ...template,
+  //         transactions: [tx]
+  //       })
+  //       console.log(newBlock, newBlock.toString())
+  //     }
+  //   } catch (e) {
+  //     console.log(e)
+  //   }
+  // })
 
   // it('should mine a new block', function (done) {
   //   this.timeout(200 * 1000)

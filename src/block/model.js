@@ -1,27 +1,34 @@
-import assert from 'assert'
 import pqccore from 'pqc-core'
 import genesisJSON from './genesis'
 
 const {Block} = pqccore
 
 const kLastBlockIDKey = 'iblast'
+const kGenesisKey = 'igenesis'
 
 export default class BlockService {
-  constructor(scope) {
+  constructor(scope, callback) {
     this.scope = scope
     const {database, logger} = scope
-    database.queryBlock('genesis')
-      .then(block => {
-        if (!block) {
+    database.queryObject(kGenesisKey)
+      .then(blockID => {
+        if (!blockID) {
           logger.debug('no genesis block, so save it into db from JSON file ')
           // no any block
           this.genesisblock = Block.fromBuffer(Buffer.from(genesisJSON.hex, 'hex'))
           database.putBlock(this.genesisblock)
-          database.putBlock(this.genesisblock, 'genesis')
-          database.putObject(kLastBlockIDKey, this.genesisblock.id)
+            .then(() => {
+              database.putObject(kGenesisKey, this.genesisblock.id)
+              database.putObject(kLastBlockIDKey, this.genesisblock.id)
+              callback(null, this)
+            })
         } else {
           logger.debug('load genesis from database')
-          this.genesisblock = block
+          database.queryBlock(blockID)
+            .then(block => {
+              this.genesisblock = block
+              callback(null, this)
+            })
         }
       })
   }
@@ -62,6 +69,7 @@ export default class BlockService {
       logger.log('block already in db')
     }
   }
+
   /**
    * did receive block from p2p network
    * @param block {Block}

@@ -4,7 +4,7 @@ import encode from 'encoding-down'
 import pqccore from 'pqc-core'
 import storage from '../storage'
 
-const {Block, Transaction, Hash} = pqccore
+const {Block, Transaction, Keypair} = pqccore
 const {NotFoundError} = levelup.errors
 
 export default class Database {
@@ -86,13 +86,16 @@ export default class Database {
         const utxo = []
         const queries = []
         const {wallet} = this.scope
-        if (wallet.current.publicKey) {
-          const publicKeyHash = Hash.defaultHash(wallet.current.publicKey)
-          const {address} = wallet.current
+        const {address} = wallet.current
+        console.log(90, wallet.current)
+        if (address) {
+          const publicKeyHash = Keypair.addressToPublicKeyHash(address)
+          console.log(92, publicKeyHash)
           block.transactions.forEach(t => {
             const {inputs, outputs} = t
-            if (!Transaction.isCoinbase(t.txid)) {
+            if (!Transaction.Input.isCoinbase(t.txid)) {
               inputs.forEach(ilooper => {
+                console.log(96, ilooper)
                 if (ilooper.verify(publicKeyHash)) {
                   // it's mine spent, so delete from utxo table
                   utxo.push({
@@ -107,17 +110,18 @@ export default class Database {
                   })
                 }
               })
-              outputs.forEach((olooper, oidx) => {
-                if (olooper.publicKeyHash.equals(publicKeyHash)) {
-                  // it's mine utxo
-                  utxo.push({
-                    type: 'put',
-                    key: `u${address}${t.txid}`,
-                    value: `${oidx.toString()}${olooper.amount.toString()}`
-                  })
-                }
-              })
             }
+            outputs.forEach((olooper, oidx) => {
+              console.log(113, 'verify', olooper.publicKeyHash, publicKeyHash)
+              if (olooper.publicKeyHash.equals(publicKeyHash)) {
+                // it's mine utxo
+                utxo.push({
+                  type: 'put',
+                  key: `u${address}${t.txid}`,
+                  value: `${oidx.toString()}${olooper.amount.toString()}`
+                })
+              }
+            })
             queries.push({
               type: 'put',
               key: `t${t.txid}`,
@@ -125,12 +129,13 @@ export default class Database {
             })
           })
         }
+        console.log(129, queries, spent, utxo)
         queries.push({
           type: 'put',
           key: rid,
           value: block.toString()
         })
-        return this.db.batch(queries)
+        return this.db.batch([...queries, ...spent, ...utxo])
       }
     } else {
       throw new Error('invalid argument type')
