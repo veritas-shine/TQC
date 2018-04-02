@@ -1,5 +1,6 @@
 import Domain from 'domain'
 import async from 'async'
+import pqccore from 'pqc-core'
 
 import config from './config'
 import logger from './logger'
@@ -11,6 +12,8 @@ import transaction from './transaction'
 import wallet from './wallet'
 import mine from './mine'
 import block from './block'
+
+const {Keypair} = pqccore
 
 const d = Domain.create()
 d.run(() => {
@@ -29,6 +32,10 @@ d.run(() => {
     mine: ['block', 'transaction', 'server', mine]
   }, (error, scope) => {
     const lo = scope.logger
+    const {wallet, block} = scope
+    const {transactions} = block.genesisblock
+    const output = transactions[0].outputs[0]
+    console.log(wallet.current, Keypair.addressToPublicKeyHash(wallet.current.address), output.publicKeyHash)
     if (error) {
       lo.error(error)
     } else {

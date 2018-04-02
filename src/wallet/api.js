@@ -16,6 +16,14 @@ export default {
       throw new Error('Invalid argument `secret`')
     }
   },
+  'get /wallet/balance': async (req, ctx) => {
+    const {transaction} = ctx
+    const balance = await transaction.getBalance()
+    return {
+      code: code.ok,
+      data: balance
+    }
+  },
   'get /wallet/detail': async (req, ctx) => {
     const {wallet} = ctx
     return {

@@ -6,7 +6,7 @@ import config from 'config'
 
 function getDataFolder() {
   const {HOME, APPDATA} = process.env
-  return APPDATA || (process.platform === 'darwin' ? `${HOME}/Library/PQC` : `${HOME}/.TQC`)
+  return APPDATA || (process.platform === 'darwin' ? `${HOME}/Library/TQC` : `${HOME}/.TQC`)
 }
 
 function getPeersPath() {

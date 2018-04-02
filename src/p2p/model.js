@@ -37,6 +37,7 @@ export default class PeerService {
    * @param peers
    */
   connectToPeers(peers) {
+    console.log(40, 'will connect to peers', peers)
     const p2 = Storage.readPeers()
     let array = peers
     if (p2.length > 0) {

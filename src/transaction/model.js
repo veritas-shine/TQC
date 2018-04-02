@@ -57,7 +57,6 @@ function createNormalTransaction(from, result, privateKey, publicKey, toAddress,
   return new Transaction(info)
 }
 
-
 export default class TransactionService {
   constructor(scope) {
     this.scope = scope
@@ -71,7 +70,7 @@ export default class TransactionService {
   async getBalance() {
     const {database, wallet} = this.scope
     const {address} = wallet.current
-    return database.getBalance(address)
+    return database.getAccountBalance(address)
   }
 
   /**
