@@ -2,6 +2,7 @@ import fs from 'fs'
 import Storage from 'storage'
 import pqccore from 'pqc-core'
 import bip39 from 'bip39'
+import CryptoJS from 'crypto-js'
 import config from '../config'
 
 const {Keypair} = pqccore
@@ -12,12 +13,21 @@ function loadFromFile(filePath) {
     try {
       const obj = JSON.parse(content)
       if (obj) {
-        const {secret} = obj
-        const keypair = new Keypair({secret})
-        return {
-          address: keypair.toAddress(),
-          keypair,
-          secret
+        const {seed, encrypted} = obj
+        console.log(17, obj)
+        if (encrypted) {
+          return {
+            seed,
+            encrypted
+          }
+        } else {
+          console.log(23, seed)
+          const keypair = new Keypair({secret: seed})
+          return {
+            address: keypair.toAddress(),
+            keypair,
+            seed
+          }
         }
       }
     } catch (e) {
@@ -37,16 +47,17 @@ export default class WalletService {
    * load wallet from file
    * @param filePath {String}
    * @param shouldCreate {Boolean}
-   * @return {{secret: String, address: String, keypair: Keypair}}
+   * @return {{seed: String, address: String, keypair: Keypair}}
    */
   load(filePath, shouldCreate = false) {
     if (filePath) {
       // load account from file
-      const {secret, keypair, address} = loadFromFile(filePath)
+      const {seed, keypair, address, encrypted} = loadFromFile(filePath)
       const wallet = {
         address,
         keypair,
-        secret
+        seed,
+        encrypted
       }
       this.current = {...wallet}
       return wallet
@@ -62,7 +73,7 @@ export default class WalletService {
   /**
    * create wallet from mnemonic string
    * @param mnemonic {String}
-   * @return {{secret: String, address: String, keypair: Keypair}}
+   * @return {{seed: String, address: String, keypair: Keypair}}
    */
   create(mnemonic) {
     const seed = bip39.mnemonicToSeed(mnemonic)
@@ -72,12 +83,51 @@ export default class WalletService {
     })
     const address = keypair.toAddress()
     const wallet = {
-      secret: seed,
+      seed,
       address,
       keypair
     }
     this.current = {...wallet}
     return wallet
+  }
+
+  lock() {
+    const {seed, address, password} = this.current
+    const {logger} = this.scope
+    const filename = address.toString()
+    const seedString = seed.toString('hex')
+    const bytes = CryptoJS.AES.encrypt(seedString, password)
+    const data = {
+      seed: bytes.toString(), // base64 encoded
+      encrypted: true
+    }
+    if (Storage.createWalletFile(filename, JSON.stringify(data))) {
+      logger.log('save wallet ok!')
+    }
+    this.current = {
+      seed: bytes.toString(),
+      encrypted: true
+    }
+  }
+
+  /**
+   * unlock wallet with AES key
+   * @param password {String}
+   */
+  unlock(password) {
+    const {seed} = this.current
+    const bytes = CryptoJS.AES.decrypt(seed, password)
+    const pt = bytes.toString(CryptoJS.enc.Utf8)
+    const realSeed = Buffer.from(pt, 'hex')
+    const keypair = new Keypair({secret: realSeed})
+    this.current = {
+      address: keypair.toAddress(),
+      keypair,
+      seed: realSeed,
+      password,
+      encrypted: false
+    }
+    return {...this.current}
   }
 
   /**
@@ -89,7 +139,7 @@ export default class WalletService {
     const address = this.current.address.toString()
     filename = filename || address
     const data = {
-      secret: this.current.secret.toString('hex')
+      seed: this.current.seed.toString('hex')
     }
     if (Storage.createWalletFile(filename, JSON.stringify(data))) {
       logger.log('save wallet ok!')
@@ -102,9 +152,11 @@ export default class WalletService {
    */
   toJSON() {
     const wallet = this.current
+    console.log(149, wallet)
     if (Object.keys(wallet).length > 0) {
       return {
-        secret: wallet.secret.toString('hex')
+        address: wallet.address,
+        encrypted: wallet.encrypted
       }
     } else {
       return {}

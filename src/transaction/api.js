@@ -31,5 +31,13 @@ export default {
     } else {
       throw new Error('Invalid argument')
     }
+  },
+  'get /transaction/list': async (req, ctx) => {
+    const {database} = ctx
+    const txs = await database.listTransactions()
+    return {
+      code: code.ok,
+      data: txs
+    }
   }
 }

@@ -65,12 +65,19 @@ export default class TransactionService {
 
   /**
    * get balance of current wallet
-   * @return {Promise<Number>}
+   * @return {Promise<{balance: Number, txs: Array}>}
    */
   async getBalance() {
     const {database, wallet} = this.scope
     const {address} = wallet.current
-    return database.getAccountBalance(address)
+    if (address) {
+      return database.getAccountBalance(address)
+    } else {
+      return {
+        balance: 0,
+        txs: []
+      }
+    }
   }
 
   /**

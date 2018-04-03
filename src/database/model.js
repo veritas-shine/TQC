@@ -177,6 +177,37 @@ export default class Database {
     }))
   }
 
+  async listTransactions() {
+    const {logger} = this.scope
+    return new Promise(((resolve, reject) => {
+      const options = {
+        keys: true,
+        values: true,
+        revers: false,
+        limit: 20,
+        fillCache: true
+      }
+      options.start = 't'
+      options.end = 'tf'
+      const result = []
+      this.db.createReadStream(options)
+        .on('data', (data) => {
+          const tx = Transaction.fromBuffer(Buffer.from(data.value, 'hex'))
+          result.push(tx)
+        })
+        .on('error', error => {
+          logger.error(error)
+          reject(error)
+        })
+        .on('close', () => {
+
+        })
+        .on('end', () => {
+          resolve(result)
+        })
+    }))
+  }
+
   /**
    * query transaction by txid
    * @param txid {String}
@@ -231,10 +262,14 @@ export default class Database {
 
         })
         .on('end', () => {
-          resolve({balance, txs})
+          resolve({
+            balance,
+            txs
+          })
         })
     }))
   }
+
   /**
    * close db
    */

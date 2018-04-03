@@ -32,10 +32,6 @@ d.run(() => {
     mine: ['block', 'transaction', 'server', mine]
   }, (error, scope) => {
     const lo = scope.logger
-    const {wallet, block} = scope
-    const {transactions} = block.genesisblock
-    const output = transactions[0].outputs[0]
-    console.log(wallet.current, Keypair.addressToPublicKeyHash(wallet.current.address), output.publicKeyHash)
     if (error) {
       lo.error(error)
     } else {
