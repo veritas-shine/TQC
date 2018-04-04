@@ -3,15 +3,16 @@ import leveldown from 'leveldown'
 import encode from 'encoding-down'
 import pqccore from 'pqc-core'
 import storage from '../storage'
+import {addressFromHash, isCoinbaseTX} from '../lib/utils'
 
-const {Block, Transaction, Keypair} = pqccore
+const {Block, Transaction, Network} = pqccore
 const {NotFoundError} = levelup.errors
 
 export default class Database {
   constructor(scope) {
     this.scope = scope
     const p = storage.getDBPath()
-    const db = levelup(encode(leveldown(p), {valueEncoding: 'hex'}))
+    const db = levelup(encode(leveldown(p), {valueEncoding: 'utf8'}))
     this.db = db
   }
 
@@ -85,50 +86,40 @@ export default class Database {
         const spent = []
         const utxo = []
         const queries = []
-        const {wallet} = this.scope
-        const {address} = wallet.current
-        console.log(90, wallet.current)
-        if (address) {
-          const publicKeyHash = Keypair.addressToPublicKeyHash(address)
-          console.log(92, publicKeyHash)
-          block.transactions.forEach(t => {
-            const {inputs, outputs} = t
-            if (!Transaction.Input.isCoinbase(t.txid)) {
-              inputs.forEach(ilooper => {
-                console.log(96, ilooper)
-                if (ilooper.verify(publicKeyHash)) {
-                  // it's mine spent, so delete from utxo table
-                  utxo.push({
-                    type: 'del',
-                    key: `u${address}${ilooper.prevTxID}`
-                  })
-                  // save to spent table
-                  spent.push({
-                    type: 'put',
-                    key: `s${address}${ilooper.prevTxID}`,
-                    value: ilooper.outIndex.toString()
-                  })
-                }
+        const {config} = this.scope
+        const network = Network[config.network].publicKeyHash
+        block.transactions.forEach(t => {
+          const {inputs, outputs} = t
+          if (!isCoinbaseTX(t)) {
+            inputs.forEach(ilooper => {
+              console.log(96, ilooper)
+              const key = `${ilooper.prevTxID.toString('hex')}:${ilooper.outIndex.toString()}`
+              utxo.push({
+                type: 'del',
+                key: `u${key}`
               })
-            }
-            outputs.forEach((olooper, oidx) => {
-              console.log(113, 'verify', olooper.publicKeyHash, publicKeyHash)
-              if (olooper.publicKeyHash.equals(publicKeyHash)) {
-                // it's mine utxo
-                utxo.push({
-                  type: 'put',
-                  key: `u${address}${t.txid}`,
-                  value: `${oidx.toString()}${olooper.amount.toString()}`
-                })
-              }
+              // save to spent table
+              spent.push({
+                type: 'put',
+                key: `s${key}`,
+                value: ilooper.outIndex.toString()
+              })
             })
-            queries.push({
+          }
+          outputs.forEach((olooper, oidx) => {
+            const address = addressFromHash(network, olooper.publicKeyHash)
+            utxo.push({
               type: 'put',
-              key: `t${t.txid}`,
-              value: t.toString()
+              key: `u${address}${t.txid}`,
+              value: `${oidx.toString()}:${olooper.amount.toString()}`
             })
           })
-        }
+          queries.push({
+            type: 'put',
+            key: `t${t.txid}`,
+            value: t.toString()
+          })
+        })
         console.log(129, queries, spent, utxo)
         queries.push({
           type: 'put',
@@ -246,11 +237,13 @@ export default class Database {
       this.db.createReadStream(options)
         .on('data', (data) => {
           const {key, value} = data
-          const amount = parseInt(value.slice(1), 10)
+          console.log(249, key, value)
+          const array = value.split(':')
+          const amount = parseInt(array[1], 10)
           balance += amount
           txs.push({
             txid: key.slice(prefixLength),
-            idx: parseInt(value.slice(0, 1), 10),
+            idx: parseInt(array[0], 10),
             amount
           })
         })
