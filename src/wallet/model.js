@@ -92,21 +92,24 @@ export default class WalletService {
   }
 
   lock() {
-    const {seed, address, password} = this.current
-    const {logger} = this.scope
-    const filename = address.toString()
-    const seedString = seed.toString('hex')
-    const bytes = CryptoJS.AES.encrypt(seedString, password)
-    const data = {
-      seed: bytes.toString(), // base64 encoded
-      encrypted: true
-    }
-    if (Storage.createWalletFile(filename, JSON.stringify(data))) {
-      logger.log('save wallet ok!')
-    }
-    this.current = {
-      seed: bytes.toString(),
-      encrypted: true
+    const {seed, address, password, encrypted} = this.current
+    if (!encrypted) {
+      const {logger} = this.scope
+      console.log(97, this.current)
+      const filename = address.toString()
+      const seedString = seed.toString('hex')
+      const bytes = CryptoJS.AES.encrypt(seedString, password)
+      const data = {
+        seed: bytes.toString(), // base64 encoded
+        encrypted: true
+      }
+      if (Storage.createWalletFile(filename, JSON.stringify(data))) {
+        logger.log('save wallet ok!')
+      }
+      this.current = {
+        seed: bytes.toString(),
+        encrypted: true
+      }
     }
   }
 
@@ -115,18 +118,21 @@ export default class WalletService {
    * @param password {String}
    */
   unlock(password) {
-    const {seed} = this.current
-    const bytes = CryptoJS.AES.decrypt(seed, password)
-    const pt = bytes.toString(CryptoJS.enc.Utf8)
-    const realSeed = Buffer.from(pt, 'hex')
-    const keypair = new Keypair({secret: realSeed})
-    this.current = {
-      address: keypair.toAddress(),
-      keypair,
-      seed: realSeed,
-      password,
-      encrypted: false
+    const {seed, encrypted} = this.current
+    if (encrypted) {
+      const bytes = CryptoJS.AES.decrypt(seed, password)
+      const pt = bytes.toString(CryptoJS.enc.Utf8)
+      const realSeed = Buffer.from(pt, 'hex')
+      const keypair = new Keypair({secret: realSeed})
+      this.current = {
+        address: keypair.toAddress(),
+        keypair,
+        seed: realSeed,
+        password,
+        encrypted: false
+      }
     }
+    console.log(130, this.current)
     return {...this.current}
   }
 
