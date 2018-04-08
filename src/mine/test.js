@@ -19,31 +19,35 @@ describe('Mine', () => {
   const blockService = new BlockService(scope)
   scope.block = blockService
 
+  const prevHash = Hash.NULL
+  const coinbase = Buffer.from('veritas shine', 'utf8')
+
+  const files = Storage.getWalletFiles()
+  walletService.load(files[0])
+  walletService.unlock('1qaz!QAZ')
+  const wallet = walletService.current
+  console.log(28, wallet.address)
+
+  const mineService = new MineService(scope)
+  mineService.stop = false
+
+  const tx = Transaction.createCoinbaseTransaction(wallet.keypair, coinbase, 50 * 1e8)
+  const merkleroot = fastRoot([tx.hash()], Hash.defaultHash)
+
+  const template = mineService.mine(prevHash, merkleroot)
+  if (template) {
+    template.height = 0
+    const newBlock = new Block({
+      ...template,
+      transactions: [tx]
+    })
+    console.log(newBlock, newBlock.toString())
+  }
+
   it('should create genesis block', function () {
     this.timeout(200 * 1000)
     try {
-      const prevHash = Hash.NULL
-      const coinbase = Buffer.from('veritas shine', 'utf8')
 
-      const files = Storage.getWalletFiles()
-      walletService.load(files[0])
-      const wallet = walletService.current
-
-      const mineService = new MineService(scope)
-      mineService.stop = false
-
-      const tx = Transaction.createCoinbaseTransaction(wallet.keypair, coinbase, 50 * 1e8)
-      const merkleroot = fastRoot([tx.hash()], Hash.defaultHash)
-
-      const template = mineService.mine(prevHash, merkleroot)
-      if (template) {
-        template.height = 0
-        const newBlock = new Block({
-          ...template,
-          transactions: [tx]
-        })
-        console.log(newBlock, newBlock.toString())
-      }
     } catch (e) {
       console.log(e)
     }
