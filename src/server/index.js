@@ -2,6 +2,9 @@ import Express from 'express'
 import expressWinston from 'express-winston'
 import winston from 'winston'
 import bodyParser from 'body-parser'
+import router from 'lib/router'
+import api from './api'
+
 
 export default (scope, callback) => {
   const {config} = scope
@@ -41,6 +44,9 @@ export default (scope, callback) => {
       scope.logger.log(`PQC node started, listen on port: ${config.port}`)
     }
   })
+
+  // TODO: this is a partial scope
+  router(api, {server: app, ...scope})
 
   callback(null, app)
 }

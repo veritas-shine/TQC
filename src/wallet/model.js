@@ -43,6 +43,10 @@ export default class WalletService {
     this.current = {}
   }
 
+  reload() {
+    const files = Storage.getWalletFiles()
+    this.load(files[0], false)
+  }
   /**
    * load wallet from file
    * @param filePath {String}
