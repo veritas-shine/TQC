@@ -28,3 +28,7 @@ export function isCoinbaseTX(tx) {
   }
   return false
 }
+
+export function randomString() {
+  return Math.random().toString(16).substring(2)
+}

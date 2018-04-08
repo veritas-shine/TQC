@@ -1,15 +1,15 @@
-import Miner from './model'
+import config from '../config/code'
 import schemas from './schemas'
 
 export default {
   'post /mine/try': async (req, ctx) => {
-    const {validator} = ctx
+    const {validator, mine} = ctx
     const {block, nonce} = req.body
     let ok = validator.validate(block, schemas.block)
     if (ok) {
       ok = validator.validate(nonce, schemas.nonce)
       if (ok) {
-        return Miner.run(block, nonce)
+        return mine.run(block, nonce)
       }
     }
     if (!ok) {
@@ -17,6 +17,13 @@ export default {
     } else {
       // will never go here
       return {}
+    }
+  },
+  'post /mine/start': async (req, ctx) => {
+    const {mine} = ctx
+    mine.mineOnce()
+    return {
+      code: config.ok
     }
   }
 }

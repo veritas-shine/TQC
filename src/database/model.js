@@ -5,6 +5,7 @@ import pqccore from 'pqc-core'
 import storage from '../storage'
 import {addressFromHash, isCoinbaseTX} from '../lib/utils'
 
+const kMaxHash = 'ffffffffffffffffffffffffffffffff'
 const {Block, Transaction, Network} = pqccore
 const {NotFoundError} = levelup.errors
 
@@ -179,7 +180,7 @@ export default class Database {
         fillCache: true
       }
       options.start = 't'
-      options.end = 'tf'
+      options.end = `t${kMaxHash}`
       const result = []
       this.db.createReadStream(options)
         .on('data', (data) => {
@@ -231,7 +232,7 @@ export default class Database {
         fillCache: true
       }
       options.start = `u${address}`
-      options.end = `u${address}f`
+      options.end = `u${address}${kMaxHash}`
       const txs = []
       let balance = 0
       this.db.createReadStream(options)

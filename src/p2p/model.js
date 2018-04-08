@@ -138,7 +138,10 @@ export default class PeerService {
    * @param tx {Transaction}
    */
   broadcastTransaction(tx) {
-    this.connections.forEach(client => client.sendTransaction(tx))
+    Object.keys(this.connections).forEach(key => {
+      const client = this.connections[key]
+      client.sendTransaction(tx)
+    })
   }
 
   /**
@@ -146,7 +149,10 @@ export default class PeerService {
    * @param block {Block}
    */
   broadcastBlock(block) {
-    this.connections.forEach(client => client.sendBlock(block))
+    Object.keys(this.connections).forEach(key => {
+      const client = this.connections[key]
+      client.sendBlock(block)
+    })
   }
 
   /**

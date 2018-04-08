@@ -30,24 +30,24 @@ function gatherTxsForAmount(txs, amount) {
  * @param toAddress {String}
  * @param amount {Number}
  */
-function createNormalTransaction(from, result, privateKey, publicKey, toAddress, totalAmount) {
+function createNormalTransaction(from, result, keypair, toAddress, totalAmount) {
   let change = totalAmount
   const inputs = result.map(({txid, idx, amount}) => {
     const message = Input.createMessageForSign(txid, idx)
-    const signature = Keypair.sign(message, privateKey)
+    const signature = keypair.sign(message)
     change -= amount
     return new Input({
       prevTxID: txid,
       outIndex: idx,
       signature,
-      publicKey
+      publicKey: keypair.publicKey()
     })
   })
   const outputs = []
   let publicKeyHash = Keypair.addressToPublicKeyHash(toAddress)
   outputs.push(new Output(totalAmount, publicKeyHash))
   publicKeyHash = Keypair.addressToPublicKeyHash(from)
-  outputs.push(new Output(change, publicKeyHash))
+  outputs.push(new Output(-change, publicKeyHash))
   const info = {
     version: 1,
     inputs,
@@ -88,14 +88,15 @@ export default class TransactionService {
    */
   async createTXto(toAddress, amount) {
     const {wallet} = this.scope
-    const {privateKey, publicKey, address} = wallet.current
+    const {keypair, address} = wallet.current
     const {balance, txs} = await this.getBalance()
     if (balance < amount) {
       throw new Error('balance is small than amount')
     } else {
       // gather txs to create the transaction
       const result = gatherTxsForAmount(txs, amount)
-      const tx = createNormalTransaction(address, result, privateKey, publicKey, toAddress, amount)
+      console.log(98, result, txs)
+      const tx = createNormalTransaction(address, result, keypair, toAddress, amount)
       return this.addTransaction(tx)
     }
   }
@@ -111,16 +112,22 @@ export default class TransactionService {
       // tx should not already be in database
       const idx = this.pendingTXs.findIndex(looper => looper.txid === tx.txid)
       if (idx === -1) {
-        this.pendingTXs.push(tx)
+        console.log(115, tx.toJSON())
+        if (tx.isCoinbase()) {
+          this.pendingTXs.unshift(tx)
+        } else {
+          this.pendingTXs.push(tx)
+        }
         // stop current mine event, because pending transactions change caused merkle root changed
         const {mine} = this.scope
         mine.stopCurrentMine()
 
+        console.log(124, this.pendingTXs)
         // will broadcast normal transaction out
-        if (!Transaction.isCoinbase(tx.txid)) {
+        if (!tx.isCoinbase()) {
           p2p.broadcastTransaction(tx)
         }
-        return true
+        return this.pendingTXs
       } else {
         throw new Error('transaction already in memory!')
       }

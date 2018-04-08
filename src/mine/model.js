@@ -1,6 +1,7 @@
 import NodeSchedule from 'node-schedule'
 import pqccore from 'pqc-core'
 import Domain from 'domain'
+import {randomString} from '../lib/utils'
 
 const {Block, Transaction, Consensus} = pqccore
 
@@ -62,47 +63,52 @@ export default class MinerService {
     return null
   }
 
+  mineOnce() {
+    const {logger} = this.scope
+    const walletService = this.scope.wallet
+    const wallet = walletService.current
+    const blockService = this.scope.block
+    const txSerivce = this.scope.transaction
+
+    if (this.stop) {
+      blockService.lastBlock()
+        .then(lastBlock => {
+          logger.log('lastblock', lastBlock.id, lastBlock.height)
+          const str = `${walletService.current.address}${randomString()}`
+          const coinbase = Buffer.from(str, 'utf8')
+          try {
+            const tx = Transaction.createCoinbaseTransaction(wallet.keypair, coinbase, 50 * 1e8)
+            txSerivce.addTransaction(tx).then((txs) => {
+              const merkleroot = txSerivce.merkleRoot()
+              this.stop = false
+              logger.log(85, merkleroot)
+
+              const template = this.mine(lastBlock.id, merkleroot)
+              if (template) {
+                template.height = lastBlock.height + 1
+                const newBlock = new Block({
+                  ...template,
+                  transactions: txs
+                })
+                blockService.addMineBlock(newBlock)
+              }
+            }).catch(e => {
+              logger.error(e)
+            })
+          } catch (e) {
+            logger.error(e)
+          }
+        })
+    }
+  }
+
   schedule() {
     const {logger} = this.scope
     logger.log('start mine schedule')
     const d = Domain.create()
     d.run(() => {
-      const walletService = this.scope.wallet
-      const wallet = walletService.current
-      const blockService = this.scope.block
-      const txSerivce = this.scope.transaction
-
       NodeSchedule.scheduleJob('*/1 * * * *', () => {
-        if (this.stop) {
-          blockService.lastBlock()
-            .then(lastBlock => {
-              logger.log('lastblock', lastBlock.id, lastBlock.height)
-
-              const coinbase = Buffer.from('veritas', 'utf8')
-              try {
-                const tx = Transaction.createCoinbaseTransaction(wallet.keypair, coinbase, 50 * 1e8)
-                txSerivce.addTransaction(tx).then(() => {
-                  const merkleroot = txSerivce.merkleRoot()
-                  this.stop = false
-                  logger.log(85, merkleroot)
-
-                  const template = this.mine(lastBlock.id, merkleroot)
-                  if (template) {
-                    template.height = lastBlock.height + 1
-                    const newBlock = new Block({
-                      ...template,
-                      transactions: [tx]
-                    })
-                    blockService.addMineBlock(newBlock)
-                  }
-                }).catch(e => {
-                  logger.error(e)
-                })
-              } catch (e) {
-                logger.error(e)
-              }
-            })
-        }
+        this.mineOnce()
       })
     })
   }
