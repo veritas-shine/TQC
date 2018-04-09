@@ -10,7 +10,6 @@ export default class PeerService {
 
     const {config, logger} = scope
     const {peer: {ip, port}, peers} = config
-    logger.log(9, ip, port)
 
     const protoPath = path.resolve(__dirname, './chain.proto')
     const peerProto = grpc.load(protoPath).peer
@@ -68,7 +67,7 @@ export default class PeerService {
     if (info.network === network) {
       // ignore already connected peer
       if (!this.connections[ip]) {
-        const client = new Client(ip, port, this, scope)
+        const client = new Client(ip, port, this, this.scope)
         // request peer's last block when it connected to me
         client.getLastBlock()
         this.connections[ip] = client
