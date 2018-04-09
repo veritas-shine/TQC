@@ -3,7 +3,7 @@ import genesisJSON from './genesis'
 
 const {Block} = pqccore
 
-const kLastBlockIDKey = 'iblast'
+export const kLastBlockIDKey = 'iblast'
 const kGenesisKey = 'igenesis'
 
 export default class BlockService {
@@ -60,11 +60,12 @@ export default class BlockService {
   }
 
   async syncBlock(block) {
-    const {database, logger} = this.scope
+    const {database, transaction, logger} = this.scope
     const obj = await database.queryBlock(block.id)
     // make sure not have the block in database
     if (!obj) {
       await database.putBlock(block)
+      transaction.clearTransactionForBlock(block)
     } else {
       logger.log('block already in db')
     }

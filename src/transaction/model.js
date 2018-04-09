@@ -176,6 +176,16 @@ export default class TransactionService {
   }
 
   /**
+   * remove duplicate transactions in pendingTXs when block will be
+   * saved into database
+   * @param block {Block}
+   */
+  clearTransactionForBlock(block) {
+    const txis = block.transactions.filter(looper => looper.txid)
+    this.prunePendingTransactions(txis)
+  }
+
+  /**
    * return merkle root of current pending transactions
    * @return {Buffer}
    */

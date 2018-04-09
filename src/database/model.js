@@ -4,6 +4,7 @@ import encode from 'encoding-down'
 import pqccore from 'pqc-core'
 import storage from '../storage'
 import {addressFromHash, isCoinbaseTX} from '../lib/utils'
+import {kLastBlockIDKey} from '../block/model'
 
 const kMaxHash = 'ffffffffffffffffffffffffffffffff'
 const {Block, Transaction, Network} = pqccore
@@ -121,11 +122,18 @@ export default class Database {
             value: t.toString()
           })
         })
-        console.log(129, queries, spent, utxo)
+
+        // put block into queries
         queries.push({
           type: 'put',
           key: rid,
           value: block.toString()
+        })
+        // update lastblock id
+        queries.push({
+          type: 'put',
+          key: kLastBlockIDKey,
+          value: block.id
         })
         return this.db.batch([...queries, ...spent, ...utxo])
       }
