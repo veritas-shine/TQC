@@ -105,14 +105,14 @@ export default class TransactionService {
    * add a transaction to memory
    * @param tx {Transaction}
    */
-  async addTransaction(tx) {
+  async addTransaction(tx, needBroadcast = true) {
     const {p2p, database} = this.scope
     const storedTX = await database.queryTransaction(tx.txid)
     if (!storedTX) {
       // tx should not already be in database
       const idx = this.pendingTXs.findIndex(looper => looper.txid === tx.txid)
-      if (idx === -1) {
-        console.log(115, tx.toJSON())
+      console.log(114, this.pendingTXs, idx, idx === -1)
+      if (idx == -1) {
         if (tx.isCoinbase()) {
           this.pendingTXs.unshift(tx)
         } else {
@@ -121,9 +121,8 @@ export default class TransactionService {
         // stop current mine event, because pending transactions change caused merkle root changed
         const {mine} = this.scope
         mine.stopCurrentMine()
-
         // will broadcast normal transaction out
-        if (!tx.isCoinbase()) {
+        if (!tx.isCoinbase() && needBroadcast) {
           p2p.broadcastTransaction(tx)
         }
         return this.pendingTXs
@@ -141,7 +140,7 @@ export default class TransactionService {
   async receiveTransaction(tx) {
     const error = this.validateTransaction(tx)
     if (!error) {
-      await this.addTransaction(tx)
+      await this.addTransaction(tx, false)
     }
   }
 
@@ -170,7 +169,9 @@ export default class TransactionService {
    * @param txids {Array}
    */
   prunePendingTransactions(txids = []) {
+    console.log(174, txids)
     const result = this.pendingTXs.filter(looper => !txids.includes(looper.txid))
+    console.log(176, result)
     this.pendingTXs = result
   }
 
@@ -180,7 +181,7 @@ export default class TransactionService {
    * @param block {Block}
    */
   clearTransactionForBlock(block) {
-    const txis = block.transactions.filter(looper => looper.txid)
+    const txis = block.transactions.filter(looper => looper.txid).map(tx => tx.txid)
     this.prunePendingTransactions(txis)
   }
 

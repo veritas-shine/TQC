@@ -53,7 +53,7 @@ export default class BlockService {
     const {database, transaction, p2p, logger} = this.scope
     await database.putBlock(block)
     await database.putObject(kLastBlockIDKey, block.id)
-    const txids = block.transactions.filter(looper => looper.txid)
+    const txids = block.transactions.filter(looper => looper.txid).map(tx => tx.txid)
     transaction.prunePendingTransactions(txids)
     p2p.broadcastBlock(block)
     logger.log('did add mined block', block)

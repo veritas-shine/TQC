@@ -94,7 +94,6 @@ export default class Database {
           const {inputs, outputs} = t
           if (!isCoinbaseTX(t)) {
             inputs.forEach(ilooper => {
-              console.log(96, ilooper)
               const key = `${ilooper.prevTxID.toString('hex')}:${ilooper.outIndex.toString()}`
               utxo.push({
                 type: 'del',
