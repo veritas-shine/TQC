@@ -74,8 +74,10 @@ function willClose(scope) {
   const {logger, p2p} = scope
   logger.log('p2p', 'did receive peer close message')
   return (call, callback) => {
-    const ip = parsePeer(call.getPeer())
-    p2p.willPeerClose(ip)
+    const {ip} = parsePeer(call.getPeer())
+    if (p2p) {
+      p2p.willPeerClose(ip)
+    }
     callback(null, {})
   }
 }

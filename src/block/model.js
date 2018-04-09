@@ -59,6 +59,11 @@ export default class BlockService {
     logger.log('did add mined block', block)
   }
 
+  /**
+   *
+   * @param block {Block}
+   * @return {Promise<void>}
+   */
   async syncBlock(block) {
     const {database, transaction, logger} = this.scope
     const obj = await database.queryBlock(block.id)
