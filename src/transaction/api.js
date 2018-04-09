@@ -39,5 +39,12 @@ export default {
       code: code.ok,
       data: txs
     }
+  },
+  'post /transaction/prune': async (req, ctx) => {
+    const {transaction} = ctx
+    transaction.prune()
+    return {
+      code: code.ok
+    }
   }
 }

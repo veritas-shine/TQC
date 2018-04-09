@@ -122,7 +122,6 @@ export default class TransactionService {
         const {mine} = this.scope
         mine.stopCurrentMine()
 
-        console.log(124, this.pendingTXs)
         // will broadcast normal transaction out
         if (!tx.isCoinbase()) {
           p2p.broadcastTransaction(tx)
@@ -193,5 +192,13 @@ export default class TransactionService {
     const hashes = this.pendingTXs.map(tx => tx.hash())
     const root = fastRoot(hashes, Hash.defaultHash)
     return root
+  }
+
+  /**
+   * discard all pending transactions
+   * debug usage
+   */
+  prune() {
+    this.pendingTXs = []
   }
 }
