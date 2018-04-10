@@ -1,3 +1,4 @@
+[![codebeat badge](https://codebeat.co/badges/89eb5f22-12e8-47f5-b0e8-08ce062cd27a)](https://codebeat.co/projects/github-com-veritas-shine-tqc-master)
 [![Snyk Vulnerability Analysis](https://snyk.io/test/github/veritas-shine/TQC/badge.svg)](https://snyk.io/test/github/veritas-shine/TQC)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/veritas-shine/TQC/master/LICENSE)
 
