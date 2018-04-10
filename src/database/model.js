@@ -94,14 +94,24 @@ export default class Database {
         const queries = []
         const {config} = this.scope
         const network = Network[config.network].publicKeyHash
-        block.transactions.forEach(t => {
+        for (let i = 0; i < block.transactions.length; ++i) {
+          const t = block.transactions[i]
           const {inputs, outputs} = t
           if (!isCoinbaseTX(t)) {
-            inputs.forEach(ilooper => {
-              const key = `${ilooper.prevTxID.toString('hex')}:${ilooper.outIndex.toString()}`
+            for (let j = 0; j < inputs.length; ++j) {
+              const ilooper = inputs[j]
+              const prevTXID = ilooper.prevTxID.toString('hex')
+              const key = `${prevTXID}:${ilooper.outIndex.toString()}`
               utxo.push({
                 type: 'del',
                 key: `u${key}`
+              })
+
+              const prevTX = await this.queryTransaction(prevTXID)
+              const addr = addressFromHash(network, prevTX.outputs[ilooper.outIndex].publicKeyHash)
+              utxo.push({
+                type: 'del',
+                key: `u${addr}${prevTXID}`
               })
               // save to spent table
               spent.push({
@@ -109,14 +119,20 @@ export default class Database {
                 key: `s${key}`,
                 value: ilooper.outIndex.toString()
               })
-            })
+            }
           }
           outputs.forEach((olooper, oidx) => {
             const address = addressFromHash(network, olooper.publicKeyHash)
+            // convenient for calculate balance base on address
             utxo.push({
               type: 'put',
               key: `u${address}${t.txid}`,
               value: `${oidx.toString()}:${olooper.amount.toString()}`
+            })
+            utxo.push({
+              type: 'put',
+              key: `u${t.txid}:${oidx.toString()}`,
+              value: ''
             })
           })
           queries.push({
@@ -124,7 +140,7 @@ export default class Database {
             key: `t${t.txid}`,
             value: t.toString()
           })
-        })
+        }
 
         // put block into queries
         queries.push({
