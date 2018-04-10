@@ -162,7 +162,6 @@ export default class WalletService {
    */
   toJSON() {
     const wallet = this.current
-    console.log(149, wallet)
     if (Object.keys(wallet).length > 0) {
       return {
         address: wallet.address,

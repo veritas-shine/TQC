@@ -53,8 +53,7 @@ export default class BlockService {
     const {database, transaction, p2p, logger} = this.scope
     await database.putBlock(block)
     await database.putObject(kLastBlockIDKey, block.id)
-    const txids = block.transactions.filter(looper => looper.txid).map(tx => tx.txid)
-    transaction.prunePendingTransactions(txids)
+    transaction.prunePendingTransactions(block.transactions)
     p2p.broadcastBlock(block)
     logger.log('did add mined block', block)
   }
@@ -70,7 +69,7 @@ export default class BlockService {
     // make sure not have the block in database
     if (!obj) {
       await database.putBlock(block)
-      transaction.clearTransactionForBlock(block)
+      transaction.prunePendingTransactions(block.transactions)
     } else {
       logger.log('block already in db')
     }
@@ -81,11 +80,12 @@ export default class BlockService {
    * @param block {Block}
    */
   async receiveBlock(block) {
-    const {database} = this.scope
+    const {database, transaction} = this.scope
     const obj = await database.queryBlock(block.id)
     // make sure not have the block in database
     if (!obj) {
       await database.putBlock(block)
+      transaction.prunePendingTransactions(block.transactions)
     }
   }
 }

@@ -19,7 +19,7 @@ export default class Database {
     this.db = db
 
     const {bus} = scope
-    bus.on(kModuleClearUp, this.close)
+    bus.on(kModuleClearUp, this.close.bind(this))
   }
 
   queryObject(key) {
@@ -249,7 +249,6 @@ export default class Database {
       this.db.createReadStream(options)
         .on('data', (data) => {
           const {key, value} = data
-          console.log(249, key, value)
           const array = value.split(':')
           const amount = parseInt(array[1], 10)
           balance += amount

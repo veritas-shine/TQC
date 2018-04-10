@@ -111,8 +111,7 @@ export default class TransactionService {
     if (!storedTX) {
       // tx should not already be in database
       const idx = this.pendingTXs.findIndex(looper => looper.txid === tx.txid)
-      console.log(114, this.pendingTXs, idx, idx === -1)
-      if (idx == -1) {
+      if (idx === -1) {
         if (tx.isCoinbase()) {
           this.pendingTXs.unshift(tx)
         } else {
@@ -168,21 +167,16 @@ export default class TransactionService {
    * prune saved transactions from pending transactions
    * @param txids {Array<String>}
    */
-  prunePendingTransactions(txids = []) {
+  prunePendingTransactions(txs = []) {
+    const txids = txs.map(tx => tx.txid)
     console.log(174, txids)
-    const result = this.pendingTXs.filter(looper => !txids.includes(looper.txid))
+    const result = this.pendingTXs.filter(looper => {
+      const ret = !txids.includes(looper.txid)
+      console.log(ret, looper.txid)
+      return ret
+    })
     console.log(176, result)
     this.pendingTXs = result
-  }
-
-  /**
-   * remove duplicate transactions in pendingTXs when block will be
-   * saved into database
-   * @param block {Block}
-   */
-  clearTransactionForBlock(block) {
-    const txis = block.transactions.filter(looper => looper.txid).map(tx => tx.txid)
-    this.prunePendingTransactions(txis)
   }
 
   /**

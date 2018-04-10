@@ -23,7 +23,7 @@ export default class PeerService {
     this.connections = {}
     this.connectToPeers(peers)
 
-    bus.on(kModuleClearUp, this.close)
+    bus.on(kModuleClearUp, this.close.bind(this))
   }
 
   /**
