@@ -70,7 +70,6 @@ export default class TransactionService {
   async getBalance() {
     const {database, wallet} = this.scope
     const {address} = wallet.current
-    console.log(73, wallet.current)
     if (address) {
       return database.getAccountBalance(address)
     } else {

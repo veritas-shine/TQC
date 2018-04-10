@@ -138,7 +138,7 @@ export default class Database {
           key: kLastBlockIDKey,
           value: block.id
         })
-        return this.db.batch([...queries, ...spent, ...utxo])
+        return this.db.batch([...queries, ...utxo, ...spent])
       }
     } else {
       throw new Error('invalid argument type')
@@ -251,6 +251,7 @@ export default class Database {
           const {key, value} = data
           const array = value.split(':')
           const amount = parseInt(array[1], 10)
+          console.log(254, amount, key, value)
           balance += amount
           txs.push({
             txid: key.slice(prefixLength),
