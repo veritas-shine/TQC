@@ -166,7 +166,7 @@ export default class TransactionService {
 
   /**
    * prune saved transactions from pending transactions
-   * @param txids {Array}
+   * @param txids {Array<String>}
    */
   prunePendingTransactions(txids = []) {
     console.log(174, txids)

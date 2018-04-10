@@ -4,10 +4,10 @@ import winston from 'winston'
 import bodyParser from 'body-parser'
 import router from 'lib/router'
 import api from './api'
-
+import {kModuleDidLoad} from '../bus/constants'
 
 export default (scope, callback) => {
-  const {config} = scope
+  const {config, bus} = scope
   const app = new Express()
 
   app.all('*', (req, res, next) => {
@@ -45,8 +45,9 @@ export default (scope, callback) => {
     }
   })
 
-  // TODO: this is a partial scope
-  router(api, {server: app, ...scope})
+  bus.on(kModuleDidLoad, () => {
+    router(api, scope)
+  })
 
   callback(null, app)
 }

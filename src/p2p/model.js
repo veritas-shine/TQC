@@ -3,12 +3,13 @@ import path from 'path'
 import Client from './client'
 import serviceBinder from './service'
 import Storage from '../storage'
+import {kModuleClearUp} from '../bus/constants'
 
 export default class PeerService {
   constructor(scope) {
     this.scope = scope
 
-    const {config, logger} = scope
+    const {config, bus} = scope
     const {peer: {ip, port}, peers} = config
 
     const protoPath = path.resolve(__dirname, './chain.proto')
@@ -21,6 +22,8 @@ export default class PeerService {
     this.server = server
     this.connections = {}
     this.connectToPeers(peers)
+
+    bus.on(kModuleClearUp, this.close)
   }
 
   /**

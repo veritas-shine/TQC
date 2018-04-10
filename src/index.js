@@ -1,6 +1,5 @@
 import Domain from 'domain'
 import async from 'async'
-import pqccore from 'pqc-core'
 
 import config from './config'
 import logger from './logger'
@@ -12,8 +11,8 @@ import transaction from './transaction'
 import wallet from './wallet'
 import mine from './mine'
 import block from './block'
-
-const {Keypair} = pqccore
+import bus from './bus'
+import {kModuleDidLoad, kModuleClearUp} from './bus/constants'
 
 const d = Domain.create()
 d.run(() => {
@@ -23,12 +22,13 @@ d.run(() => {
     },
     logger,
     validator,
-    database: ['config', 'logger', database],
+    bus: ['logger', bus],
+    database: ['config', 'bus', 'logger', database],
     server: ['config', 'logger', server],
-    p2p: ['config', 'logger', p2p],
+    p2p: ['config', 'bus', 'logger', p2p],
     wallet: ['server', wallet],
     block: ['database', block],
-    transaction: ['config', 'logger', transaction],
+    transaction: ['server', transaction],
     mine: ['block', 'transaction', 'server', mine]
   }, (error, scope) => {
     const lo = scope.logger
@@ -58,16 +58,12 @@ d.run(() => {
         process.emit('cleanup');
       })
 
+      scope.bus.trigger(kModuleDidLoad)
+
       process.once('cleanup', () => {
         lo.error('Cleaning up...')
         // try to close all services
-        Object.keys(scope)
-          .forEach(key => {
-            const service = scope[key]
-            if (service && service.close) {
-              service.close()
-            }
-          })
+        scope.bus.trigger(kModuleClearUp)
       })
     }
   })

@@ -5,6 +5,7 @@ import pqccore from 'pqc-core'
 import storage from '../storage'
 import {addressFromHash, isCoinbaseTX} from '../lib/utils'
 import {kLastBlockIDKey} from '../block/model'
+import {kModuleClearUp} from '../bus/constants'
 
 const kMaxHash = 'ffffffffffffffffffffffffffffffff'
 const {Block, Transaction, Network} = pqccore
@@ -16,6 +17,9 @@ export default class Database {
     const p = storage.getDBPath()
     const db = levelup(encode(leveldown(p), {valueEncoding: 'utf8'}))
     this.db = db
+
+    const {bus} = scope
+    bus.on(kModuleClearUp, this.close)
   }
 
   queryObject(key) {

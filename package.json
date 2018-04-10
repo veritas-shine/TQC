@@ -10,7 +10,8 @@
     "test-mine": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/mine/test.js",
     "test-p2p": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/p2p/test.js",
     "test-db": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/database/test.js",
-    "test-tx": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/transaction/test.js"
+    "test-tx": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/transaction/test.js",
+    "test-bus": "NODE_PATH=./src mocha $NODE_DEBUG_OPTION --require babel-core/register --require babel-polyfill --reporter spec src/bus/test.js"
   },
   "betterScripts": {
     "dev": {
