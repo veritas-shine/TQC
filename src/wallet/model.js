@@ -49,9 +49,9 @@ export default class WalletService {
   }
   /**
    * load wallet from file
-   * @param filePath {String}
+   * @param filePath {string}
    * @param shouldCreate {Boolean}
-   * @return {{seed: String, address: String, keypair: Keypair}}
+   * @return {{seed: string, address: string, keypair: Keypair}}
    */
   load(filePath, shouldCreate = false) {
     if (filePath) {
@@ -76,8 +76,8 @@ export default class WalletService {
 
   /**
    * create wallet from mnemonic string
-   * @param mnemonic {String}
-   * @return {{seed: String, address: String, keypair: Keypair}}
+   * @param mnemonic {string}
+   * @return {{seed: string, address: string, keypair: Keypair}}
    */
   create(mnemonic) {
     const seed = bip39.mnemonicToSeed(mnemonic)
@@ -119,7 +119,7 @@ export default class WalletService {
 
   /**
    * unlock wallet with AES key
-   * @param password {String}
+   * @param password {string}
    */
   unlock(password) {
     const {seed, encrypted} = this.current
@@ -142,7 +142,7 @@ export default class WalletService {
 
   /**
    * save wallet to file, JSON format
-   * @param filename {String}
+   * @param filename {string}
    */
   saveToFile(filename) {
     const {logger} = this.scope

@@ -60,7 +60,7 @@ export default class PeerService {
 
   /**
    *
-   * @param info {{ip: String, network: String}}
+   * @param info {{ip: string, network: string}}
    */
   addPeer(info) {
     const {config, logger} = this.scope
@@ -90,7 +90,7 @@ export default class PeerService {
 
   /**
    * remove peer by ip
-   * @param ip {String}
+   * @param ip {string}
    */
   removePeer(ip) {
     if (ip) {
@@ -159,7 +159,7 @@ export default class PeerService {
 
   /**
    * did receive peer close message, so close the client
-   * @param ip {String}
+   * @param ip {string}
    */
   willPeerClose(ip) {
     const client = this.connections[ip]

@@ -6,7 +6,7 @@ export default class Bus {
 
   /**
    * register message handler
-   * @param message {String}
+   * @param message {string}
    * @param handler {Function}
    */
   on(message, handler) {
@@ -26,7 +26,7 @@ export default class Bus {
 
   /**
    *
-   * @param message {String}
+   * @param message {string}
    * @param handler {Function}
    */
   off(message, handler) {
@@ -41,7 +41,7 @@ export default class Bus {
 
   /**
    *
-   * @param message {String}
+   * @param message {string}
    * @param payload {Object}
    */
   trigger(message, payload = null) {

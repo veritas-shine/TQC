@@ -5,9 +5,9 @@ const {Transaction} = pqccore
 
 /**
  *
- * @param network {Number}
- * @param publicKeyHash {Buffer|String}
- * @return {String}
+ * @param network {number}
+ * @param publicKeyHash {Buffer|string}
+ * @return {string}
  */
 export function addressFromHash(network, publicKeyHash) {
   publicKeyHash = BufferUtil.ensureBuffer(publicKeyHash)

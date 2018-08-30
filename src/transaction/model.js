@@ -6,8 +6,8 @@ const {Input, Output} = Transaction
 
 /**
  *
- * @param txs {Array<{txid: String, idx: Number}>}
- * @param amount {Number}
+ * @param txs {Array<{txid: string, idx: number}>}
+ * @param amount {number}
  */
 function gatherTxsForAmount(txs, amount) {
   const result = []
@@ -24,11 +24,11 @@ function gatherTxsForAmount(txs, amount) {
 
 /**
  *
- * @param result {Array<{txid: String, idx: Number, amount: Number}>}
- * @param privateKey {Buffer}
- * @param publicKey {Buffer}
- * @param toAddress {String}
- * @param amount {Number}
+ * @param result {Array<{txid: string, idx: number, amount: number}>}
+ * @param {Buffer} from
+ * @param {Buffer}
+ * @param {string} toAddress
+ * @param {number} totalAmount
  */
 function createNormalTransaction(from, result, keypair, toAddress, totalAmount) {
   let change = totalAmount
@@ -65,7 +65,7 @@ export default class TransactionService {
 
   /**
    * get balance of current wallet
-   * @return {Promise<{balance: Number, txs: Array}>}
+   * @return {Promise<{balance: number, txs: Array}>}
    */
   async getBalance() {
     const {database, wallet} = this.scope
@@ -82,8 +82,8 @@ export default class TransactionService {
 
   /**
    *
-   * @param toAddress {String}
-   * @param amount {Number}
+   * @param toAddress {string}
+   * @param amount {number}
    */
   async createTXto(toAddress, amount) {
     const {wallet} = this.scope
@@ -164,7 +164,7 @@ export default class TransactionService {
 
   /**
    * prune saved transactions from pending transactions
-   * @param txids {Array<String>}
+   * @param {Array<string>} txids
    */
   prunePendingTransactions(txs = []) {
     const txids = txs.map(tx => tx.txid)

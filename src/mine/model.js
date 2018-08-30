@@ -19,7 +19,7 @@ export default class MinerService {
    *
    * @param prevHash {Buffer}
    * @param merkleRoot {Buffer}
-   * @param startNonce {Number}
+   * @param startNonce {number}
    * @return {Object}
    */
   mine(prevHash, merkleRoot, startNonce = 0) {

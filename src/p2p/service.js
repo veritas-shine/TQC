@@ -4,8 +4,8 @@ const {Block, Transaction} = pqccore
 
 /**
  *
- * @param peer {String}
- * @return {{ip: String}}
+ * @param peer {string}
+ * @return {{ip: string}}
  */
 function parsePeer(peer) {
   const array = peer.split(':')

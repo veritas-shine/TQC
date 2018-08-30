@@ -73,7 +73,7 @@ export default class Database {
    * save block into db, default key is block's hash
    * if argument `id` provided, will use `id` as key
    * @param block {Block}
-   * @param id {String}
+   * @param id {string}
    * @return {Promise}
    */
   async putBlock(block, id) {
@@ -229,7 +229,7 @@ export default class Database {
 
   /**
    * query transaction by txid
-   * @param txid {String}
+   * @param txid {string}
    * @return {Promise<Transaction>}
    */
   async queryTransaction(txid) {
@@ -244,7 +244,7 @@ export default class Database {
 
   /**
    * get balance of a account
-   * @param account {String}
+   * @param account {string}
    */
   async getAccountBalance(address) {
     const {logger, wallet} = this.scope
